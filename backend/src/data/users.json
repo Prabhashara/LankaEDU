@@ -1,0 +1,30 @@
+[
+  {
+    "id": "bdcf7ebe-5a6c-415f-b208-73751004144e",
+    "name": "System Admin",
+    "email": "admin@example.com",
+    "role": "admin",
+    "is_active": true,
+    "password_hash": "$2a$10$pamuxD8oTeaBtJtZgq7Xyuti8J5Qy3VS0O5TglRN/0uEPmkv9QtO2",
+    "created_at": "2026-05-02T13:59:33.745Z"
+  },
+  {
+    "id": "52e796ef-6641-4bb7-b15c-5b26785be68b",
+    "name": "Demo Lecturer",
+    "email": "lecturer@example.com",
+    "role": "lecturer",
+    "is_active": true,
+    "password_hash": "$2a$10$pamuxD8oTeaBtJtZgq7Xyuti8J5Qy3VS0O5TglRN/0uEPmkv9QtO2",
+    "created_at": "2026-05-02T13:59:33.747Z"
+  },
+  {
+    "id": "90d151c1-d015-4763-bb94-3a7151dab73d",
+    "name": "Demo Student",
+    "email": "student@example.com",
+    "student_id": "STU-DEMO-001",
+    "role": "student",
+    "is_active": true,
+    "password_hash": "$2a$10$pamuxD8oTeaBtJtZgq7Xyuti8J5Qy3VS0O5TglRN/0uEPmkv9QtO2",
+    "created_at": "2026-05-02T13:59:33.748Z"
+  }
+]
