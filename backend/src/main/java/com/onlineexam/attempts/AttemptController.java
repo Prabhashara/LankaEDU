@@ -11,6 +11,8 @@ import com.onlineexam.results.Result;
 import com.onlineexam.results.ResultAnswer;
 import com.onlineexam.results.ResultService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -172,6 +175,10 @@ public class AttemptController {
     double maxScore = 0;
 
     for (Question question : questions) {
+      if (!isAutoGradable(question)) {
+        continue;
+      }
+
       maxScore += question.getMarks();
       String selectedOptionId = answers.get(question.getId());
       boolean correct = question.getOptions().stream()
@@ -187,7 +194,7 @@ public class AttemptController {
       resultAnswers.add(resultAnswer);
     }
 
-    double percentage = maxScore == 0 ? 0 : (totalScore / maxScore) * 100;
+    double percentage = percentage(totalScore, maxScore);
     Result result = new Result();
     result.setId(UUID.randomUUID().toString());
     result.setAttemptId(attempt.getId());
@@ -195,12 +202,27 @@ public class AttemptController {
     result.setExamId(attempt.getExamId());
     result.setTotalScore(totalScore);
     result.setMaxScore(maxScore);
-    result.setPercentage(Math.round(percentage * 100.0) / 100.0);
+    result.setPercentage(percentage);
     result.setGrade(gradeFor(percentage));
     result.setPassed(percentage >= passMark);
     result.setPublishedAt(submittedAt);
     result.setAnswers(resultAnswers);
     return result;
+  }
+
+  private boolean isAutoGradable(Question question) {
+    String type = question.getType() == null ? "" : question.getType().toUpperCase(Locale.ROOT);
+    return "MCQ".equals(type) || "TRUE_FALSE".equals(type);
+  }
+
+  private double percentage(double totalScore, double maxScore) {
+    if (maxScore == 0) {
+      return 0;
+    }
+    return BigDecimal.valueOf(totalScore)
+      .multiply(BigDecimal.valueOf(100))
+      .divide(BigDecimal.valueOf(maxScore), 2, RoundingMode.HALF_UP)
+      .doubleValue();
   }
 
   private String gradeFor(double percentage) {

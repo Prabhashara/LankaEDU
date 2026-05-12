@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
-import { getExam } from "../../services/examService";
-import { getResult } from "../../services/resultService";
+import { getResultDetail } from "../../services/resultService";
 import "./ExamTakingPage.css";
 
 export default function ResultDetailPage() {
@@ -11,6 +10,7 @@ export default function ResultDetailPage() {
   const role = getStoredRole();
   const [result, setResult] = useState(null);
   const [exam, setExam] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,11 +23,11 @@ export default function ResultDetailPage() {
 
     async function loadResult() {
       try {
-        const loadedResult = await getResult(resultId);
-        const loadedExam = await getExam(loadedResult.exam_id || loadedResult.examId);
+        const detail = await getResultDetail(resultId);
         if (isMounted) {
-          setResult(loadedResult);
-          setExam(loadedExam);
+          setResult(detail.result);
+          setExam(detail.exam);
+          setQuestions(detail.questions || []);
         }
       } catch (_error) {
         if (isMounted) {
@@ -56,33 +56,27 @@ export default function ResultDetailPage() {
   }
 
   return (
-    <main className="submission-shell">
-      <section className="submission-card" aria-labelledby="result-title">
+    <main className="result-detail-shell">
+      <section className="result-detail-panel" aria-labelledby="result-title">
         <p className="eyebrow">Result</p>
         <h1 id="result-title">{exam?.title || "Exam Result"}</h1>
         {isLoading ? <p className="empty-state">Loading result...</p> : null}
         {error ? <div className="alert alert-error admin-alert">{error}</div> : null}
         {result ? (
-          <dl className="submission-summary">
-            <div>
-              <dt>Score</dt>
-              <dd>
-                {result.total_score ?? result.totalScore} / {result.max_score ?? result.maxScore}
-              </dd>
-            </div>
-            <div>
-              <dt>Percentage</dt>
-              <dd>{result.percentage}%</dd>
-            </div>
-            <div>
-              <dt>Grade</dt>
-              <dd>{result.grade}</dd>
-            </div>
-            <div>
-              <dt>Status</dt>
-              <dd>{result.is_passed || result.passed ? "Passed" : "Failed"}</dd>
-            </div>
-          </dl>
+          <>
+            <ResultSummary result={result} />
+            <section className="result-review" aria-labelledby="answers-title">
+              <div className="result-section-header">
+                <h2 id="answers-title">Answer Review</h2>
+                <span>{questions.length} questions</span>
+              </div>
+              <div className="result-question-list">
+                {questions.map((question, index) => (
+                  <QuestionReview key={question.id} question={question} number={index + 1} />
+                ))}
+              </div>
+            </section>
+          </>
         ) : null}
         <div className="submission-actions">
           <Link className="secondary-button" to="/student/exams">
@@ -92,4 +86,71 @@ export default function ResultDetailPage() {
       </section>
     </main>
   );
+}
+
+function ResultSummary({ result }) {
+  const totalScore = result.total_score ?? result.totalScore ?? 0;
+  const maxScore = result.max_score ?? result.maxScore ?? 0;
+  const passed = result.is_passed ?? result.passed;
+
+  return (
+    <dl className="result-summary-grid">
+      <div>
+        <dt>Score</dt>
+        <dd>
+          {formatNumber(totalScore)} / {formatNumber(maxScore)}
+        </dd>
+      </div>
+      <div>
+        <dt>Percentage</dt>
+        <dd>{formatPercentage(result.percentage)}</dd>
+      </div>
+      <div>
+        <dt>Grade</dt>
+        <dd>
+          <span className="grade-badge">{result.grade || "F"}</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Status</dt>
+        <dd>
+          <span className={`status-badge ${passed ? "pass" : "fail"}`}>{passed ? "Pass" : "Fail"}</span>
+        </dd>
+      </div>
+    </dl>
+  );
+}
+
+function QuestionReview({ question, number }) {
+  const isCorrect = Boolean(question.isCorrect);
+
+  return (
+    <article className={`result-question-card ${isCorrect ? "correct" : "wrong"}`}>
+      <div className="result-question-topline">
+        <h3>Question {number}</h3>
+        <span>{formatNumber(question.marksAwarded)} / {formatNumber(question.marks)} marks</span>
+      </div>
+      <p className="result-question-text">{question.questionText}</p>
+      <div className="answer-comparison">
+        <div className={`answer-box ${isCorrect ? "correct" : "wrong"}`}>
+          <span>Your answer</span>
+          <strong>{question.selectedAnswer || "Not answered"}</strong>
+        </div>
+        <div className="answer-box correct">
+          <span>Correct answer</span>
+          <strong>{question.correctAnswer || "No correct answer set"}</strong>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function formatPercentage(value) {
+  const number = Number(value || 0);
+  return `${Number.isInteger(number) ? number : number.toFixed(2)}%`;
+}
+
+function formatNumber(value) {
+  const number = Number(value || 0);
+  return Number.isInteger(number) ? String(number) : number.toFixed(2);
 }

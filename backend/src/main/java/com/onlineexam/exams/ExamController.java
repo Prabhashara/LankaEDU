@@ -7,6 +7,10 @@ import com.onlineexam.common.ApiException;
 import com.onlineexam.questions.PublicQuestion;
 import com.onlineexam.questions.Question;
 import com.onlineexam.questions.QuestionService;
+import com.onlineexam.results.Result;
+import com.onlineexam.results.ResultService;
+import com.onlineexam.users.User;
+import com.onlineexam.users.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -30,11 +34,21 @@ public class ExamController {
   private final ExamService examService;
   private final QuestionService questionService;
   private final AttemptService attemptService;
+  private final ResultService resultService;
+  private final UserService userService;
 
-  public ExamController(ExamService examService, QuestionService questionService, AttemptService attemptService) {
+  public ExamController(
+    ExamService examService,
+    QuestionService questionService,
+    AttemptService attemptService,
+    ResultService resultService,
+    UserService userService
+  ) {
     this.examService = examService;
     this.questionService = questionService;
     this.attemptService = attemptService;
+    this.resultService = resultService;
+    this.userService = userService;
   }
 
   @GetMapping
@@ -73,6 +87,26 @@ public class ExamController {
     }
 
     return Map.of("exam", exam);
+  }
+
+  @GetMapping("/{id}/results")
+  public Map<String, Object> results(HttpServletRequest request, @PathVariable String id) {
+    UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
+    PublicExam exam = findOwnedExam(id, user);
+
+    if (!canViewResults(exam)) {
+      throw new ApiException(HttpStatus.CONFLICT, "Results are available after the exam ends.");
+    }
+
+    List<Map<String, Object>> rows = resultService.listByExam(id).stream()
+      .map(this::resultRow)
+      .toList();
+
+    return Map.of(
+      "exam", exam,
+      "results", rows,
+      "summary", summary(rows)
+    );
   }
 
   @PostMapping("/{id}/questions/{questionId}")
@@ -152,6 +186,56 @@ public class ExamController {
       throw new ApiException(HttpStatus.NOT_FOUND, "Exam not found");
     }
     return exam;
+  }
+
+  private boolean canViewResults(PublicExam exam) {
+    if ("Archived".equals(exam.status())) {
+      return true;
+    }
+
+    Instant end = parseInstant(exam.endAt());
+    return end != null && !end.isAfter(Instant.now());
+  }
+
+  private Map<String, Object> resultRow(Result result) {
+    User student = userService.findRawById(result.getStudentId()).orElse(null);
+    Map<String, Object> row = new LinkedHashMap<>();
+    row.put("resultId", result.getId());
+    row.put("attemptId", result.getAttemptId());
+    row.put("studentId", result.getStudentId());
+    row.put("studentName", student == null ? "Unknown student" : student.getName());
+    row.put("studentNumber", student == null || student.getStudentId() == null ? "" : student.getStudentId());
+    row.put("score", result.getTotalScore());
+    row.put("maxScore", result.getMaxScore());
+    row.put("percentage", result.getPercentage());
+    row.put("grade", result.getGrade());
+    row.put("passed", result.isPassed());
+    row.put("submittedAt", result.getPublishedAt());
+    return row;
+  }
+
+  private Map<String, Object> summary(List<Map<String, Object>> rows) {
+    int count = rows.size();
+    double average = count == 0 ? 0 : rows.stream().mapToDouble(row -> numberValue(row.get("percentage"))).average().orElse(0);
+    double passRate = count == 0 ? 0 : rows.stream().filter(row -> Boolean.TRUE.equals(row.get("passed"))).count() * 100.0 / count;
+    double highestScore = rows.stream().mapToDouble(row -> numberValue(row.get("score"))).max().orElse(0);
+    double lowestScore = rows.stream().mapToDouble(row -> numberValue(row.get("score"))).min().orElse(0);
+
+    return Map.of(
+      "attemptCount", count,
+      "classAverage", round2(average),
+      "passRate", round2(passRate),
+      "highestScore", round2(highestScore),
+      "lowestScore", round2(lowestScore)
+    );
+  }
+
+  private double numberValue(Object value) {
+    return value instanceof Number number ? number.doubleValue() : 0;
+  }
+
+  private double round2(double value) {
+    return Math.round(value * 100.0) / 100.0;
   }
 
   private ExamValues validateExam(Map<String, Object> body) {

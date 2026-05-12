@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import AvailableExamsPage from "./pages/exams/AvailableExamsPage.jsx";
 import ExamCreatePage from "./pages/exams/ExamCreatePage.jsx";
 import ExamDetailPage from "./pages/exams/ExamDetailPage.jsx";
+import LecturerExamResultsPage from "./pages/exams/LecturerExamResultsPage.jsx";
 import ExamSubmissionConfirmationPage from "./pages/exams/ExamSubmissionConfirmationPage.jsx";
 import ExamTakingPage from "./pages/exams/ExamTakingPage.jsx";
 import ResultDetailPage from "./pages/exams/ResultDetailPage.jsx";
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="/admin/users" element={<UserManagementPage />} />
       <Route path="/lecturer/exams/new" element={<ExamCreatePage />} />
       <Route path="/lecturer/exams/:id" element={<ExamDetailPage />} />
+      <Route path="/lecturer/exams/:id/results" element={<LecturerExamResultsPage />} />
       <Route path="/lecturer/exams/:examId/question-bank" element={<QuestionBankPage />} />
       <Route path="/lecturer/exams/:examId/questions/new" element={<QuestionFormPage />} />
       <Route path="/lecturer/exams/:examId/questions/:questionId/edit" element={<QuestionFormPage />} />
