@@ -33,8 +33,8 @@ public class JsonFileStore<T> {
   }
 
   public synchronized List<T> readAll() {
-    String databaseUrl = databaseUrl();
-    if (!databaseUrl.isBlank()) {
+    if (useDatabase()) {
+      String databaseUrl = databaseUrl();
       return readAllFromDatabase(databaseUrl);
     }
 
@@ -49,8 +49,8 @@ public class JsonFileStore<T> {
   }
 
   public synchronized void writeAll(List<T> items) {
-    String databaseUrl = databaseUrl();
-    if (!databaseUrl.isBlank()) {
+    if (useDatabase()) {
+      String databaseUrl = databaseUrl();
       writeAllToDatabase(databaseUrl, items);
       return;
     }
@@ -155,7 +155,19 @@ public class JsonFileStore<T> {
     if (value == null || value.isBlank()) {
       value = System.getenv("DATABASE_URL");
     }
-    return value == null ? "" : value.trim();
+    value = value == null ? "" : value.trim();
+    if (value.isBlank()) {
+      throw new IllegalStateException("APP_STORAGE=database requires DATABASE_URL to be set");
+    }
+    return value;
+  }
+
+  private boolean useDatabase() {
+    String storage = System.getProperty("APP_STORAGE");
+    if (storage == null || storage.isBlank()) {
+      storage = System.getenv("APP_STORAGE");
+    }
+    return "database".equalsIgnoreCase(storage == null ? "" : storage.trim());
   }
 
   private Connection connection(String databaseUrl) throws SQLException {

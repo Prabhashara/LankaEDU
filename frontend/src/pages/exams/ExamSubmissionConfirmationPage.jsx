@@ -7,26 +7,16 @@ import { getResultByAttempt } from "../../services/resultService";
 import "./ExamTakingPage.css";
 
 function formatDateTime(value) {
-  if (!value) {
-    return "Not available";
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short"
-  }).format(new Date(value));
+  if (!value) return "Not available";
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
 function formatDuration(seconds) {
-  const totalSeconds = Math.max(0, Number(seconds) || 0);
-  const minutes = Math.floor(totalSeconds / 60);
-  const remainingSeconds = totalSeconds % 60;
-
-  if (minutes === 0) {
-    return `${remainingSeconds}s`;
-  }
-
-  return `${minutes}m ${remainingSeconds}s`;
+  const total = Math.max(0, Number(seconds) || 0);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  if (m === 0) return `${s}s`;
+  return `${m}m ${s}s`;
 }
 
 export default function ExamSubmissionConfirmationPage() {
@@ -42,12 +32,8 @@ export default function ExamSubmissionConfirmationPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!token || role !== "student" || (attempt && result && exam)) {
-      return;
-    }
-
+    if (!token || role !== "student" || (attempt && result && exam)) return;
     let isMounted = true;
-
     async function loadConfirmation() {
       try {
         const loadedAttempt = attempt || (await getAttempt(attemptId));
@@ -55,56 +41,31 @@ export default function ExamSubmissionConfirmationPage() {
           result || getResultByAttempt(attemptId),
           exam || getExam(loadedAttempt.exam_id || loadedAttempt.examId)
         ]);
-
-        if (isMounted) {
-          setAttempt(loadedAttempt);
-          setResult(loadedResult);
-          setExam(loadedExam);
-          setError("");
-        }
-      } catch (_error) {
-        if (isMounted) {
-          setError("Unable to load submission confirmation.");
-        }
+        if (isMounted) { setAttempt(loadedAttempt); setResult(loadedResult); setExam(loadedExam); setError(""); }
+      } catch {
+        if (isMounted) setError("Unable to load submission confirmation.");
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     }
-
     loadConfirmation();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [attempt, attemptId, exam, result, role, token]);
 
   const timeTakenSeconds = useMemo(() => {
-    if (initialSubmission?.time_taken_seconds != null) {
-      return initialSubmission.time_taken_seconds;
-    }
-
-    if (!attempt?.created_at || !attempt?.submitted_at) {
-      return 0;
-    }
-
+    if (initialSubmission?.time_taken_seconds != null) return initialSubmission.time_taken_seconds;
+    if (!attempt?.created_at || !attempt?.submitted_at) return 0;
     return Math.round((new Date(attempt.submitted_at).getTime() - new Date(attempt.created_at).getTime()) / 1000);
   }, [attempt, initialSubmission]);
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (role !== "student") {
-    return <Navigate to={`/${role || "student"}-dashboard`} replace />;
-  }
+  if (!token) return <Navigate to="/login" replace />;
+  if (role !== "student") return <Navigate to={`/${role || "student"}-dashboard`} replace />;
 
   if (isLoading) {
     return (
       <main className="submission-shell">
         <section className="submission-card">
-          <p className="empty-state">Loading confirmation...</p>
+          <p className="empty-state">Loading confirmation…</p>
         </section>
       </main>
     );
@@ -113,32 +74,55 @@ export default function ExamSubmissionConfirmationPage() {
   return (
     <main className="submission-shell">
       <section className="submission-card" aria-labelledby="submission-title">
-        <p className="eyebrow">Submitted</p>
-        <h1 id="submission-title">Exam submitted successfully</h1>
-        {error ? <div className="alert alert-error admin-alert">{error}</div> : null}
+        {/* Success icon */}
+        <div style={{
+          width: 72, height: 72, borderRadius: "50%",
+          background: "linear-gradient(135deg, #d1fae5, #a7f3d0)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "2rem", marginBottom: 24,
+          border: "3px solid #6ee7b7",
+          boxShadow: "0 4px 16px rgba(5,150,105,0.2)"
+        }}>
+          ✅
+        </div>
+
+        <p className="eyebrow" style={{ color: "#059669" }}>Exam submitted</p>
+        <h1 id="submission-title" style={{ marginBottom: 8 }}>All done!</h1>
+        <p style={{ color: "#64748b", marginBottom: 24, lineHeight: 1.7 }}>
+          Your answers have been recorded. Results are processed automatically — check below to view your score.
+        </p>
+
+        {error && <div className="alert alert-error" style={{ marginBottom: 16 }}>⚠ {error}</div>}
+
         <dl className="submission-summary">
           <div>
             <dt>Exam</dt>
             <dd>{exam?.title || "Exam"}</dd>
           </div>
+          {exam?.subject && (
+            <div>
+              <dt>Subject</dt>
+              <dd>{exam.subject}</dd>
+            </div>
+          )}
           <div>
             <dt>Time taken</dt>
             <dd>{formatDuration(timeTakenSeconds)}</dd>
           </div>
           <div>
-            <dt>Submission time</dt>
+            <dt>Submitted at</dt>
             <dd>{formatDateTime(attempt?.submitted_at || result?.published_at)}</dd>
           </div>
         </dl>
+
         <div className="submission-actions">
           {result?.id ? (
             <Link className="primary-button" to={`/student/results/${result.id}`}>
-              View Result
+              View my result →
             </Link>
           ) : null}
-          <Link className="secondary-button" to="/student/exams">
-            Back to exams
-          </Link>
+          <Link className="secondary-button" to="/student/exams">Back to exams</Link>
+          <Link className="secondary-button" to="/student/report-card">My report card</Link>
         </div>
       </section>
     </main>

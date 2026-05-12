@@ -1,1 +1,635 @@
-[]
+[ {
+  "id" : "q-active-001",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "q-active-001-a",
+    "option_text" : "extends",
+    "is_correct" : true
+  }, {
+    "id" : "q-active-001-b",
+    "option_text" : "implements",
+    "is_correct" : false
+  }, {
+    "id" : "q-active-001-c",
+    "option_text" : "inherits",
+    "is_correct" : false
+  }, {
+    "id" : "q-active-001-d",
+    "option_text" : "super",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "11111111-1111-4111-8111-111111111111",
+  "question_text" : "Which Java keyword is used to inherit a class?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-05T09:05:00Z"
+}, {
+  "id" : "q-active-002",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "q-active-002-true",
+    "option_text" : "True",
+    "is_correct" : true
+  }, {
+    "id" : "q-active-002-false",
+    "option_text" : "False",
+    "is_correct" : false
+  } ],
+  "order_no" : 2,
+  "exam_id" : "11111111-1111-4111-8111-111111111111",
+  "question_text" : "Java is a statically typed programming language.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-05T09:06:00Z"
+}, {
+  "id" : "q-active-003",
+  "type" : "SHORT_ANSWER",
+  "marks" : 5.0,
+  "options" : [ ],
+  "order_no" : 3,
+  "exam_id" : "11111111-1111-4111-8111-111111111111",
+  "question_text" : "Explain one benefit of encapsulation in object-oriented programming.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-05T09:07:00Z"
+}, {
+  "id" : "q-arch-001",
+  "type" : "MCQ",
+  "marks" : 10.0,
+  "options" : [ {
+    "id" : "q-arch-001-a",
+    "option_text" : "WHERE",
+    "is_correct" : false
+  }, {
+    "id" : "q-arch-001-b",
+    "option_text" : "HAVING",
+    "is_correct" : true
+  }, {
+    "id" : "q-arch-001-c",
+    "option_text" : "ORDER BY",
+    "is_correct" : false
+  }, {
+    "id" : "q-arch-001-d",
+    "option_text" : "GROUP BY",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "22222222-2222-4222-8222-222222222222",
+  "question_text" : "Which SQL clause filters grouped records after aggregation?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-04-10T08:05:00Z"
+}, {
+  "id" : "q-arch-002",
+  "type" : "TRUE_FALSE",
+  "marks" : 10.0,
+  "options" : [ {
+    "id" : "q-arch-002-true",
+    "option_text" : "True",
+    "is_correct" : false
+  }, {
+    "id" : "q-arch-002-false",
+    "option_text" : "False",
+    "is_correct" : true
+  } ],
+  "order_no" : 2,
+  "exam_id" : "22222222-2222-4222-8222-222222222222",
+  "question_text" : "A primary key can contain duplicate values.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-04-10T08:06:00Z"
+}, {
+  "id" : "q-draft-001",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "q-draft-001-a",
+    "option_text" : "O(1)",
+    "is_correct" : false
+  }, {
+    "id" : "q-draft-001-b",
+    "option_text" : "O(log n)",
+    "is_correct" : true
+  }, {
+    "id" : "q-draft-001-c",
+    "option_text" : "O(n)",
+    "is_correct" : false
+  }, {
+    "id" : "q-draft-001-d",
+    "option_text" : "O(n log n)",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "33333333-3333-4333-8333-333333333333",
+  "question_text" : "What is the average-case time complexity of binary search?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-05T10:05:00Z"
+}, {
+  "id" : "se-mid-001",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "se-mid-001-a",
+    "option_text" : "Functional requirement only",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-001-b",
+    "option_text" : "Non-functional performance requirement",
+    "is_correct" : true
+  }, {
+    "id" : "se-mid-001-c",
+    "option_text" : "Business rule",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-001-d",
+    "option_text" : "User interface constraint only",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "44444444-4444-4444-8444-444444444444",
+  "question_text" : "A product owner says, \"Students must be able to download a result transcript within two seconds after the result is published.\" Which type of requirement is this?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-01T08:05:00Z"
+}, {
+  "id" : "se-mid-002",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "se-mid-002-true",
+    "option_text" : "True",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-002-false",
+    "option_text" : "False",
+    "is_correct" : true
+  } ],
+  "order_no" : 2,
+  "exam_id" : "44444444-4444-4444-8444-444444444444",
+  "question_text" : "In Scrum, the sprint backlog is fixed forever once the sprint starts.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-01T08:06:00Z"
+}, {
+  "id" : "se-mid-003",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "se-mid-003-a",
+    "option_text" : "Class diagram",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-003-b",
+    "option_text" : "Sequence diagram",
+    "is_correct" : true
+  }, {
+    "id" : "se-mid-003-c",
+    "option_text" : "Deployment diagram",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-003-d",
+    "option_text" : "Package diagram",
+    "is_correct" : false
+  } ],
+  "order_no" : 3,
+  "exam_id" : "44444444-4444-4444-8444-444444444444",
+  "question_text" : "Which UML diagram is most suitable for showing object interactions over time for a login workflow?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-01T08:07:00Z"
+}, {
+  "id" : "se-mid-004",
+  "type" : "SHORT_ANSWER",
+  "marks" : 10.0,
+  "options" : [ ],
+  "order_no" : 4,
+  "exam_id" : "44444444-4444-4444-8444-444444444444",
+  "question_text" : "Explain why acceptance criteria are useful when implementing an exam scheduling feature.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-01T08:08:00Z"
+}, {
+  "id" : "se-mid-005",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "se-mid-005-true",
+    "option_text" : "True",
+    "is_correct" : true
+  }, {
+    "id" : "se-mid-005-false",
+    "option_text" : "False",
+    "is_correct" : false
+  } ],
+  "order_no" : 5,
+  "exam_id" : "44444444-4444-4444-8444-444444444444",
+  "question_text" : "Regression testing is mainly used to check that recent changes have not broken existing behavior.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-01T08:09:00Z"
+}, {
+  "id" : "se-mid-006",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "se-mid-006-a",
+    "option_text" : "Cyclomatic complexity",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-006-b",
+    "option_text" : "Velocity trend",
+    "is_correct" : true
+  }, {
+    "id" : "se-mid-006-c",
+    "option_text" : "Code coverage alone",
+    "is_correct" : false
+  }, {
+    "id" : "se-mid-006-d",
+    "option_text" : "Number of branches",
+    "is_correct" : false
+  } ],
+  "order_no" : 6,
+  "exam_id" : "44444444-4444-4444-8444-444444444444",
+  "question_text" : "Which metric best indicates whether a team is consistently delivering completed backlog items each sprint?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-01T08:10:00Z"
+}, {
+  "id" : "web-paper-001",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "web-paper-001-a",
+    "option_text" : "200 OK",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-001-b",
+    "option_text" : "201 Created",
+    "is_correct" : true
+  }, {
+    "id" : "web-paper-001-c",
+    "option_text" : "204 No Content",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-001-d",
+    "option_text" : "409 Conflict",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "55555555-5555-4555-8555-555555555555",
+  "question_text" : "Which HTTP status code is most appropriate after a new exam attempt is successfully created?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-02T08:05:00Z"
+}, {
+  "id" : "web-paper-002",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "web-paper-002-true",
+    "option_text" : "True",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-002-false",
+    "option_text" : "False",
+    "is_correct" : true
+  } ],
+  "order_no" : 2,
+  "exam_id" : "55555555-5555-4555-8555-555555555555",
+  "question_text" : "A REST API endpoint should normally use GET for a request that creates a new database record.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-02T08:06:00Z"
+}, {
+  "id" : "web-paper-003",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "web-paper-003-a",
+    "option_text" : "useState",
+    "is_correct" : true
+  }, {
+    "id" : "web-paper-003-b",
+    "option_text" : "useMemo",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-003-c",
+    "option_text" : "useRef only",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-003-d",
+    "option_text" : "useLayoutEffect",
+    "is_correct" : false
+  } ],
+  "order_no" : 3,
+  "exam_id" : "55555555-5555-4555-8555-555555555555",
+  "question_text" : "In React, which hook is commonly used to store component-local form input values?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-02T08:07:00Z"
+}, {
+  "id" : "web-paper-004",
+  "type" : "SHORT_ANSWER",
+  "marks" : 10.0,
+  "options" : [ ],
+  "order_no" : 4,
+  "exam_id" : "55555555-5555-4555-8555-555555555555",
+  "question_text" : "Describe one accessibility improvement you would make to an online exam timer.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-02T08:08:00Z"
+}, {
+  "id" : "web-paper-005",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "web-paper-005-a",
+    "option_text" : "CORS policy",
+    "is_correct" : true
+  }, {
+    "id" : "web-paper-005-b",
+    "option_text" : "DNS caching",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-005-c",
+    "option_text" : "HTTP compression",
+    "is_correct" : false
+  }, {
+    "id" : "web-paper-005-d",
+    "option_text" : "Service discovery",
+    "is_correct" : false
+  } ],
+  "order_no" : 5,
+  "exam_id" : "55555555-5555-4555-8555-555555555555",
+  "question_text" : "Which browser feature prevents frontend JavaScript from reading responses from disallowed origins?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-02T08:09:00Z"
+}, {
+  "id" : "web-paper-006",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "web-paper-006-true",
+    "option_text" : "True",
+    "is_correct" : true
+  }, {
+    "id" : "web-paper-006-false",
+    "option_text" : "False",
+    "is_correct" : false
+  } ],
+  "order_no" : 6,
+  "exam_id" : "55555555-5555-4555-8555-555555555555",
+  "question_text" : "Client-side validation improves user experience, but server-side validation is still required.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-02T08:10:00Z"
+}, {
+  "id" : "net-final-001",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "net-final-001-a",
+    "option_text" : "Application layer",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-001-b",
+    "option_text" : "Transport layer",
+    "is_correct" : true
+  }, {
+    "id" : "net-final-001-c",
+    "option_text" : "Data link layer",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-001-d",
+    "option_text" : "Physical layer",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "66666666-6666-4666-8666-666666666666",
+  "question_text" : "Which layer of the OSI model is responsible for end-to-end reliable delivery in TCP?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-03T08:05:00Z"
+}, {
+  "id" : "net-final-002",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "net-final-002-true",
+    "option_text" : "True",
+    "is_correct" : true
+  }, {
+    "id" : "net-final-002-false",
+    "option_text" : "False",
+    "is_correct" : false
+  } ],
+  "order_no" : 2,
+  "exam_id" : "66666666-6666-4666-8666-666666666666",
+  "question_text" : "DNS translates human-readable domain names into IP addresses.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-03T08:06:00Z"
+}, {
+  "id" : "net-final-003",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "net-final-003-a",
+    "option_text" : "14 hosts",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-003-b",
+    "option_text" : "30 hosts",
+    "is_correct" : true
+  }, {
+    "id" : "net-final-003-c",
+    "option_text" : "62 hosts",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-003-d",
+    "option_text" : "126 hosts",
+    "is_correct" : false
+  } ],
+  "order_no" : 3,
+  "exam_id" : "66666666-6666-4666-8666-666666666666",
+  "question_text" : "What is the usable host range size for a /27 IPv4 subnet?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-03T08:07:00Z"
+}, {
+  "id" : "net-final-004",
+  "type" : "SHORT_ANSWER",
+  "marks" : 10.0,
+  "options" : [ ],
+  "order_no" : 4,
+  "exam_id" : "66666666-6666-4666-8666-666666666666",
+  "question_text" : "Briefly explain why HTTPS protects credentials better than plain HTTP on public networks.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-03T08:08:00Z"
+}, {
+  "id" : "net-final-005",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "net-final-005-a",
+    "option_text" : "DHCP",
+    "is_correct" : true
+  }, {
+    "id" : "net-final-005-b",
+    "option_text" : "SMTP",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-005-c",
+    "option_text" : "FTP",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-005-d",
+    "option_text" : "ICMP",
+    "is_correct" : false
+  } ],
+  "order_no" : 5,
+  "exam_id" : "66666666-6666-4666-8666-666666666666",
+  "question_text" : "Which protocol is commonly used to automatically assign IP addresses to devices on a local network?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-03T08:09:00Z"
+}, {
+  "id" : "net-final-006",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "net-final-006-true",
+    "option_text" : "True",
+    "is_correct" : false
+  }, {
+    "id" : "net-final-006-false",
+    "option_text" : "False",
+    "is_correct" : true
+  } ],
+  "order_no" : 6,
+  "exam_id" : "66666666-6666-4666-8666-666666666666",
+  "question_text" : "A router forwards frames using only MAC addresses and never considers IP addresses.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-03T08:10:00Z"
+}, {
+  "id" : "os-draft-001",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "os-draft-001-a",
+    "option_text" : "Shortest Job First",
+    "is_correct" : true
+  }, {
+    "id" : "os-draft-001-b",
+    "option_text" : "Round Robin with a fixed quantum",
+    "is_correct" : false
+  }, {
+    "id" : "os-draft-001-c",
+    "option_text" : "First Come First Served only",
+    "is_correct" : false
+  }, {
+    "id" : "os-draft-001-d",
+    "option_text" : "Multilevel feedback with aging",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "77777777-7777-4777-8777-777777777777",
+  "question_text" : "Which scheduling algorithm can cause starvation if long jobs keep waiting behind shorter jobs?",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-04T08:05:00Z"
+}, {
+  "id" : "os-draft-002",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "os-draft-002-true",
+    "option_text" : "True",
+    "is_correct" : true
+  }, {
+    "id" : "os-draft-002-false",
+    "option_text" : "False",
+    "is_correct" : false
+  } ],
+  "order_no" : 2,
+  "exam_id" : "77777777-7777-4777-8777-777777777777",
+  "question_text" : "A deadlock can occur only when mutual exclusion, hold and wait, no preemption, and circular wait all hold together.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-04T08:06:00Z"
+}, {
+  "id" : "os-draft-003",
+  "type" : "SHORT_ANSWER",
+  "marks" : 10.0,
+  "options" : [ ],
+  "order_no" : 3,
+  "exam_id" : "77777777-7777-4777-8777-777777777777",
+  "question_text" : "Explain the difference between a process and a thread.",
+  "source_question_id" : null,
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-04T08:07:00Z"
+}, {
+  "id" : "caa87d87-1d88-4569-8c66-7624f6a70b10",
+  "type" : "MCQ",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "9e7cec03-201d-407e-8a28-0dfa1bac39be",
+    "option_text" : "O(1)",
+    "is_correct" : false
+  }, {
+    "id" : "c38f78b3-7967-4616-8022-a512b87da9c8",
+    "option_text" : "O(log n)",
+    "is_correct" : true
+  }, {
+    "id" : "2541fa4c-0065-4a7f-ad31-a97574227b5d",
+    "option_text" : "O(n)",
+    "is_correct" : false
+  }, {
+    "id" : "ad4021aa-819c-459f-b70c-ac3aa2fca314",
+    "option_text" : "O(n log n)",
+    "is_correct" : false
+  } ],
+  "order_no" : 1,
+  "exam_id" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad",
+  "question_text" : "What is the average-case time complexity of binary search?",
+  "source_question_id" : "q-draft-001",
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-06T06:19:48.991467Z"
+}, {
+  "id" : "bec891fa-b655-41da-afab-07fc1a49557b",
+  "type" : "SHORT_ANSWER",
+  "marks" : 5.0,
+  "options" : [ ],
+  "order_no" : 2,
+  "exam_id" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad",
+  "question_text" : "Explain one benefit of encapsulation in object-oriented programming.",
+  "source_question_id" : "q-active-003",
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-06T06:19:50.468179Z"
+}, {
+  "id" : "1d8e2a29-117d-41d1-ae74-b5e2140c5a36",
+  "type" : "TRUE_FALSE",
+  "marks" : 5.0,
+  "options" : [ {
+    "id" : "fa28fd5b-87a9-4729-8c3a-2da0466ca2ab",
+    "option_text" : "True",
+    "is_correct" : true
+  }, {
+    "id" : "83d75352-2caa-449c-b0b5-88b70db4292e",
+    "option_text" : "False",
+    "is_correct" : false
+  } ],
+  "order_no" : 3,
+  "exam_id" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad",
+  "question_text" : "Java is a statically typed programming language.",
+  "source_question_id" : "q-active-002",
+  "created_by" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "created_at" : "2026-05-06T06:19:52.201232Z"
+} ]

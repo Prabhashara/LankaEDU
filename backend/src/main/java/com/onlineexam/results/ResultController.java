@@ -52,13 +52,20 @@ public class ResultController {
   }
 
   private Map<String, Object> resultDetail(UserPrincipal user, Result result) {
-    if (result == null || (!result.getStudentId().equals(user.id()) && !"admin".equals(user.role()))) {
+    if (result == null) {
       throw new ApiException(HttpStatus.NOT_FOUND, "Result not found");
     }
 
     PublicExam exam = examService.findPublicById(result.getExamId()).orElse(null);
     if (exam == null) {
       throw new ApiException(HttpStatus.NOT_FOUND, "Exam not found");
+    }
+
+    boolean ownsResult = result.getStudentId().equals(user.id());
+    boolean ownsExam = exam.createdBy().equals(user.id());
+    boolean isAdmin = "admin".equals(user.role());
+    if (!ownsResult && !ownsExam && !isAdmin) {
+      throw new ApiException(HttpStatus.NOT_FOUND, "Result not found");
     }
 
     List<Map<String, Object>> questions = reviewedQuestions(result);

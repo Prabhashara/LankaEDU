@@ -95,6 +95,8 @@ export default function QuestionBankPage() {
     return new Set(examQuestions.map(sourceKey));
   }, [examQuestions]);
 
+  const canManageQuestions = exam?.status === "Draft";
+
   const filteredQuestions = useMemo(() => {
     const search = filters.search.trim().toLowerCase();
     return bankQuestions.filter((question) => {
@@ -122,6 +124,11 @@ export default function QuestionBankPage() {
     setToast("");
     setWarning("");
     setError("");
+
+    if (!canManageQuestions) {
+      setWarning("Questions can only be added while the exam is in Draft status.");
+      return;
+    }
 
     if (existingSourceKeys.has(sourceKey(question))) {
       setWarning("This question is already linked to this exam.");
@@ -162,6 +169,11 @@ export default function QuestionBankPage() {
       </section>
 
       {toast ? <div className="toast" role="status">{toast}</div> : null}
+      {!isLoading && !canManageQuestions ? (
+        <div className="alert alert-warning admin-alert" role="status">
+          Questions can only be added while the exam is in Draft status.
+        </div>
+      ) : null}
       {warning ? <div className="alert alert-warning admin-alert" role="status">{warning}</div> : null}
       {error ? <div className="alert alert-error admin-alert">{error}</div> : null}
 
@@ -231,9 +243,15 @@ export default function QuestionBankPage() {
                         className={alreadyAdded ? "table-button added" : "table-button"}
                         type="button"
                         onClick={() => handleAdd(question)}
-                        disabled={actionQuestionId === question.id}
+                        disabled={!canManageQuestions || alreadyAdded || actionQuestionId === question.id}
                       >
-                        {actionQuestionId === question.id ? "Adding..." : alreadyAdded ? "Added" : "Add to Exam"}
+                        {actionQuestionId === question.id
+                          ? "Adding..."
+                          : alreadyAdded
+                            ? "Added"
+                            : canManageQuestions
+                              ? "Add to Exam"
+                              : "Locked"}
                       </button>
                     </div>
                   </div>

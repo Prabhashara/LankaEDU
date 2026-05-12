@@ -31,6 +31,12 @@ public class ResultService {
       .toList();
   }
 
+  public List<Result> listByStudent(String studentId) {
+    return store.readAll().stream()
+      .filter(result -> studentId.equals(result.getStudentId()))
+      .toList();
+  }
+
   public Result save(Result result) {
     List<Result> results = new ArrayList<>(store.readAll());
     results.removeIf(existing -> existing.getId().equals(result.getId()) || existing.getAttemptId().equals(result.getAttemptId()));

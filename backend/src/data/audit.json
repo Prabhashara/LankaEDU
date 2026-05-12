@@ -1,0 +1,366 @@
+[ {
+  "id" : "ee8897f4-5d56-4d89-88fc-cf7a18a5b9ad",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "actorRole" : "student",
+  "actorEmail" : "sachithasmadala@gmail.com",
+  "entityType" : "user",
+  "entityId" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-05T15:35:22.238986Z"
+}, {
+  "id" : "7d464a91-1b19-45e2-a2a8-15506b39f013",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "actorRole" : "student",
+  "actorEmail" : "sachithasmadala@gmail.com",
+  "entityType" : "user",
+  "entityId" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-05T15:50:02.729311Z"
+}, {
+  "id" : "c38a1d6b-85e3-4e99-a83d-6d73272118d2",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "user",
+  "entityId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:25:02.880503Z"
+}, {
+  "id" : "3f0f556a-9ec4-4b13-a3a9-dfdf70f55ebd",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "user",
+  "entityId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:26:16.543456Z"
+}, {
+  "id" : "2e6cf876-7ec0-464b-a8ff-216598bbb4d3",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "actorRole" : "admin",
+  "actorEmail" : "admin@example.com",
+  "entityType" : "user",
+  "entityId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:27:00.132304Z"
+}, {
+  "id" : "b0102df5-9e83-43fb-84d2-3a2d92948187",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:27:10.803238Z"
+}, {
+  "id" : "747a6041-3c6f-4d8d-840d-cdd6e506a42d",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:34:40.912154Z"
+}, {
+  "id" : "5dae0025-a253-4783-8f85-a1b003ff2347",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "user",
+  "entityId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:39:41.285154Z"
+}, {
+  "id" : "387fd906-5942-4072-b6be-9e51ae798086",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:44:14.608320Z"
+}, {
+  "id" : "3b88dc1f-a2e4-4fcb-ab24-12958013f383",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:47:30.673322Z"
+}, {
+  "id" : "15105e1d-9a40-45a4-9cc3-e5305e12ec58",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:50:30.588927Z"
+}, {
+  "id" : "f9b015b4-0acd-4c43-ae49-ff72a63bc14d",
+  "action" : "EXAM_CREATED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "exam",
+  "entityId" : "b2089ead-ad84-498b-aa6e-619917dc0f77",
+  "message" : "Exam created",
+  "metadata" : {
+    "subject" : "QA",
+    "title" : "Smoke Test Exam"
+  },
+  "created_at" : "2026-05-06T05:50:41.288605Z"
+}, {
+  "id" : "d1235524-8b18-460e-ba2c-33ef3a161ef9",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T05:53:56.212428Z"
+}, {
+  "id" : "f8e40630-b782-4c3a-8025-3173fd69d39e",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:00:22.387854Z"
+}, {
+  "id" : "2b6711a4-2893-4e7c-b79a-9a0afe0e513b",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:17:51.248601Z"
+}, {
+  "id" : "c2b17278-8836-4113-a404-c407547e3be9",
+  "action" : "EXAM_UPDATED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "exam",
+  "entityId" : "33333333-3333-4333-8333-333333333333",
+  "message" : "Exam settings updated",
+  "metadata" : {
+    "title" : "Algorithms Revision Quiz",
+    "subject" : "Algorithms"
+  },
+  "created_at" : "2026-05-06T06:19:02.870571Z"
+}, {
+  "id" : "fc6d6f49-c96c-408e-aad3-227243d4d92d",
+  "action" : "EXAM_CREATED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "exam",
+  "entityId" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad",
+  "message" : "Exam created",
+  "metadata" : {
+    "title" : "Basic Mathematics",
+    "subject" : "Mathematics"
+  },
+  "created_at" : "2026-05-06T06:19:43.262663Z"
+}, {
+  "id" : "1950d725-7f08-488d-a598-6b945e56fe0a",
+  "action" : "QUESTION_REUSED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "question",
+  "entityId" : "caa87d87-1d88-4569-8c66-7624f6a70b10",
+  "message" : "Question reused from bank",
+  "metadata" : {
+    "examId" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad"
+  },
+  "created_at" : "2026-05-06T06:19:48.999339Z"
+}, {
+  "id" : "7553af64-a1f3-4cc8-9026-3fd7c4aba7bb",
+  "action" : "QUESTION_REUSED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "question",
+  "entityId" : "bec891fa-b655-41da-afab-07fc1a49557b",
+  "message" : "Question reused from bank",
+  "metadata" : {
+    "examId" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad"
+  },
+  "created_at" : "2026-05-06T06:19:50.469729Z"
+}, {
+  "id" : "4fb4d9f1-d35d-496c-a6e3-62bf8c792d6d",
+  "action" : "QUESTION_REUSED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "question",
+  "entityId" : "1d8e2a29-117d-41d1-ae74-b5e2140c5a36",
+  "message" : "Question reused from bank",
+  "metadata" : {
+    "examId" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad"
+  },
+  "created_at" : "2026-05-06T06:19:52.202308Z"
+}, {
+  "id" : "bcedd017-1316-4eb5-ac6a-cb40c14e9410",
+  "action" : "EXAM_PUBLISHED",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "exam",
+  "entityId" : "8ee3fd7a-2272-4c44-9c66-82a7d51e82ad",
+  "message" : "Exam published",
+  "metadata" : {
+    "startAt" : "2026-05-10T08:30:00Z",
+    "endAt" : "2026-05-10T10:30:00Z"
+  },
+  "created_at" : "2026-05-06T06:20:43.657870Z"
+}, {
+  "id" : "b6f17f9e-1a4d-4f42-a380-713ad0298220",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "user",
+  "entityId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:23:12.307979Z"
+}, {
+  "id" : "4501e97e-c8aa-4720-a1f0-52cf65effb52",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "actorRole" : "admin",
+  "actorEmail" : "admin@example.com",
+  "entityType" : "user",
+  "entityId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:36:37.806808Z"
+}, {
+  "id" : "0f27624b-6dbd-4cfa-ad0a-80722863391c",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "actorRole" : "admin",
+  "actorEmail" : "admin@example.com",
+  "entityType" : "user",
+  "entityId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:38:21.507988Z"
+}, {
+  "id" : "100a776f-798c-4b79-a78c-2468636fa3a5",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "actorRole" : "lecturer",
+  "actorEmail" : "lecturer@example.com",
+  "entityType" : "user",
+  "entityId" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:39:13.578343Z"
+}, {
+  "id" : "1754f8ea-2bee-4b7a-988f-e8fb415c3f6c",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "user",
+  "entityId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:40:07.695099Z"
+}, {
+  "id" : "45557d01-876b-4720-92f3-df531fae5202",
+  "action" : "ATTEMPT_STARTED",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "attempt",
+  "entityId" : "70191093-6f30-4a65-b8bf-ce2818a0239b",
+  "message" : "Student started an exam",
+  "metadata" : {
+    "examId" : "11111111-1111-4111-8111-111111111111"
+  },
+  "created_at" : "2026-05-06T06:40:19.876605Z"
+}, {
+  "id" : "d84031c6-d87d-4cdf-a9ad-4fc3070f31b7",
+  "action" : "ATTEMPT_SUBMITTED",
+  "actorId" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "actorRole" : "student",
+  "actorEmail" : "student@example.com",
+  "entityType" : "attempt",
+  "entityId" : "70191093-6f30-4a65-b8bf-ce2818a0239b",
+  "message" : "Student submitted an exam",
+  "metadata" : {
+    "percentage" : 50.0,
+    "examId" : "11111111-1111-4111-8111-111111111111",
+    "resultId" : "69e626e9-69fc-4b9a-9eea-a66ca74927a6"
+  },
+  "created_at" : "2026-05-06T06:40:41.525286Z"
+}, {
+  "id" : "bdc61973-0e41-4003-a86e-f73608869ffb",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "actorRole" : "admin",
+  "actorEmail" : "admin@example.com",
+  "entityType" : "user",
+  "entityId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:49:23.430477Z"
+}, {
+  "id" : "605737a6-ee92-4344-8036-ee0801e7383d",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "actorRole" : "student",
+  "actorEmail" : "sachithasmadala@gmail.com",
+  "entityType" : "user",
+  "entityId" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:49:58.082884Z"
+}, {
+  "id" : "c4736897-0006-403c-a95a-e722e40d50fb",
+  "action" : "AUTH_LOGIN",
+  "actorId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "actorRole" : "admin",
+  "actorEmail" : "admin@example.com",
+  "entityType" : "user",
+  "entityId" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "message" : "User signed in",
+  "metadata" : { },
+  "created_at" : "2026-05-06T06:50:07.207922Z"
+} ]

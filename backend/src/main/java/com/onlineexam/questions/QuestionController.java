@@ -1,5 +1,6 @@
 package com.onlineexam.questions;
 
+import com.onlineexam.audit.AuditService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
@@ -27,10 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuestionController {
   private final QuestionService questionService;
   private final ExamService examService;
+  private final AuditService auditService;
 
-  public QuestionController(QuestionService questionService, ExamService examService) {
+  public QuestionController(QuestionService questionService, ExamService examService, AuditService auditService) {
     this.questionService = questionService;
     this.examService = examService;
+    this.auditService = auditService;
   }
 
   @GetMapping
@@ -61,6 +64,7 @@ public class QuestionController {
     requireDraftExam(findOwnedExam(values.examId(), user));
 
     PublicQuestion question = questionService.create(user.id(), values);
+    auditService.record(user, "QUESTION_CREATED", "question", question.id(), "Question created", Map.of("examId", question.examId(), "type", question.type(), "marks", question.marks()));
     return ResponseEntity.status(201).body(Map.of("message", "Question created", "question", question));
   }
 
@@ -76,6 +80,7 @@ public class QuestionController {
     }
 
     PublicQuestion question = questionService.update(id, values);
+    auditService.record(user, "QUESTION_UPDATED", "question", id, "Question updated", Map.of("examId", question.examId(), "type", question.type()));
     return Map.of("message", "Question updated", "question", question);
   }
 
@@ -86,6 +91,7 @@ public class QuestionController {
     requireDraftExam(findOwnedExam(existingQuestion.examId(), user));
 
     PublicQuestion question = questionService.delete(id);
+    auditService.record(user, "QUESTION_DELETED", "question", id, "Question deleted", Map.of("examId", existingQuestion.examId()));
     return Map.of("message", "Question deleted", "question", question);
   }
 
@@ -104,6 +110,7 @@ public class QuestionController {
       throw new ApiException(HttpStatus.BAD_REQUEST, "Question order must include every question once");
     }
 
+    auditService.record(user, "QUESTION_REORDERED", "exam", exam.id(), "Question order updated", Map.of("questionCount", questions.size()));
     return Map.of("message", "Question order updated", "questions", questions);
   }
 

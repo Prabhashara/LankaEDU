@@ -1,5 +1,6 @@
 package com.onlineexam.exams;
 
+import com.onlineexam.audit.AuditService;
 import com.onlineexam.attempts.AttemptService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
@@ -36,19 +37,22 @@ public class ExamController {
   private final AttemptService attemptService;
   private final ResultService resultService;
   private final UserService userService;
+  private final AuditService auditService;
 
   public ExamController(
     ExamService examService,
     QuestionService questionService,
     AttemptService attemptService,
     ResultService resultService,
-    UserService userService
+    UserService userService,
+    AuditService auditService
   ) {
     this.examService = examService;
     this.questionService = questionService;
     this.attemptService = attemptService;
     this.resultService = resultService;
     this.userService = userService;
+    this.auditService = auditService;
   }
 
   @GetMapping
@@ -56,7 +60,7 @@ public class ExamController {
     UserPrincipal user = AuthSupport.currentUser(request);
     if ("student".equals(user.role())) {
       List<AvailableExam> exams = examService.listActive().stream()
-        .map(exam -> AvailableExam.from(exam, questionService.countForExam(exam.id()), attemptService.hasAttempted(user.id(), exam.id())))
+        .map(exam -> AvailableExam.from(exam, questionService.countForExam(exam.id()), attemptService.findByStudentAndExam(user.id(), exam.id()).orElse(null)))
         .toList();
       return Map.of("exams", exams);
     }
@@ -73,6 +77,7 @@ public class ExamController {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     ExamValues values = validateExam(body);
     PublicExam exam = examService.create(user.id(), values);
+    auditService.record(user, "EXAM_CREATED", "exam", exam.id(), "Exam created", Map.of("title", exam.title(), "subject", exam.subject()));
     return ResponseEntity.status(201).body(Map.of("message", "Exam created", "exam", exam));
   }
 
@@ -134,6 +139,7 @@ public class ExamController {
     }
 
     PublicQuestion question = questionService.linkToExam(exam.id(), sourceQuestion, user.id());
+    auditService.record(user, "QUESTION_REUSED", "question", question.id(), "Question reused from bank", Map.of("examId", exam.id()));
     return ResponseEntity.status(201).body(Map.of("message", "Question added to exam", "question", question));
   }
 
@@ -154,6 +160,7 @@ public class ExamController {
 
       ScheduleValues schedule = validateSchedule(body);
       PublicExam updatedExam = examService.updateStatus(id, "Active", schedule.startAt(), schedule.endAt());
+      auditService.record(user, "EXAM_PUBLISHED", "exam", id, "Exam published", Map.of("startAt", schedule.startAt(), "endAt", schedule.endAt()));
       return Map.of("message", "Exam published", "exam", updatedExam);
     }
 
@@ -168,6 +175,7 @@ public class ExamController {
       }
 
       PublicExam updatedExam = examService.updateStatus(id, "Archived", null, null);
+      auditService.record(user, "EXAM_ARCHIVED", "exam", id, "Exam archived");
       return Map.of("message", "Exam archived", "exam", updatedExam);
     }
 
@@ -177,6 +185,7 @@ public class ExamController {
 
     ExamValues values = validateExam(body);
     PublicExam updatedExam = examService.updateSettings(id, values);
+    auditService.record(user, "EXAM_UPDATED", "exam", id, "Exam settings updated", Map.of("title", updatedExam.title(), "subject", updatedExam.subject()));
     return Map.of("message", "Exam updated", "exam", updatedExam);
   }
 

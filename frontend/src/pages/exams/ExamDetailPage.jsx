@@ -213,6 +213,7 @@ export default function ExamDetailPage() {
   const isDraft = exam?.status === "Draft";
   const isActive = exam?.status === "Active";
   const canArchive = isActive && exam?.endAt && new Date(exam.endAt) <= new Date();
+  const canViewResults = exam?.status === "Archived" || (exam?.endAt && new Date(exam.endAt) <= new Date());
   const totalMarks = questions.reduce((sum, question) => sum + Number(question.marks || 0), 0);
 
   function handleEdit() {
@@ -414,7 +415,7 @@ export default function ExamDetailPage() {
         <div>
           <p className="eyebrow">Exam Detail</p>
           <h1 id="exam-detail-title">{exam?.title || "Exam"}</h1>
-          <p className="dashboard-copy">Review and correct exam settings before publishing.</p>
+          <p className="dashboard-copy">Review, edit, schedule and manage questions for this exam.</p>
         </div>
         <div className="header-actions">
           {exam && !isEditing ? (
@@ -434,9 +435,14 @@ export default function ExamDetailPage() {
               </span>
             )
           ) : null}
-          {exam && !isDraft ? (
+          {exam && canViewResults ? (
             <Link className="secondary-button" to={`/lecturer/exams/${id}/results`}>
               View results
+            </Link>
+          ) : null}
+          {exam ? (
+            <Link className="secondary-button" to={`/lecturer/exams/${id}/analytics`}>
+              Analytics
             </Link>
           ) : null}
           <Link className="secondary-button" to="/lecturer-dashboard">
@@ -448,7 +454,7 @@ export default function ExamDetailPage() {
       {toast ? <div className="toast" role="status">{toast}</div> : null}
       {exam && isActive ? (
         <div className="alert alert-warning admin-alert" role="status">
-          This exam is Active and its settings are locked.
+          This exam is Active and its settings are locked. Results are available after the exam ends.
         </div>
       ) : null}
       {error ? <div className="alert alert-error admin-alert">{error}</div> : null}
@@ -714,14 +720,24 @@ export default function ExamDetailPage() {
                     <h2 id="exam-questions-title">Exam Questions</h2>
                   </div>
                   <div className="row-actions">
-                    <Link className="secondary-button" to={`/lecturer/exams/${id}/question-bank`}>
-                      Add from bank
-                    </Link>
-                    <Link className="secondary-button" to={`/lecturer/exams/${id}/questions/new`}>
-                      Add question
-                    </Link>
+                    {isDraft ? (
+                      <>
+                        <Link className="secondary-button" to={`/lecturer/exams/${id}/question-bank`}>
+                          Add from bank
+                        </Link>
+                        <Link className="secondary-button" to={`/lecturer/exams/${id}/questions/new`}>
+                          Add question
+                        </Link>
+                      </>
+                    ) : null}
                   </div>
                 </div>
+
+                {!isDraft ? (
+                  <div className="alert alert-warning admin-alert">
+                    Questions can only be changed while the exam is in Draft status.
+                  </div>
+                ) : null}
 
                 {questionError ? <div className="alert alert-error admin-alert">{questionError}</div> : null}
 
