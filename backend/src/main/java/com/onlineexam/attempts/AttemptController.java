@@ -1,5 +1,6 @@
 package com.onlineexam.attempts;
 
+import com.onlineexam.audit.AuditService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
@@ -40,13 +41,15 @@ public class AttemptController {
   private final ExamService examService;
   private final QuestionService questionService;
   private final ResultService resultService;
+  private final AuditService auditService;
 
   public AttemptController(AttemptService attemptService, ExamService examService, QuestionService questionService,
-      ResultService resultService) {
+      ResultService resultService, AuditService auditService) {
     this.attemptService = attemptService;
     this.examService = examService;
     this.questionService = questionService;
     this.resultService = resultService;
+    this.auditService = auditService;
   }
 
   @PostMapping
@@ -71,12 +74,17 @@ public class AttemptController {
       throw new ApiException(HttpStatus.CONFLICT, "Exam is not available right now");
     }
 
+    if (attemptService.hasAttempted(user.id(), examId)) {
+      throw new ApiException(HttpStatus.CONFLICT, "You have already attempted this exam");
+    }
+
     List<AttemptQuestion> questions = new java.util.ArrayList<>(questionService.listForAttempt(examId));
     if (questions.isEmpty()) {
       throw new ApiException(HttpStatus.CONFLICT, "Exam has no questions");
     }
 
     Attempt attempt = attemptService.create(user.id(), examId);
+    auditService.record(user, "ATTEMPT_STARTED", "attempt", attempt.getId(), "Student started an exam", Map.of("examId", examId));
 
     Collections.shuffle(questions);
 
@@ -119,9 +127,10 @@ public class AttemptController {
     if (body.containsKey("answers")) {
       Map<String, String> answers = normalizeAnswers(body.get("answers"));
       attempt = attemptService.saveAnswers(id, answers);
+      auditService.record(user, "ATTEMPT_SAVED", "attempt", id, "Attempt answers saved", Map.of("answerCount", answers.size()));
     }
 
-    if (body.containsKey("submit") && (boolean) body.get("submit")) {
+    if (Boolean.TRUE.equals(body.get("submit"))) {
       return submitAttempt(request, id, body);
     }
 
@@ -154,12 +163,19 @@ public class AttemptController {
       throw new ApiException(HttpStatus.NOT_FOUND, "Exam not found");
     }
 
-    String submittedAt = Instant.now().toString();
+    Instant now = Instant.now();
+    Instant endAt = parseInstant(exam.endAt());
+    if (endAt != null && now.isAfter(endAt.plusSeconds(60))) {
+      throw new ApiException(HttpStatus.CONFLICT, "Exam submission window has closed");
+    }
+
+    String submittedAt = now.toString();
     Result result = gradeAttempt(attempt, answers, exam.passMark(), submittedAt);
     resultService.save(result);
     attempt = attemptService.submit(id, answers, result.getId(), submittedAt);
 
     long timeTakenSeconds = timeTakenSeconds(attempt.getCreatedAt(), submittedAt);
+    auditService.record(user, "ATTEMPT_SUBMITTED", "attempt", id, "Student submitted an exam", Map.of("examId", attempt.getExamId(), "resultId", result.getId(), "percentage", result.getPercentage()));
     return ResponseEntity.ok(Map.of(
       "message", "Exam submitted successfully",
       "attempt", attempt,

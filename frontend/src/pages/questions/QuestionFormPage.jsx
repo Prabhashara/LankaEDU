@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getExam } from "../../services/examService";
 import { createQuestion, getQuestion, updateQuestion } from "../../services/questionService";
 
 const questionTypes = [
@@ -92,29 +93,37 @@ export default function QuestionFormPage() {
   const token = getAuthToken();
   const role = getStoredRole();
   const [values, setValues] = useState(initialValues);
+  const [exam, setExam] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(Boolean(questionId));
+  const [isLoading, setIsLoading] = useState(true);
   const isEditing = Boolean(questionId);
+  const canManageQuestions = exam?.status === "Draft";
 
   useEffect(() => {
-    if (!token || role !== "lecturer" || !questionId) {
+    if (!token || role !== "lecturer") {
       return;
     }
 
     let isMounted = true;
 
-    async function loadQuestion() {
+    async function loadData() {
       try {
-        const question = await getQuestion(questionId);
+        const [examData, question] = await Promise.all([
+          getExam(examId),
+          questionId ? getQuestion(questionId) : Promise.resolve(null)
+        ]);
         if (isMounted) {
-          setValues(toFormValues(question));
+          setExam(examData);
+          if (question) {
+            setValues(toFormValues(question));
+          }
           setSubmitError("");
         }
       } catch (_error) {
         if (isMounted) {
-          setSubmitError("Unable to load question.");
+          setSubmitError("Unable to load question form.");
         }
       } finally {
         if (isMounted) {
@@ -123,12 +132,12 @@ export default function QuestionFormPage() {
       }
     }
 
-    loadQuestion();
+    loadData();
 
     return () => {
       isMounted = false;
     };
-  }, [questionId, role, token]);
+  }, [examId, questionId, role, token]);
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -188,6 +197,11 @@ export default function QuestionFormPage() {
     const validationErrors = validate(values);
     setErrors(validationErrors);
     setSubmitError("");
+
+    if (!canManageQuestions) {
+      setSubmitError("Questions can only be managed while the exam is in Draft status.");
+      return;
+    }
 
     if (Object.keys(validationErrors).length > 0) {
       return;
@@ -252,6 +266,11 @@ export default function QuestionFormPage() {
 
       <section className="form-panel" aria-label="Question form">
         {submitError ? <div className="alert alert-error">{submitError}</div> : null}
+        {!isLoading && !canManageQuestions ? (
+          <div className="alert alert-warning">
+            Questions can only be managed while the exam is in Draft status.
+          </div>
+        ) : null}
 
         {isLoading ? <p className="empty-state">Loading question...</p> : null}
 
@@ -365,7 +384,7 @@ export default function QuestionFormPage() {
             <div className="alert alert-warning">Short answer questions do not use selectable options.</div>
           ) : null}
 
-          <button className="primary-button" type="submit" disabled={isSubmitting}>
+          <button className="primary-button" type="submit" disabled={isSubmitting || !canManageQuestions}>
             {isSubmitting ? "Saving..." : isEditing ? "Save changes" : "Save question"}
           </button>
         </form>

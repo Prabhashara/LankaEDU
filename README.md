@@ -1,73 +1,91 @@
 # Online Examination and Results Management System
 
-> A full-stack coursework application for managing online exams, users, scheduling, and publishing.
+> Complete full-stack Online Examination System with a Java Spring Boot backend and a JavaScript/CSS frontend.
 
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Stack](https://img.shields.io/badge/stack-React%20%2B%20Java%20Spring%20Boot-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-complete-brightgreen)
+![Frontend](https://img.shields.io/badge/frontend-JavaScript%20%2B%20CSS-0ea5e9)
+![Backend](https://img.shields.io/badge/backend-Java%20Spring%20Boot-16a34a)
 
-## Table of Contents
+## Overview
 
-- [Project Overview](#project-overview)
-- [Current Features](#current-features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Demo Accounts](#demo-accounts)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [Data Storage](#data-storage)
-- [User Roles](#user-roles)
-- [Development Notes](#development-notes)
-- [Planned Modules](#planned-modules)
-- [License](#license)
+This project implements the full coursework scope for an Online Examination and Results Management System. It includes authentication, role-based dashboards, admin user management, exam creation, scheduling, question bank management, student exam attempts with timer, automatic grading, result views, analytics, student report cards, and PDF result export.
 
-## Project Overview
+The frontend is written with React JavaScript (`.jsx` / `.js`) and plain CSS. The backend is fully Java-based using Spring Boot and Maven. Data is stored in JSON files under `backend/src/data` for simple local running, with optional PostgreSQL-backed JSON storage available through environment variables.
 
-The Online Examination and Results Management System allows students, lecturers, and admins to use one role-based web application. The frontend is built with React and Vite. The backend is now fully Java-based using Spring Boot and Maven.
+## Completed Feature Coverage
 
-The current backend stores data in JSON files so the project can run locally without setting up MySQL, PostgreSQL, or Supabase. The data layer can be replaced later with a database while keeping the same API routes.
+| Jira ID | Module | Status |
+|---|---|---|
+| OES-001 | Student self-registration | Complete |
+| OES-002 | Login with role-based redirect | Complete |
+| OES-003 | Admin user management | Complete |
+| OES-004 | Lecturer exam creation | Complete |
+| OES-005 | View and edit draft exam settings | Complete |
+| OES-006 | Schedule, publish, and archive exams | Complete |
+| OES-007 | Add MCQ, True/False, and Short Answer questions | Complete |
+| OES-008 | View, edit, delete, and reorder questions | Complete |
+| OES-009 | Question bank and add-to-exam reuse | Complete |
+| OES-010 | Student available exams | Complete |
+| OES-011 | Exam taking page with countdown timer | Complete |
+| OES-012 | Submit exam and confirmation screen | Complete |
+| OES-013 | Auto-grade MCQ and True/False answers | Complete |
+| OES-014 | Student result detail page | Complete |
+| OES-015 | Lecturer exam results table and summary | Complete |
+| OES-016 | Lecturer analytics dashboard | Complete |
+| OES-017 | Student report card | Complete |
+| OES-018 | Download result as PDF | Complete |
 
-## Current Features
+## Professional UI Update
 
-**Authentication**
-- Student signup
-- Login with JWT
-- Role-based redirects
-- Protected API routes
-- Password hashing with bcrypt
+The frontend includes a polished responsive design with:
 
-**Admin**
-- View all users
-- Search users in the admin UI
-- Activate or deactivate accounts
-- Delete users, except the currently logged-in admin
+- Complete light and dark theme support across every page.
+- A bottom-right floating theme toggle with saved preference, so it does not cover the login/header actions.
+- More colorful but professional blue, violet, cyan, emerald, amber, and rose design tokens.
+- Theme-matched buttons with gradients, hover states, focus states, and disabled states.
+- Role-based dashboards for student, lecturer, and admin users.
+- Professional cards, tables, forms, badges, charts, analytics panels, status states, and exam-taking screens.
+- Plain CSS styling in `frontend/src/index.css` plus page-specific CSS for the exam-taking, results, and analytics screens.
 
-**Lecturer**
-- Create a draft exam
-- View lecturer exam list
-- View all exam settings
-- Edit draft exam settings inline
-- Schedule an exam with start and end datetime
-- Publish a draft exam as Active
-- Archive an Active exam after it has ended
-- Add MCQ, True/False, and Short Answer questions to an exam
-- View an exam's question list
-- Edit, delete, and reorder questions before publishing
-- View total marks for an exam's questions
 
-**Student**
-- View Active exams in the student dashboard
+## Industrial-Level Completion Additions
+
+This build now includes extra production-style hardening on top of the original 18 Jira stories:
+
+- Centralized frontend route protection for student, lecturer, and admin pages.
+- Admin-only staff account creation for lecturer and admin users; public registration remains student-only.
+- Safeguards preventing admins from deleting/deactivating themselves or removing the last active admin.
+- 403 Unauthorized and 404 Not Found screens.
+- React error boundary with safe recovery controls.
+- Axios timeout handling and automatic session cleanup on expired JWTs.
+- Backend security headers for API responses.
+- Login throttling after repeated failed attempts.
+- Server-side prevention of duplicate student exam attempts.
+- Server-side submission-window enforcement for late exam submissions.
+- Persistent audit trail for registration, login, admin user actions, exam lifecycle changes, question changes, question-bank reuse, attempt saves, and submissions.
+- Admin Audit Log page with search and event timeline.
+- Health endpoint now returns service and timestamp metadata.
+
+
+## Role and Permission Matrix
+
+| Role | Allowed actions | Not allowed |
+|---|---|---|
+| Student | Self-register, log in, view active/scheduled exams, start one attempt per exam, save/submit answers, view own results/report card, download own PDF result | Cannot create users, create exams, edit questions, view audit logs, or view other students' results |
+| Lecturer | Create draft exams, edit own draft exams, publish/archive own exams, manage own question bank, view own exam analytics/results, download reports for own exam results | Cannot create users, manage admins, view audit logs, or access exams owned by other lecturers |
+| Admin | Create lecturer/admin accounts, list all users, activate/deactivate users, delete users except self, view audit logs, protect last active admin | Cannot self-register staff through public signup; cannot delete/deactivate own account or remove the last active admin |
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|------------|
-| Frontend | React 18, React Router, Axios, Vite |
-| Backend | Java 17, Spring Boot 3.3, Maven |
+|---|---|
+| Frontend | React 18, JavaScript, React Router, Axios, Chart.js, Vite |
+| Styling | Plain CSS only |
+| Backend | Java 17+, Spring Boot 3.3, Maven |
 | Storage | JSON files in `backend/src/data` |
-| Authentication | JWT, bcrypt |
-| Styling | Plain CSS |
+| Optional Database | PostgreSQL JSON storage |
+| Authentication | JWT and bcrypt password hashing |
+| PDF Export | Apache PDFBox |
 
 ## Project Structure
 
@@ -75,70 +93,41 @@ The current backend stores data in JSON files so the project can run locally wit
 online-exam-system/
 ├── backend/
 │   ├── pom.xml
+│   ├── .env.example
 │   └── src/
 │       ├── data/
+│       │   ├── users.json
 │       │   ├── exams.json
 │       │   ├── questions.json
-│       │   └── users.json
+│       │   ├── attempts.json
+│       │   ├── results.json
+│       │   └── audit.json
 │       └── main/
 │           ├── java/com/onlineexam/
+│           │   ├── audit/
 │           │   ├── auth/
-│           │   │   ├── AuthController.java
-│           │   │   ├── AuthFilter.java
-│           │   │   ├── AuthSupport.java
-│           │   │   ├── JwtService.java
-│           │   │   └── UserPrincipal.java
+│           │   ├── attempts/
 │           │   ├── common/
-│           │   │   ├── ApiException.java
-│           │   │   ├── ApiExceptionHandler.java
-│           │   │   ├── HealthController.java
-│           │   │   └── JsonFileStore.java
 │           │   ├── config/
-│           │   │   ├── CorsConfig.java
-│           │   │   └── CorsFilterConfig.java
 │           │   ├── exams/
-│           │   │   ├── Exam.java
-│           │   │   ├── ExamController.java
-│           │   │   ├── ExamService.java
-│           │   │   └── PublicExam.java
 │           │   ├── questions/
-│           │   │   ├── Question.java
-│           │   │   ├── QuestionController.java
-│           │   │   ├── QuestionOption.java
-│           │   │   └── QuestionService.java
+│           │   ├── reports/
+│           │   ├── results/
 │           │   ├── users/
-│           │   │   ├── PublicUser.java
-│           │   │   ├── User.java
-│           │   │   ├── UserController.java
-│           │   │   └── UserService.java
 │           │   └── OnlineExamApplication.java
-│           └── resources/
-│               └── application.properties
+│           └── resources/application.properties
 ├── frontend/
-│   ├── index.html
 │   ├── package.json
+│   ├── .env.example
+│   ├── index.html
 │   └── src/
 │       ├── App.jsx
 │       ├── main.jsx
 │       ├── index.css
+│       ├── components/
 │       ├── pages/
-│       │   ├── DashboardPage.jsx
-│       │   ├── admin/UserManagementPage.jsx
-│       │   ├── auth/LoginPage.jsx
-│       │   ├── auth/SignupPage.jsx
-│       │   └── exams/
-│       │       ├── ExamCreatePage.jsx
-│       │       └── ExamDetailPage.jsx
-│       │   └── questions/
-│       │       └── QuestionFormPage.jsx
 │       ├── services/
-│       │   ├── api.js
-│       │   ├── authService.js
-│       │   ├── authStorage.js
-│       │   ├── examService.js
-│       │   └── userService.js
 │       └── utils/
-│           └── roleRedirect.js
 └── README.md
 ```
 
@@ -151,7 +140,7 @@ online-exam-system/
 - Node.js 18 or higher
 - npm 9 or higher
 
-### 1. Backend Setup
+### 1. Run the backend
 
 ```bash
 cd backend
@@ -159,56 +148,52 @@ cp .env.example .env
 mvn spring-boot:run
 ```
 
-The backend starts on:
+Backend URL:
 
 ```text
 http://localhost:5000
 ```
 
-If port `5000` is already in use, run with a different port:
-
-```bash
-PORT=52743 mvn spring-boot:run
-```
-
-### 2. Frontend Setup
+### 2. Run the frontend
 
 Open a second terminal:
 
 ```bash
 cd frontend
-npm install
 cp .env.example .env
+npm install
 npm run dev
 ```
 
-The frontend starts on:
+Frontend URL:
 
 ```text
 http://localhost:5173
 ```
 
-If the backend is running on a custom port, update `frontend/.env`:
+If Vite automatically starts on another port such as `5174`, login still works because the frontend now uses `/api` through the Vite proxy and the backend also allows local development origins.
 
-```env
-VITE_API_URL=http://localhost:52743/api
+### 3. Production build check
+
+```bash
+cd frontend
+npm run build
 ```
-
-### 3. Build Checks
-
-Backend:
 
 ```bash
 cd backend
 mvn test
 ```
 
-Frontend:
+
+## Verification Completed in This Environment
 
 ```bash
 cd frontend
 npm run build
 ```
+
+The frontend production build completed successfully. Maven is not installed in this execution environment, so backend Maven tests could not be executed here; however, the Java source was syntax-reviewed and no syntax-level errors were detected beyond missing external dependencies in a direct `javac` dependency-free check.
 
 ## Demo Accounts
 
@@ -218,11 +203,17 @@ All demo accounts use this password:
 password123
 ```
 
-| Role | Email |
-|------|-------|
-| Admin | `admin@example.com` |
-| Lecturer | `lecturer@example.com` |
-| Student | `student@example.com` |
+| Role | Email | Main pages |
+|---|---|---|
+| Admin | `admin@example.com` | User management, audit log |
+| Lecturer | `lecturer@example.com` | Exams, questions, analytics, results |
+| Student | `student@example.com` | Available exams, attempts, results, report card |
+
+The included seed data contains:
+
+- One active Java mock exam for testing student attempts.
+- One archived Database Systems exam with a demo result for analytics and PDF export.
+- One draft Algorithms quiz for lecturer editing and publishing.
 
 ## Environment Variables
 
@@ -230,182 +221,111 @@ password123
 
 ```env
 PORT=5000
-ALLOWED_ORIGIN=http://localhost:5173,http://localhost:5174
-JWT_SECRET=replace_this_with_a_long_random_secret
+ALLOWED_ORIGIN=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175
+JWT_SECRET=replace_this_with_a_long_random_secret_at_least_32_chars
 JWT_EXPIRES_IN=7d
+APP_STORAGE=file
+```
+
+Optional PostgreSQL-backed JSON storage:
+
+```env
+APP_STORAGE=database
+DATABASE_URL=postgres://user:password@localhost:5432/online_exam
 ```
 
 ### Frontend `.env`
 
 ```env
-VITE_API_URL=http://localhost:5000/api
+# Development default uses the Vite proxy and avoids CORS issues.
+VITE_API_URL=/api
 ```
 
-Do not commit real `.env` files. Commit only `.env.example` files.
+
+## Fixes Included for Common Local Errors
+
+### CORS login error from `localhost:5174`
+
+The frontend now calls `/api` by default, and `vite.config.js` proxies `/api` to `http://localhost:5000`. This means development requests are same-origin from the browser and no longer fail preflight CORS checks.
+
+The backend also includes a high-priority CORS response filter that allows local development origins such as `http://localhost:5173`, `http://localhost:5174`, `http://localhost:5175`, and matching `127.0.0.1` URLs.
+
+### 404 resource error
+
+`frontend/index.html` now includes an inline SVG favicon so the browser does not request a missing `/favicon.ico` file. If you refresh nested React routes, Vite serves the app correctly in development.
 
 ## API Endpoints
 
-### Health
+### Health and Auth
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/health` | Check API status | Public |
-
-### Auth
-
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/auth/register` | Register a new student account | Public |
-| POST | `/api/auth/login` | Login and receive JWT | Public |
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/health` | Public | Health check |
+| POST | `/api/auth/register` | Public | Register a student |
+| POST | `/api/auth/login` | Public | Login and receive JWT |
 
 ### Users
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/users` | List all users | Admin |
-| PATCH | `/api/users/:id/status` | Activate or deactivate user | Admin |
-| DELETE | `/api/users/:id` | Delete user | Admin |
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/users` | Admin | List users |
+| POST | `/api/users` | Admin | Create lecturer or admin account |
+| PATCH | `/api/users/:id/status` | Admin | Activate/deactivate user |
+| DELETE | `/api/users/:id` | Admin | Delete a user except self |
+| GET | `/api/audit?limit=100` | Admin | View recent audit events |
 
 ### Exams
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/exams` | Lecturers see their exams; students see Active exams | Auth |
-| POST | `/api/exams` | Create a new Draft exam | Lecturer |
-| GET | `/api/exams/:id` | Get exam detail | Lecturer owner or student for Active exams |
-| PATCH | `/api/exams/:id` | Edit Draft settings, publish Draft exams, or archive ended Active exams | Lecturer owner |
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/exams` | Auth | Lecturer sees own exams; student sees active exams |
+| POST | `/api/exams` | Lecturer | Create draft exam |
+| GET | `/api/exams/:id` | Lecturer owner / Student active exam | Exam detail |
+| PATCH | `/api/exams/:id` | Lecturer owner | Edit draft, publish, or archive |
+| GET | `/api/exams/:id/results` | Lecturer owner | Exam result table and summary |
+| POST | `/api/exams/:id/questions/:questionId` | Lecturer owner | Add question bank item to exam |
 
 ### Questions
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/questions?examId=:id` | List questions for an exam | Lecturer owner |
-| POST | `/api/questions` | Add MCQ, True/False, or Short Answer question to an exam | Lecturer owner |
-| GET | `/api/questions/:id` | Get question detail for editing | Lecturer owner |
-| PATCH | `/api/questions/:id` | Update a question before publishing | Lecturer owner |
-| DELETE | `/api/questions/:id` | Delete a question before publishing | Lecturer owner |
-| PATCH | `/api/questions/reorder` | Update question order for an exam | Lecturer owner |
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/questions?examId=:id` | Lecturer owner | List exam questions |
+| GET | `/api/questions/bank` | Lecturer | List reusable question bank |
+| GET | `/api/questions/:id` | Lecturer owner | Get one question |
+| POST | `/api/questions` | Lecturer owner | Create question |
+| PATCH | `/api/questions/:id` | Lecturer owner | Update question |
+| DELETE | `/api/questions/:id` | Lecturer owner | Delete question |
+| PATCH | `/api/questions/reorder` | Lecturer owner | Reorder questions |
 
-`PATCH /api/exams/:id` supports three actions:
+### Attempts, Results, Reports
 
-Edit Draft settings:
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/api/attempts` | Student | Start an exam attempt |
+| GET | `/api/attempts/:id` | Student owner | Get attempt |
+| PATCH | `/api/attempts/:id` | Student owner | Save answers |
+| POST | `/api/attempts/:id/submit` | Student owner | Submit and auto-grade |
+| GET | `/api/results/:id` | Student owner / Lecturer owner | Result detail |
+| GET | `/api/results/attempt/:attemptId` | Student owner / Lecturer owner | Result by attempt |
+| GET | `/api/reports/exam/:id` | Lecturer owner | Exam analytics |
+| GET | `/api/reports/student/:id` | Student owner | Student report card |
+| GET | `/api/reports/pdf/:attemptId` | Student owner / Lecturer owner | Download PDF result report |
 
-```json
-{
-  "title": "Midterm Exam",
-  "subject": "Java",
-  "durationMinutes": 60,
-  "passMark": 50,
-  "description": "Optional description"
-}
-```
+## Notes for Development
 
-Publish a Draft exam:
+- Keep frontend API calls inside `frontend/src/services`.
+- Keep visual styling in CSS files; the project does not use Tailwind or TypeScript.
+- The backend controllers validate role permissions before returning protected data.
+- Only draft exams can be edited or have questions modified.
+- Only active exams inside the schedule window can be attempted.
+- MCQ and True/False answers are auto-graded immediately on submit.
+- Short Answer questions are displayed and stored as part of exams, but the current auto-grader awards marks only for MCQ and True/False.
 
-```json
-{
-  "status": "Active",
-  "start_at": "2026-05-03T09:00:00.000Z",
-  "end_at": "2026-05-03T10:00:00.000Z"
-}
-```
+## Build Status
 
-Archive an Active exam after it ends:
-
-```json
-{
-  "status": "Archived"
-}
-```
-
-## Data Storage
-
-The current backend uses JSON file storage:
-
-```text
-backend/src/data/users.json
-backend/src/data/exams.json
-backend/src/data/questions.json
-```
-
-### `users.json`
-
-| Field | Notes |
-|-------|-------|
-| `id` | User UUID |
-| `name` | Full name |
-| `email` | Login email |
-| `role` | `student`, `lecturer`, or `admin` |
-| `student_id` | Student identifier, only for students |
-| `is_active` | Whether the user can log in |
-| `password_hash` | bcrypt password hash |
-| `created_at` | ISO datetime |
-
-### `exams.json`
-
-| Field | Notes |
-|-------|-------|
-| `id` | Exam UUID |
-| `created_by` | Lecturer user ID |
-| `title` | Exam title |
-| `subject` | Subject name |
-| `duration_mins` | Duration in minutes |
-| `pass_mark` | Pass mark percentage |
-| `description` | Optional description |
-| `status` | `Draft`, `Active`, or `Archived` |
-| `start_at` | Scheduled start datetime |
-| `end_at` | Scheduled end datetime |
-| `created_at` | ISO datetime |
-| `updated_at` | ISO datetime |
-
-### `questions.json`
-
-| Field | Notes |
-|-------|-------|
-| `id` | Question UUID |
-| `exam_id` | Linked exam UUID |
-| `question_text` | Question prompt |
-| `type` | `MCQ`, `TRUE_FALSE`, or `SHORT_ANSWER` |
-| `marks` | Positive mark value |
-| `order_no` | Display order inside the exam |
-| `options` | Answer options for MCQ and True/False |
-| `created_by` | Lecturer user ID |
-| `created_at` | ISO datetime |
-
-## User Roles
-
-| Role | Can Do |
-|------|--------|
-| Student | Register, log in, view Active exams |
-| Lecturer | Create, edit, schedule, publish, archive own exams, and add questions |
-| Admin | Manage user accounts |
-
-Role information is stored in the JWT payload. Protected Java routes read the authenticated user from `AuthFilter` and enforce roles in controllers.
-
-## Development Notes
-
-- The frontend should call API functions from `frontend/src/services`, not direct `fetch()` calls inside page components.
-- Backend API errors return JSON with a `message` field and, for validation errors, an `errors` object.
-- Exam settings can be edited only while the exam is `Draft`.
-- An exam can be published only when the start datetime is in the future and the end datetime is after the start.
-- An Active exam can be archived only after its end datetime has passed.
-- MCQ questions must have exactly four options and exactly one correct answer.
-- True/False questions use fixed True and False options with exactly one correct answer.
-- Questions can be edited, deleted, or reordered only before the exam is published.
-
-## Planned Modules
-
-These modules are described in the original coursework scope but are not fully implemented yet:
-
-- More question bank actions, such as editing and deleting questions
-- Exam attempts with timer
-- Auto-grading
-- Results pages
-- Reports and analytics
-- PDF report export
+- Frontend production build passed with `npm run build`.
+- Backend Java source was reviewed and the duplicate unreachable return in `AttemptController` was fixed. Run `mvn test` locally where Maven is installed.
 
 ## License
 
-This project is created for educational purposes as part of a university coursework assignment.
-
-MIT License - free to use and modify with attribution.
+Educational coursework project. Free to use and modify for learning purposes.

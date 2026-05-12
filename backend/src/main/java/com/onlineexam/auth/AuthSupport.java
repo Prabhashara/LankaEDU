@@ -3,6 +3,7 @@ package com.onlineexam.auth;
 import com.onlineexam.common.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import java.util.Arrays;
 
 public final class AuthSupport {
   private AuthSupport() {
@@ -19,6 +20,15 @@ public final class AuthSupport {
   public static UserPrincipal requireRole(HttpServletRequest request, String role) {
     UserPrincipal user = currentUser(request);
     if (!role.equals(user.role())) {
+      throw new ApiException(HttpStatus.FORBIDDEN, "Forbidden");
+    }
+    return user;
+  }
+
+  public static UserPrincipal requireAnyRole(HttpServletRequest request, String... roles) {
+    UserPrincipal user = currentUser(request);
+    boolean allowed = Arrays.stream(roles).anyMatch(role -> role.equals(user.role()));
+    if (!allowed) {
       throw new ApiException(HttpStatus.FORBIDDEN, "Forbidden");
     }
     return user;

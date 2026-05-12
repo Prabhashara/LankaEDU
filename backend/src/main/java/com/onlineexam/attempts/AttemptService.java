@@ -22,8 +22,13 @@ public class AttemptService {
   }
 
   public boolean hasAttempted(String studentId, String examId) {
+    return findByStudentAndExam(studentId, examId).isPresent();
+  }
+
+  public Optional<Attempt> findByStudentAndExam(String studentId, String examId) {
     return store.readAll().stream()
-        .anyMatch(attempt -> studentId.equals(attempt.getStudentId()) && examId.equals(attempt.getExamId()));
+        .filter(attempt -> studentId.equals(attempt.getStudentId()) && examId.equals(attempt.getExamId()))
+        .findFirst();
   }
 
   public Attempt create(String studentId, String examId) {
