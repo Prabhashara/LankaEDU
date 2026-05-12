@@ -434,6 +434,11 @@ export default function ExamDetailPage() {
               </span>
             )
           ) : null}
+          {exam && !isDraft ? (
+            <Link className="secondary-button" to={`/lecturer/exams/${id}/results`}>
+              View results
+            </Link>
+          ) : null}
           <Link className="secondary-button" to="/lecturer-dashboard">
             Back to exams
           </Link>

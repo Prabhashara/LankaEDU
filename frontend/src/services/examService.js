@@ -10,6 +10,11 @@ export async function getExam(examId) {
   return response.data.exam;
 }
 
+export async function getExamResults(examId) {
+  const response = await api.get(`/exams/${examId}/results`);
+  return response.data;
+}
+
 export async function createExam(examData) {
   const response = await api.post("/exams", examData);
   return response.data.exam;

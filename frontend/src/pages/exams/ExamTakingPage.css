@@ -695,6 +695,235 @@
   gap: 12px;
 }
 
+.result-detail-shell {
+  min-height: 100vh;
+  padding: 24px;
+  background: #f7f8fb;
+}
+
+.result-detail-panel {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 60px rgba(23, 32, 51, 0.12);
+}
+
+.result-detail-panel h1 {
+  margin: 0 0 20px;
+  color: #172033;
+}
+
+.result-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+.result-summary-grid div {
+  display: grid;
+  gap: 8px;
+  min-height: 96px;
+  padding: 16px;
+  border: 1px solid #e6eaf1;
+  border-radius: 6px;
+  background: #f7f8fb;
+}
+
+.result-summary-grid dt {
+  color: #596275;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.result-summary-grid dd {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: #172033;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.grade-badge,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.grade-badge {
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.status-badge.pass {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.fail {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.grade-badge.compact,
+.status-badge.compact {
+  min-width: 0;
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.lecturer-results-summary {
+  margin-bottom: 20px;
+}
+
+.results-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.table-sort-button {
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  background: transparent;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.table-sort-button:hover {
+  color: #006880;
+}
+
+.result-review {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.result-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e6eaf1;
+}
+
+.result-section-header h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 20px;
+}
+
+.result-section-header span {
+  color: #596275;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.result-question-list {
+  display: grid;
+  gap: 14px;
+}
+
+.result-question-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e6eaf1;
+  border-left-width: 5px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.result-question-card.correct {
+  border-left-color: #22c55e;
+}
+
+.result-question-card.wrong {
+  border-left-color: #ef4444;
+}
+
+.result-question-topline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.result-question-topline h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 16px;
+}
+
+.result-question-topline span {
+  color: #596275;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.result-question-text {
+  margin: 0;
+  color: #26324a;
+  line-height: 1.6;
+}
+
+.answer-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.answer-box {
+  display: grid;
+  gap: 6px;
+  min-height: 82px;
+  padding: 14px;
+  border: 1px solid #e6eaf1;
+  border-radius: 6px;
+}
+
+.answer-box span {
+  color: #596275;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.answer-box strong {
+  color: #172033;
+  line-height: 1.45;
+}
+
+.answer-box.correct {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.answer-box.wrong {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .exam-content {
@@ -778,6 +1007,22 @@
 
   .submission-summary div {
     grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .result-detail-panel {
+    padding: 22px;
+  }
+
+  .result-summary-grid,
+  .answer-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .result-question-topline,
+  .result-section-header {
+    align-items: flex-start;
+    flex-direction: column;
     gap: 6px;
   }
 }
