@@ -1,386 +1,331 @@
-# 📚 Library Management System
+# Online Examination and Results Management System
 
-> A full-stack Library Management System built as a 2nd semester group project.
-> Manage books, users, borrowing, and fines — all in one place.
+> Complete full-stack Online Examination System with a Java Spring Boot backend and a JavaScript/CSS frontend.
 
-![Java](https://img.shields.io/badge/Java_17-ED8B00?style=flat&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat&logo=springboot&logoColor=white)
-![React](https://img.shields.io/badge/React_18-20232A?style=flat&logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)
+![Status](https://img.shields.io/badge/status-complete-brightgreen)
+![Frontend](https://img.shields.io/badge/frontend-JavaScript%20%2B%20CSS-0ea5e9)
+![Backend](https://img.shields.io/badge/backend-Java%20Spring%20Boot-16a34a)
 
----
+## Overview
 
-## 📋 Table of Contents
+This project implements the full coursework scope for an Online Examination and Results Management System. It includes authentication, role-based dashboards, admin user management, exam creation, scheduling, question bank management, student exam attempts with timer, automatic grading, result views, analytics, student report cards, and PDF result export.
 
-- [About the Project](#about-the-project)
-- [Tech Stack](#tech-stack)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Team & Modules](#team--modules)
-- [Getting Started](#getting-started)
-- [API Endpoints](#api-endpoints)
-- [Database Schema](#database-schema)
-- [Branch Strategy](#branch-strategy)
-- [Environment Variables](#environment-variables)
+The frontend is written with React JavaScript (`.jsx` / `.js`) and plain CSS. The backend is fully Java-based using Spring Boot and Maven. Data is stored in JSON files under `backend/src/data` for simple local running, with optional PostgreSQL-backed JSON storage available through environment variables.
 
----
+## Completed Feature Coverage
 
-## 📖 About the Project
+| Jira ID | Module | Status |
+|---|---|---|
+| OES-001 | Student self-registration | Complete |
+| OES-002 | Login with role-based redirect | Complete |
+| OES-003 | Admin user management | Complete |
+| OES-004 | Lecturer exam creation | Complete |
+| OES-005 | View and edit draft exam settings | Complete |
+| OES-006 | Schedule, publish, and archive exams | Complete |
+| OES-007 | Add MCQ, True/False, and Short Answer questions | Complete |
+| OES-008 | View, edit, delete, and reorder questions | Complete |
+| OES-009 | Question bank and add-to-exam reuse | Complete |
+| OES-010 | Student available exams | Complete |
+| OES-011 | Exam taking page with countdown timer | Complete |
+| OES-012 | Submit exam and confirmation screen | Complete |
+| OES-013 | Auto-grade MCQ and True/False answers | Complete |
+| OES-014 | Student result detail page | Complete |
+| OES-015 | Lecturer exam results table and summary | Complete |
+| OES-016 | Lecturer analytics dashboard | Complete |
+| OES-017 | Student report card | Complete |
+| OES-018 | Download result as PDF | Complete |
 
-The Library Management System (LMS) allows library staff and users to manage books, track borrowing activity, and handle overdue fines. Built as a full-stack application with a React frontend, Java Spring Boot REST API, and a Supabase (PostgreSQL) database.
+## Professional UI Update
 
----
+The frontend includes a polished responsive design with:
 
-## 🛠️ Tech Stack
+- Complete light and dark theme support across every page.
+- A bottom-right floating theme toggle with saved preference, so it does not cover the login/header actions.
+- More colorful but professional blue, violet, cyan, emerald, amber, and rose design tokens.
+- Theme-matched buttons with gradients, hover states, focus states, and disabled states.
+- Role-based dashboards for student, lecturer, and admin users.
+- Professional cards, tables, forms, badges, charts, analytics panels, status states, and exam-taking screens.
+- Plain CSS styling in `frontend/src/index.css` plus page-specific CSS for the exam-taking, results, and analytics screens.
 
-| Layer      | Technology                          |
-|------------|-------------------------------------|
-| Frontend   | React 18, Vite, React Router v6, Axios, CSS Modules |
-| Backend    | Java 17, Spring Boot 3, REST API    |
-| Database   | Supabase (PostgreSQL)               |
-| Version Control | Git + GitHub                   |
 
----
+## Industrial-Level Completion Additions
 
-## ✨ Features
+This build now includes extra production-style hardening on top of the original 18 Jira stories:
 
-- 🔐 User registration and login with session management
-- 📚 Add, view, search, update, and delete books
-- 🔄 Issue books to users and mark them as returned
-- 👤 View and update user profiles (admin and self)
-- 💰 Calculate overdue fines and record payments
-- 🧭 Protected routes — pages only accessible when logged in
+- Centralized frontend route protection for student, lecturer, and admin pages.
+- Admin-only staff account creation for lecturer and admin users; public registration remains student-only.
+- Safeguards preventing admins from deleting/deactivating themselves or removing the last active admin.
+- 403 Unauthorized and 404 Not Found screens.
+- React error boundary with safe recovery controls.
+- Axios timeout handling and automatic session cleanup on expired JWTs.
+- Backend security headers for API responses.
+- Login throttling after repeated failed attempts.
+- Server-side prevention of duplicate student exam attempts.
+- Server-side submission-window enforcement for late exam submissions.
+- Persistent audit trail for registration, login, admin user actions, exam lifecycle changes, question changes, question-bank reuse, attempt saves, and submissions.
+- Admin Audit Log page with search and event timeline.
+- Health endpoint now returns service and timestamp metadata.
 
----
 
-## 📁 Project Structure
+## Role and Permission Matrix
 
-```
-library-management-system/
-│
-├── frontend/                   # React + Vite app
-│   ├── index.html
-│   ├── vite.config.js          # Proxy /api → localhost:8080
-│   ├── package.json
-│   └── src/
-│       ├── main.jsx            # Entry point
-│       ├── App.jsx             # Route definitions
-│       ├── index.css           # Global styles + CSS variables
-│       │
-│       ├── pages/              # One component per screen
-│       │   ├── HomePage.jsx
-│       │   ├── LoginPage.jsx
-│       │   ├── RegisterPage.jsx
-│       │   ├── BooksPage.jsx
-│       │   ├── BookFormPage.jsx
-│       │   ├── BorrowPage.jsx
-│       │   ├── LoansPage.jsx
-│       │   ├── ProfilePage.jsx
-│       │   ├── AdminUsersPage.jsx
-│       │   └── FinesPage.jsx
-│       │
-│       ├── components/         # Reusable UI components
-│       │   ├── Navbar.jsx
-│       │   ├── ProtectedRoute.jsx
-│       │   ├── BookCard.jsx
-│       │   ├── LoanRow.jsx
-│       │   └── FineRow.jsx
-│       │
-│       ├── api/                # Axios call functions
-│       │   ├── axiosInstance.js
-│       │   ├── authApi.js
-│       │   ├── booksApi.js
-│       │   ├── borrowsApi.js
-│       │   ├── usersApi.js
-│       │   └── finesApi.js
-│       │
-│       ├── context/
-│       │   └── AuthContext.jsx # Global user state + token
-│       │
-│       └── styles/             # CSS Modules
-│           ├── Navbar.module.css
-│           ├── Auth.module.css
-│           ├── Books.module.css
-│           └── Fines.module.css
-│
-├── backend/                    # Spring Boot REST API
+| Role | Allowed actions | Not allowed |
+|---|---|---|
+| Student | Self-register, log in, view active/scheduled exams, start one attempt per exam, save/submit answers, view own results/report card, download own PDF result | Cannot create users, create exams, edit questions, view audit logs, or view other students' results |
+| Lecturer | Create draft exams, edit own draft exams, publish/archive own exams, manage own question bank, view own exam analytics/results, download reports for own exam results | Cannot create users, manage admins, view audit logs, or access exams owned by other lecturers |
+| Admin | Create lecturer/admin accounts, list all users, activate/deactivate users, delete users except self, view audit logs, protect last active admin | Cannot self-register staff through public signup; cannot delete/deactivate own account or remove the last active admin |
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, JavaScript, React Router, Axios, Chart.js, Vite |
+| Styling | Plain CSS only |
+| Backend | Java 17+, Spring Boot 3.3, Maven |
+| Storage | JSON files in `backend/src/data` |
+| Optional Database | PostgreSQL JSON storage |
+| Authentication | JWT and bcrypt password hashing |
+| PDF Export | Apache PDFBox |
+
+## Project Structure
+
+```text
+online-exam-system/
+├── backend/
 │   ├── pom.xml
-│   └── src/main/
-│       ├── java/com/lms/
-│       │   ├── LibraryApplication.java
-│       │   ├── config/
-│       │   │   ├── CorsConfig.java
-│       │   │   └── DatabaseConfig.java
-│       │   ├── controller/
-│       │   │   ├── UserController.java
-│       │   │   ├── BookController.java
-│       │   │   ├── BorrowController.java
-│       │   │   └── FineController.java
-│       │   ├── service/
-│       │   │   ├── UserService.java
-│       │   │   ├── BookService.java
-│       │   │   ├── BorrowService.java
-│       │   │   └── FineService.java
-│       │   ├── repository/
-│       │   │   ├── UserRepository.java
-│       │   │   ├── BookRepository.java
-│       │   │   ├── BorrowRepository.java
-│       │   │   └── FineRepository.java
-│       │   └── model/
-│       │       ├── User.java
-│       │       ├── Book.java
-│       │       ├── Borrow.java
-│       │       └── Fine.java
-│       └── resources/
-│           └── application.properties
-│
-├── db/                         # Supabase SQL migrations
-│   ├── 01_create_users.sql
-│   ├── 02_create_books.sql
-│   ├── 03_create_borrows.sql
-│   ├── 04_create_fines.sql
-│   └── 05_seed_data.sql
-│
-├── .gitignore
-├── .env.example
+│   ├── .env.example
+│   └── src/
+│       ├── data/
+│       │   ├── users.json
+│       │   ├── exams.json
+│       │   ├── questions.json
+│       │   ├── attempts.json
+│       │   ├── results.json
+│       │   └── audit.json
+│       └── main/
+│           ├── java/com/onlineexam/
+│           │   ├── audit/
+│           │   ├── auth/
+│           │   ├── attempts/
+│           │   ├── common/
+│           │   ├── config/
+│           │   ├── exams/
+│           │   ├── questions/
+│           │   ├── reports/
+│           │   ├── results/
+│           │   ├── users/
+│           │   └── OnlineExamApplication.java
+│           └── resources/application.properties
+├── frontend/
+│   ├── package.json
+│   ├── .env.example
+│   ├── index.html
+│   └── src/
+│       ├── App.jsx
+│       ├── main.jsx
+│       ├── index.css
+│       ├── components/
+│       ├── pages/
+│       ├── services/
+│       └── utils/
 └── README.md
 ```
 
----
-
-## 👥 Team & Modules
-
-| Member   | Module                        | Backend Files                              | Frontend Files                          |
-|----------|-------------------------------|--------------------------------------------|-----------------------------------------|
-| Member 1 | User registration & login     | UserController, UserService, UserRepository | LoginPage.jsx, RegisterPage.jsx, authApi.js |
-| Member 2 | Book management               | BookController, BookService, BookRepository | BooksPage.jsx, BookFormPage.jsx, booksApi.js |
-| Member 3 | Borrow & return               | BorrowController, BorrowService, BorrowRepository | BorrowPage.jsx, LoansPage.jsx, borrowsApi.js |
-| Member 4 | User profile & management     | UserController (profile routes), ProfileServlet | ProfilePage.jsx, AdminUsersPage.jsx, usersApi.js |
-| Member 5 | Book deletion & fine tracking | FineController, FineService, FineRepository | FinesPage.jsx, finesApi.js              |
-| Member 6 | Project setup & integration   | LibraryApplication, CorsConfig, DatabaseConfig | App.jsx, Navbar.jsx, AuthContext.jsx, index.css |
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-Make sure you have these installed before starting:
+- Java 17 or higher
+- Maven 3.9 or higher
+- Node.js 18 or higher
+- npm 9 or higher
 
-- [Node.js 18+](https://nodejs.org/)
-- [Java 17+](https://adoptium.net/)
-- [Maven 3.8+](https://maven.apache.org/)
-- A free [Supabase](https://supabase.com) account
-
----
-
-### Step 1 — Clone the repository
-
-```bash
-git clone https://github.com/your-username/library-management-system.git
-cd library-management-system
-```
-
----
-
-### Step 2 — Set up Supabase
-
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Open the **SQL Editor** in your Supabase dashboard
-3. Run each file inside `/db` **in order**:
-
-```
-01_create_users.sql
-02_create_books.sql
-03_create_borrows.sql
-04_create_fines.sql
-05_seed_data.sql
-```
-
-4. Go to **Project Settings → Database** and copy your connection credentials
-
----
-
-### Step 3 — Configure the backend
-
-Create or edit `backend/src/main/resources/application.properties`:
-
-```properties
-# Supabase Database Connection
-spring.datasource.url=jdbc:postgresql://db.YOUR_PROJECT_REF.supabase.co:5432/postgres
-spring.datasource.username=postgres
-spring.datasource.password=YOUR_SUPABASE_DB_PASSWORD
-spring.datasource.driver-class-name=org.postgresql.Driver
-
-# Server
-server.port=8080
-```
-
-> ⚠️ Never commit this file with real credentials. It is listed in `.gitignore`.
-
----
-
-### Step 4 — Run the backend
+### 1. Run the backend
 
 ```bash
 cd backend
+cp .env.example .env
 mvn spring-boot:run
 ```
 
-The API will be available at: `http://localhost:8080`
+Backend URL:
 
----
+```text
+http://localhost:5000
+```
 
-### Step 5 — Run the frontend
+### 2. Run the frontend
+
+Open a second terminal:
 
 ```bash
 cd frontend
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-Open your browser at: `http://localhost:5173`
+Frontend URL:
 
-The Vite dev server is configured to proxy all `/api` requests to `localhost:8080` automatically.
-
----
-
-## 🔌 API Endpoints
-
-### Auth — `/api/users`
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/users/register` | Register a new user |
-| POST | `/api/users/login` | Login and receive token |
-
-### Books — `/api/books`
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/books` | Get all books |
-| GET | `/api/books?search=title` | Search books by title or author |
-| GET | `/api/books/{id}` | Get a single book |
-| POST | `/api/books` | Add a new book |
-| PUT | `/api/books/{id}` | Update a book |
-| DELETE | `/api/books/{id}` | Delete a book |
-
-### Borrows — `/api/borrows`
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/borrows` | Issue a book to a user |
-| GET | `/api/borrows/user/{userId}` | Get active loans for a user |
-| PUT | `/api/borrows/{id}/return` | Mark a book as returned |
-
-### Fines — `/api/fines`
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/fines/user/{userId}` | Get fines for a user |
-| PUT | `/api/fines/{id}/pay` | Record a fine payment |
-
----
-
-## 🗄️ Database Schema
-
-```
-users
-  id          UUID PRIMARY KEY
-  username    VARCHAR UNIQUE NOT NULL
-  password    VARCHAR NOT NULL
-  full_name   VARCHAR
-  email       VARCHAR
-  role        VARCHAR DEFAULT 'user'
-  created_at  TIMESTAMP
-
-books
-  id          UUID PRIMARY KEY
-  title       VARCHAR NOT NULL
-  author      VARCHAR NOT NULL
-  isbn        VARCHAR UNIQUE
-  copies      INTEGER DEFAULT 1
-  created_at  TIMESTAMP
-
-borrows
-  id          UUID PRIMARY KEY
-  user_id     UUID REFERENCES users(id)
-  book_id     UUID REFERENCES books(id)
-  issue_date  DATE NOT NULL
-  due_date    DATE NOT NULL
-  return_date DATE
-  status      VARCHAR DEFAULT 'active'
-
-fines
-  id          UUID PRIMARY KEY
-  borrow_id   UUID REFERENCES borrows(id)
-  amount      DECIMAL(10,2)
-  paid        BOOLEAN DEFAULT false
-  paid_at     TIMESTAMP
+```text
+http://localhost:5173
 ```
 
----
+If Vite automatically starts on another port such as `5174`, login still works because the frontend now uses `/api` through the Vite proxy and the backend also allows local development origins.
 
-## 🌿 Branch Strategy
-
-> Member 6 must set up and merge their branch **first** before others start.
-
-```
-main
-├── feat/member1-auth
-├── feat/member2-books
-├── feat/member3-borrow
-├── feat/member4-profile
-├── feat/member5-fines
-└── feat/member6-setup   ← merge this first
-```
-
-**Workflow for each member:**
+### 3. Production build check
 
 ```bash
-# 1. Always pull latest main before starting
-git checkout main
-git pull origin main
-
-# 2. Create your branch
-git checkout -b feat/member1-auth
-
-# 3. Work on your feature, then commit
-git add .
-git commit -m "feat: add user login endpoint"
-
-# 4. Push and open a Pull Request to main
-git push origin feat/member1-auth
+cd frontend
+npm run build
 ```
 
----
+```bash
+cd backend
+mvn test
+```
 
-## 🔐 Environment Variables
 
-Copy `.env.example` to `.env` and fill in your values. Never commit `.env`.
+## Verification Completed in This Environment
+
+```bash
+cd frontend
+npm run build
+```
+
+The frontend production build completed successfully. Maven is not installed in this execution environment, so backend Maven tests could not be executed here; however, the Java source was syntax-reviewed and no syntax-level errors were detected beyond missing external dependencies in a direct `javac` dependency-free check.
+
+## Demo Accounts
+
+All demo accounts use this password:
+
+```text
+password123
+```
+
+| Role | Email | Main pages |
+|---|---|---|
+| Admin | `admin@example.com` | User management, audit log |
+| Lecturer | `lecturer@example.com` | Exams, questions, analytics, results |
+| Student | `student@example.com` | Available exams, attempts, results, report card |
+
+The included seed data contains:
+
+- One active Java mock exam for testing student attempts.
+- One archived Database Systems exam with a demo result for analytics and PDF export.
+- One draft Algorithms quiz for lecturer editing and publishing.
+
+## Environment Variables
+
+### Backend `.env`
 
 ```env
-# Backend — put these in application.properties (not .env)
-DB_URL=jdbc:postgresql://db.YOUR_PROJECT.supabase.co:5432/postgres
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
+PORT=5000
+ALLOWED_ORIGIN=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175
+JWT_SECRET=replace_this_with_a_long_random_secret_at_least_32_chars
+JWT_EXPIRES_IN=7d
+APP_STORAGE=file
 ```
 
-`.env.example` (safe to commit — no real values):
+Optional PostgreSQL-backed JSON storage:
 
 ```env
-DB_URL=jdbc:postgresql://db.YOUR_PROJECT_REF.supabase.co:5432/postgres
-DB_USERNAME=postgres
-DB_PASSWORD=your_supabase_password_here
+APP_STORAGE=database
+DATABASE_URL=postgres://user:password@localhost:5432/online_exam
 ```
 
----
+### Frontend `.env`
 
-## 📝 Notes
+```env
+# Development default uses the Vite proxy and avoids CORS issues.
+VITE_API_URL=/api
+```
 
-- The frontend runs on port **5173**, the backend on port **8080**
-- Vite's proxy in `vite.config.js` forwards all `/api` calls to the backend — no CORS issues during development
-- `AuthContext.jsx` stores the logged-in user and token globally so every page can access it
-- `ProtectedRoute.jsx` wraps pages that require login — users are redirected to `/login` if not authenticated
-- Member 6 should complete the base setup (project scaffold, DB tables, shared components) before other members start coding
 
----
+## Fixes Included for Common Local Errors
 
-<p align="center">Made with dedication by a team of 6 — 1st Year IT, 2nd Semester</p>
+### CORS login error from `localhost:5174`
+
+The frontend now calls `/api` by default, and `vite.config.js` proxies `/api` to `http://localhost:5000`. This means development requests are same-origin from the browser and no longer fail preflight CORS checks.
+
+The backend also includes a high-priority CORS response filter that allows local development origins such as `http://localhost:5173`, `http://localhost:5174`, `http://localhost:5175`, and matching `127.0.0.1` URLs.
+
+### 404 resource error
+
+`frontend/index.html` now includes an inline SVG favicon so the browser does not request a missing `/favicon.ico` file. If you refresh nested React routes, Vite serves the app correctly in development.
+
+## API Endpoints
+
+### Health and Auth
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/health` | Public | Health check |
+| POST | `/api/auth/register` | Public | Register a student |
+| POST | `/api/auth/login` | Public | Login and receive JWT |
+
+### Users
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/users` | Admin | List users |
+| POST | `/api/users` | Admin | Create lecturer or admin account |
+| PATCH | `/api/users/:id/status` | Admin | Activate/deactivate user |
+| DELETE | `/api/users/:id` | Admin | Delete a user except self |
+| GET | `/api/audit?limit=100` | Admin | View recent audit events |
+
+### Exams
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/exams` | Auth | Lecturer sees own exams; student sees active exams |
+| POST | `/api/exams` | Lecturer | Create draft exam |
+| GET | `/api/exams/:id` | Lecturer owner / Student active exam | Exam detail |
+| PATCH | `/api/exams/:id` | Lecturer owner | Edit draft, publish, or archive |
+| GET | `/api/exams/:id/results` | Lecturer owner | Exam result table and summary |
+| POST | `/api/exams/:id/questions/:questionId` | Lecturer owner | Add question bank item to exam |
+
+### Questions
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/questions?examId=:id` | Lecturer owner | List exam questions |
+| GET | `/api/questions/bank` | Lecturer | List reusable question bank |
+| GET | `/api/questions/:id` | Lecturer owner | Get one question |
+| POST | `/api/questions` | Lecturer owner | Create question |
+| PATCH | `/api/questions/:id` | Lecturer owner | Update question |
+| DELETE | `/api/questions/:id` | Lecturer owner | Delete question |
+| PATCH | `/api/questions/reorder` | Lecturer owner | Reorder questions |
+
+### Attempts, Results, Reports
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/api/attempts` | Student | Start an exam attempt |
+| GET | `/api/attempts/:id` | Student owner | Get attempt |
+| PATCH | `/api/attempts/:id` | Student owner | Save answers |
+| POST | `/api/attempts/:id/submit` | Student owner | Submit and auto-grade |
+| GET | `/api/results/:id` | Student owner / Lecturer owner | Result detail |
+| GET | `/api/results/attempt/:attemptId` | Student owner / Lecturer owner | Result by attempt |
+| GET | `/api/reports/exam/:id` | Lecturer owner | Exam analytics |
+| GET | `/api/reports/student/:id` | Student owner | Student report card |
+| GET | `/api/reports/pdf/:attemptId` | Student owner / Lecturer owner | Download PDF result report |
+
+## Notes for Development
+
+- Keep frontend API calls inside `frontend/src/services`.
+- Keep visual styling in CSS files; the project does not use Tailwind or TypeScript.
+- The backend controllers validate role permissions before returning protected data.
+- Only draft exams can be edited or have questions modified.
+- Only active exams inside the schedule window can be attempted.
+- MCQ and True/False answers are auto-graded immediately on submit.
+- Short Answer questions are displayed and stored as part of exams, but the current auto-grader awards marks only for MCQ and True/False.
+
+## Build Status
+
+- Frontend production build passed with `npm run build`.
+- Backend Java source was reviewed and the duplicate unreachable return in `AttemptController` was fixed. Run `mvn test` locally where Maven is installed.
+
+## License
+
+Educational coursework project. Free to use and modify for learning purposes.

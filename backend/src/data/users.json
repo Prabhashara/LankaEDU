@@ -1,0 +1,37 @@
+[ {
+  "id" : "f5043720-fc3c-4b5f-9e55-c757c37a2fa3",
+  "name" : "System Admin",
+  "email" : "admin@example.com",
+  "role" : "admin",
+  "student_id" : null,
+  "is_active" : true,
+  "password_hash" : "$2a$10$12XDsTW2CIJHUy7ALOVLiO7Bezbu5w4ojNuTQG6V8ffuWY1oQmMAS",
+  "created_at" : "2026-05-05T13:52:38.457318Z"
+}, {
+  "id" : "5ab29405-52db-4b0f-b201-e02cf9146250",
+  "name" : "Demo Lecturer",
+  "email" : "lecturer@example.com",
+  "role" : "lecturer",
+  "student_id" : null,
+  "is_active" : true,
+  "password_hash" : "$2a$10$V.2ghwbzt3eTLZLQukN12uVX4KCeNnw1hK6bzcV0zpvvmKMMvlfhS",
+  "created_at" : "2026-05-05T13:52:38.576143Z"
+}, {
+  "id" : "bb54f67b-3517-4974-9da3-8b8b1f1c386f",
+  "name" : "Demo Student",
+  "email" : "student@example.com",
+  "role" : "student",
+  "student_id" : "STU-DEMO-001",
+  "is_active" : true,
+  "password_hash" : "$2a$10$ljI/0nA30/ll47OHQTvqUebwjmWlq32.1ZTkKllEdQ1AQwJpUBg.i",
+  "created_at" : "2026-05-05T13:52:38.667656Z"
+}, {
+  "id" : "13117330-f907-4b0e-acbc-13a36d259cc6",
+  "name" : "Sachith Asmadala",
+  "email" : "sachithasmadala@gmail.com",
+  "role" : "student",
+  "student_id" : "sachithasmadala@gmail.com",
+  "is_active" : true,
+  "password_hash" : "$2a$10$/Gc/OOIP9hRb8dyDn/ml/uKo7HOhCB5oDzNMWQDL14QcL7xBjHRlG",
+  "created_at" : "2026-05-05T13:57:06.556099Z"
+} ]
