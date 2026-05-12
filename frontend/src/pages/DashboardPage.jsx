@@ -79,6 +79,11 @@ export default function DashboardPage({ role }) {
               Create exam
             </Link>
           ) : null}
+          {role === "student" ? (
+            <Link className="link-button" to="/student/exams">
+              View available exams
+            </Link>
+          ) : null}
           <button className="secondary-button" type="button" onClick={handleLogout}>
             Logout
           </button>
@@ -95,7 +100,11 @@ export default function DashboardPage({ role }) {
               <Link className="secondary-button" to="/lecturer/exams/new">
                 New exam
               </Link>
-            ) : null}
+            ) : (
+              <Link className="secondary-button" to="/student/exams">
+                Open list
+              </Link>
+            )}
           </div>
 
           {examError ? <div className="alert alert-error admin-alert">{examError}</div> : null}

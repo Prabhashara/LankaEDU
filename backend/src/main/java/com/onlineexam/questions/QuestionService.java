@@ -32,6 +32,27 @@ public class QuestionService {
       .toList();
   }
 
+  public List<AttemptQuestion> listForAttempt(String examId) {
+    return store.readAll().stream()
+      .filter(question -> examId.equals(question.getExamId()))
+      .sorted(Comparator.comparingInt(this::effectiveOrderNo))
+      .map(AttemptQuestion::from)
+      .toList();
+  }
+
+  public List<Question> listRawForExam(String examId) {
+    return store.readAll().stream()
+      .filter(question -> examId.equals(question.getExamId()))
+      .sorted(Comparator.comparingInt(this::effectiveOrderNo))
+      .toList();
+  }
+
+  public int countForExam(String examId) {
+    return (int) store.readAll().stream()
+      .filter(question -> examId.equals(question.getExamId()))
+      .count();
+  }
+
   public List<BankQuestion> listForLecturer(List<PublicExam> exams) {
     Map<String, PublicExam> examsById = exams.stream().collect(Collectors.toMap(PublicExam::id, Function.identity()));
 

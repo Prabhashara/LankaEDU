@@ -1,5 +1,6 @@
 package com.onlineexam.exams;
 
+import com.onlineexam.attempts.AttemptService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
@@ -9,8 +10,10 @@ import com.onlineexam.questions.QuestionService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,19 +29,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExamController {
   private final ExamService examService;
   private final QuestionService questionService;
+  private final AttemptService attemptService;
 
-  public ExamController(ExamService examService, QuestionService questionService) {
+  public ExamController(ExamService examService, QuestionService questionService, AttemptService attemptService) {
     this.examService = examService;
     this.questionService = questionService;
+    this.attemptService = attemptService;
   }
 
   @GetMapping
-  public Map<String, Object> list(HttpServletRequest request) {
+  public Map<String, Object> list(HttpServletRequest request, @RequestParam(value = "status", required = false) String status) {
     UserPrincipal user = AuthSupport.currentUser(request);
     if ("student".equals(user.role())) {
-      return Map.of("exams", examService.listActive());
+      List<AvailableExam> exams = examService.listActive().stream()
+        .map(exam -> AvailableExam.from(exam, questionService.countForExam(exam.id()), attemptService.hasAttempted(user.id(), exam.id())))
+        .toList();
+      return Map.of("exams", exams);
     }
-    return Map.of("exams", examService.listForLecturer(user.id()));
+
+    List<PublicExam> exams = examService.listForLecturer(user.id());
+    if (!trim(status).isBlank()) {
+      exams = exams.stream().filter(exam -> trim(status).equals(exam.status())).toList();
+    }
+    return Map.of("exams", exams);
   }
 
   @PostMapping

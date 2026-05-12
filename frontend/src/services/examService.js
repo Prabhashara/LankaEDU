@@ -1,7 +1,7 @@
 import api from "./api";
 
-export async function getExams() {
-  const response = await api.get("/exams");
+export async function getExams(params = {}) {
+  const response = await api.get("/exams", { params });
   return response.data.exams;
 }
 
