@@ -1,10 +1,14 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import SignupPage from "./pages/auth/SignupPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
-import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
+import AvailableExamsPage from "./pages/exams/AvailableExamsPage.jsx";
 import ExamCreatePage from "./pages/exams/ExamCreatePage.jsx";
 import ExamDetailPage from "./pages/exams/ExamDetailPage.jsx";
+import ExamSubmissionConfirmationPage from "./pages/exams/ExamSubmissionConfirmationPage.jsx";
+import ExamTakingPage from "./pages/exams/ExamTakingPage.jsx";
+import ResultDetailPage from "./pages/exams/ResultDetailPage.jsx";
 import QuestionBankPage from "./pages/questions/QuestionBankPage.jsx";
 import QuestionFormPage from "./pages/questions/QuestionFormPage.jsx";
 import { clearAuthSession } from "./services/authStorage.js";
@@ -16,6 +20,10 @@ export default function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/student-dashboard" element={<DashboardPage role="student" />} />
+      <Route path="/student/exams" element={<AvailableExamsPage />} />
+      <Route path="/student/exams/:examId/take" element={<ExamTakingPage />} />
+      <Route path="/student/attempts/:attemptId/submitted" element={<ExamSubmissionConfirmationPage />} />
+      <Route path="/student/results/:resultId" element={<ResultDetailPage />} />
       <Route path="/lecturer-dashboard" element={<DashboardPage role="lecturer" />} />
       <Route path="/admin-dashboard" element={<DashboardPage role="admin" />} />
       <Route path="/admin/users" element={<UserManagementPage />} />
