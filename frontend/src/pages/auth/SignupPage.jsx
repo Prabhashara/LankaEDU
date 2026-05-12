@@ -83,8 +83,8 @@ export default function SignupPage() {
       <section className="auth-panel" aria-labelledby="signup-title">
         <div className="auth-copy">
           <p className="eyebrow">Student registration</p>
-          <h1 id="signup-title">Create your account</h1>
-          <p>Register with your student details to access the user portal.</p>
+          <h1 id="signup-title">Create your exam account</h1>
+          <p>Register with your student details to access online exams and results.</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>

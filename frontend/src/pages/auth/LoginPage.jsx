@@ -42,9 +42,9 @@ export default function LoginPage() {
     <main className="auth-shell">
       <section className="auth-panel narrow" aria-labelledby="login-title">
         <div className="auth-copy">
-          <p className="eyebrow">Account login</p>
+          <p className="eyebrow">Student login</p>
           <h1 id="login-title">Welcome back</h1>
-          <p>Use your account to continue to the user portal.</p>
+          <p>Use your account to continue to the exam platform.</p>
         </div>
 
         {successMessage ? <div className="alert alert-success">{successMessage}</div> : null}

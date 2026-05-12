@@ -3,6 +3,8 @@ import LoginPage from "./pages/auth/LoginPage.jsx";
 import SignupPage from "./pages/auth/SignupPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
+import ExamCreatePage from "./pages/exams/ExamCreatePage.jsx";
+import ExamDetailPage from "./pages/exams/ExamDetailPage.jsx";
 import { clearAuthSession } from "./services/authStorage.js";
 
 export default function App() {
@@ -15,6 +17,8 @@ export default function App() {
       <Route path="/lecturer-dashboard" element={<DashboardPage role="lecturer" />} />
       <Route path="/admin-dashboard" element={<DashboardPage role="admin" />} />
       <Route path="/admin/users" element={<UserManagementPage />} />
+      <Route path="/lecturer/exams/new" element={<ExamCreatePage />} />
+      <Route path="/lecturer/exams/:id" element={<ExamDetailPage />} />
       <Route path="/logout" element={<LogoutRedirect />} />
     </Routes>
   );
