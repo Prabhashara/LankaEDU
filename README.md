@@ -51,6 +51,10 @@ The current backend stores data in JSON files so the project can run locally wit
 - Schedule an exam with start and end datetime
 - Publish a draft exam as Active
 - Archive an Active exam after it has ended
+- Add MCQ, True/False, and Short Answer questions to an exam
+- View an exam's question list
+- Edit, delete, and reorder questions before publishing
+- View total marks for an exam's questions
 
 **Student**
 - View Active exams in the student dashboard
@@ -74,6 +78,7 @@ online-exam-system/
 │   └── src/
 │       ├── data/
 │       │   ├── exams.json
+│       │   ├── questions.json
 │       │   └── users.json
 │       └── main/
 │           ├── java/com/onlineexam/
@@ -96,6 +101,11 @@ online-exam-system/
 │           │   │   ├── ExamController.java
 │           │   │   ├── ExamService.java
 │           │   │   └── PublicExam.java
+│           │   ├── questions/
+│           │   │   ├── Question.java
+│           │   │   ├── QuestionController.java
+│           │   │   ├── QuestionOption.java
+│           │   │   └── QuestionService.java
 │           │   ├── users/
 │           │   │   ├── PublicUser.java
 │           │   │   ├── User.java
@@ -119,6 +129,8 @@ online-exam-system/
 │       │   └── exams/
 │       │       ├── ExamCreatePage.jsx
 │       │       └── ExamDetailPage.jsx
+│       │   └── questions/
+│       │       └── QuestionFormPage.jsx
 │       ├── services/
 │       │   ├── api.js
 │       │   ├── authService.js
@@ -263,6 +275,17 @@ Do not commit real `.env` files. Commit only `.env.example` files.
 | GET | `/api/exams/:id` | Get exam detail | Lecturer owner or student for Active exams |
 | PATCH | `/api/exams/:id` | Edit Draft settings, publish Draft exams, or archive ended Active exams | Lecturer owner |
 
+### Questions
+
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| GET | `/api/questions?examId=:id` | List questions for an exam | Lecturer owner |
+| POST | `/api/questions` | Add MCQ, True/False, or Short Answer question to an exam | Lecturer owner |
+| GET | `/api/questions/:id` | Get question detail for editing | Lecturer owner |
+| PATCH | `/api/questions/:id` | Update a question before publishing | Lecturer owner |
+| DELETE | `/api/questions/:id` | Delete a question before publishing | Lecturer owner |
+| PATCH | `/api/questions/reorder` | Update question order for an exam | Lecturer owner |
+
 `PATCH /api/exams/:id` supports three actions:
 
 Edit Draft settings:
@@ -302,6 +325,7 @@ The current backend uses JSON file storage:
 ```text
 backend/src/data/users.json
 backend/src/data/exams.json
+backend/src/data/questions.json
 ```
 
 ### `users.json`
@@ -334,12 +358,26 @@ backend/src/data/exams.json
 | `created_at` | ISO datetime |
 | `updated_at` | ISO datetime |
 
+### `questions.json`
+
+| Field | Notes |
+|-------|-------|
+| `id` | Question UUID |
+| `exam_id` | Linked exam UUID |
+| `question_text` | Question prompt |
+| `type` | `MCQ`, `TRUE_FALSE`, or `SHORT_ANSWER` |
+| `marks` | Positive mark value |
+| `order_no` | Display order inside the exam |
+| `options` | Answer options for MCQ and True/False |
+| `created_by` | Lecturer user ID |
+| `created_at` | ISO datetime |
+
 ## User Roles
 
 | Role | Can Do |
 |------|--------|
 | Student | Register, log in, view Active exams |
-| Lecturer | Create, edit, schedule, publish, and archive own exams |
+| Lecturer | Create, edit, schedule, publish, archive own exams, and add questions |
 | Admin | Manage user accounts |
 
 Role information is stored in the JWT payload. Protected Java routes read the authenticated user from `AuthFilter` and enforce roles in controllers.
@@ -351,12 +389,15 @@ Role information is stored in the JWT payload. Protected Java routes read the au
 - Exam settings can be edited only while the exam is `Draft`.
 - An exam can be published only when the start datetime is in the future and the end datetime is after the start.
 - An Active exam can be archived only after its end datetime has passed.
+- MCQ questions must have exactly four options and exactly one correct answer.
+- True/False questions use fixed True and False options with exactly one correct answer.
+- Questions can be edited, deleted, or reordered only before the exam is published.
 
 ## Planned Modules
 
 These modules are described in the original coursework scope but are not fully implemented yet:
 
-- Question bank
+- More question bank actions, such as editing and deleting questions
 - Exam attempts with timer
 - Auto-grading
 - Results pages

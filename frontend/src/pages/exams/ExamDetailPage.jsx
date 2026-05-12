@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
 import { archiveExam, getExam, publishExam, updateExam } from "../../services/examService";
+import { deleteQuestion, getQuestions, reorderQuestions } from "../../services/questionService";
 
 function toFormValues(exam) {
   return {
@@ -92,6 +93,23 @@ function validateSchedule(values) {
   return errors;
 }
 
+function formatQuestionType(type) {
+  const labels = {
+    MCQ: "MCQ",
+    TRUE_FALSE: "True/False",
+    SHORT_ANSWER: "Short Answer"
+  };
+  return labels[type] || type;
+}
+
+function previewText(value) {
+  if (!value || value.length <= 90) {
+    return value;
+  }
+
+  return `${value.slice(0, 87)}...`;
+}
+
 export default function ExamDetailPage() {
   const { id } = useParams();
   const location = useLocation();
@@ -105,11 +123,18 @@ export default function ExamDetailPage() {
   const [formValues, setFormValues] = useState(toFormValues(null));
   const [formErrors, setFormErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState("settings");
+  const [activeTab, setActiveTab] = useState(location.state?.tab || "settings");
   const [scheduleValues, setScheduleValues] = useState(toScheduleValues(null));
   const [scheduleErrors, setScheduleErrors] = useState({});
   const [isPublishing, setIsPublishing] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+  const [questionError, setQuestionError] = useState("");
+  const [pendingDeleteQuestion, setPendingDeleteQuestion] = useState(null);
+  const [actionQuestionId, setActionQuestionId] = useState("");
+  const [draggedQuestionId, setDraggedQuestionId] = useState("");
+  const [isReordering, setIsReordering] = useState(false);
 
   useEffect(() => {
     if (!token || role !== "lecturer") {
@@ -145,6 +170,38 @@ export default function ExamDetailPage() {
     };
   }, [id, role, token]);
 
+  useEffect(() => {
+    if (!token || role !== "lecturer") {
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadQuestions() {
+      try {
+        const data = await getQuestions(id);
+        if (isMounted) {
+          setQuestions(data);
+          setQuestionError("");
+        }
+      } catch (_error) {
+        if (isMounted) {
+          setQuestionError("Unable to load questions.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingQuestions(false);
+        }
+      }
+    }
+
+    loadQuestions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id, role, token]);
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
@@ -156,6 +213,7 @@ export default function ExamDetailPage() {
   const isDraft = exam?.status === "Draft";
   const isActive = exam?.status === "Active";
   const canArchive = isActive && exam?.endAt && new Date(exam.endAt) <= new Date();
+  const totalMarks = questions.reduce((sum, question) => sum + Number(question.marks || 0), 0);
 
   function handleEdit() {
     if (!exam || !isDraft) {
@@ -275,6 +333,81 @@ export default function ExamDetailPage() {
     }
   }
 
+  async function confirmDeleteQuestion() {
+    if (!pendingDeleteQuestion) {
+      return;
+    }
+
+    setActionQuestionId(pendingDeleteQuestion.id);
+    setQuestionError("");
+    setToast("");
+
+    try {
+      await deleteQuestion(pendingDeleteQuestion.id);
+      setQuestions((current) =>
+        current
+          .filter((question) => question.id !== pendingDeleteQuestion.id)
+          .map((question, index) => ({ ...question, orderNo: index + 1 }))
+      );
+      setPendingDeleteQuestion(null);
+      setToast("Question deleted successfully.");
+    } catch (requestError) {
+      setQuestionError(requestError.response?.data?.message || "Unable to delete question.");
+    } finally {
+      setActionQuestionId("");
+    }
+  }
+
+  function handleDragStart(questionId) {
+    if (!isDraft) {
+      return;
+    }
+    setDraggedQuestionId(questionId);
+  }
+
+  function handleDragOver(event) {
+    if (!isDraft) {
+      return;
+    }
+    event.preventDefault();
+  }
+
+  async function handleDrop(targetQuestionId) {
+    if (!isDraft || !draggedQuestionId || draggedQuestionId === targetQuestionId) {
+      setDraggedQuestionId("");
+      return;
+    }
+
+    const previousQuestions = questions;
+    const draggedIndex = questions.findIndex((question) => question.id === draggedQuestionId);
+    const targetIndex = questions.findIndex((question) => question.id === targetQuestionId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedQuestionId("");
+      return;
+    }
+
+    const nextQuestions = [...questions];
+    const [draggedQuestion] = nextQuestions.splice(draggedIndex, 1);
+    nextQuestions.splice(targetIndex, 0, draggedQuestion);
+    const orderedQuestions = nextQuestions.map((question, index) => ({ ...question, orderNo: index + 1 }));
+
+    setQuestions(orderedQuestions);
+    setDraggedQuestionId("");
+    setIsReordering(true);
+    setQuestionError("");
+
+    try {
+      const savedQuestions = await reorderQuestions(id, orderedQuestions.map((question) => question.id));
+      setQuestions(savedQuestions);
+    } catch (requestError) {
+      setQuestions(previousQuestions);
+      setQuestionError(requestError.response?.data?.message || "Unable to reorder questions.");
+    } finally {
+      setIsReordering(false);
+    }
+  }
+
   return (
     <main className="admin-shell">
       <section className="admin-header" aria-labelledby="exam-detail-title">
@@ -341,6 +474,18 @@ export default function ExamDetailPage() {
                 }}
               >
                 Schedule
+              </button>
+              <button
+                className={activeTab === "questions" ? "tab active" : "tab"}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === "questions"}
+                onClick={() => {
+                  setIsEditing(false);
+                  setActiveTab("questions");
+                }}
+              >
+                Questions
               </button>
             </div>
 
@@ -555,11 +700,129 @@ export default function ExamDetailPage() {
                 </div>
               </form>
             ) : null}
+
+            {activeTab === "questions" ? (
+              <section aria-labelledby="exam-questions-title">
+                <div className="section-heading compact">
+                  <div>
+                    <p className="eyebrow">Question Bank</p>
+                    <h2 id="exam-questions-title">Exam Questions</h2>
+                  </div>
+                  <div className="row-actions">
+                    <Link className="secondary-button" to={`/lecturer/exams/${id}/question-bank`}>
+                      Add from bank
+                    </Link>
+                    <Link className="secondary-button" to={`/lecturer/exams/${id}/questions/new`}>
+                      Add question
+                    </Link>
+                  </div>
+                </div>
+
+                {questionError ? <div className="alert alert-error admin-alert">{questionError}</div> : null}
+
+                {isLoadingQuestions ? (
+                  <p className="empty-state">Loading questions...</p>
+                ) : questions.length > 0 ? (
+                  <>
+                  <div className="question-list">
+                    {questions.map((question, index) => (
+                      <article
+                        className={draggedQuestionId === question.id ? "question-item dragging" : "question-item"}
+                        key={question.id}
+                        draggable={isDraft}
+                        onDragStart={() => handleDragStart(question.id)}
+                        onDragOver={handleDragOver}
+                        onDrop={() => handleDrop(question.id)}
+                      >
+                        <div className="question-row-main">
+                          <span className="drag-handle" aria-hidden="true">
+                            ::
+                          </span>
+                          <div>
+                            <div className="question-meta">
+                              <span>#{question.orderNo || index + 1}</span>
+                              <span>{formatQuestionType(question.type)}</span>
+                              <span>{question.marks} marks</span>
+                            </div>
+                            <h3>{previewText(question.questionText)}</h3>
+                          </div>
+                          <div className="row-actions">
+                            <Link
+                              className="table-button"
+                              to={`/lecturer/exams/${id}/questions/${question.id}/edit`}
+                              aria-disabled={!isDraft}
+                              onClick={(event) => {
+                                if (!isDraft) event.preventDefault();
+                              }}
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              className="danger-button"
+                              type="button"
+                              disabled={!isDraft || actionQuestionId === question.id}
+                              onClick={() => setPendingDeleteQuestion(question)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        {question.options.length > 0 ? (
+                          <ul className="answer-list">
+                            {question.options.map((option) => (
+                              <li className={option.isCorrect ? "correct" : ""} key={option.id}>
+                                {option.optionText}
+                                {option.isCorrect ? <strong>Correct</strong> : null}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="muted-text">Short answer question.</p>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                  <div className="question-total" role="status">
+                    <span>Total Marks</span>
+                    <strong>{totalMarks}</strong>
+                    {isReordering ? <small>Saving order...</small> : null}
+                  </div>
+                  </>
+                ) : (
+                  <p className="empty-state">No questions yet. Add the first question for this exam.</p>
+                )}
+              </section>
+            ) : null}
           </>
         ) : (
           <p className="empty-state">Exam not found.</p>
         )}
       </section>
+
+      {pendingDeleteQuestion ? (
+        <div className="modal-backdrop" role="presentation">
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-question-title"
+            aria-describedby="delete-question-description"
+          >
+            <h2 id="delete-question-title">Delete question?</h2>
+            <p id="delete-question-description">
+              This will remove "{previewText(pendingDeleteQuestion.questionText)}" from the exam.
+            </p>
+            <div className="modal-actions">
+              <button className="secondary-button" type="button" onClick={() => setPendingDeleteQuestion(null)}>
+                Cancel
+              </button>
+              <button className="danger-button solid" type="button" onClick={confirmDeleteQuestion}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

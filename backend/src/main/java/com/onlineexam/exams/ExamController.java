@@ -3,6 +3,9 @@ package com.onlineexam.exams;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
+import com.onlineexam.questions.PublicQuestion;
+import com.onlineexam.questions.Question;
+import com.onlineexam.questions.QuestionService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -22,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/exams")
 public class ExamController {
   private final ExamService examService;
+  private final QuestionService questionService;
 
-  public ExamController(ExamService examService) {
+  public ExamController(ExamService examService, QuestionService questionService) {
     this.examService = examService;
+    this.questionService = questionService;
   }
 
   @GetMapping
@@ -55,6 +60,34 @@ public class ExamController {
     }
 
     return Map.of("exam", exam);
+  }
+
+  @PostMapping("/{id}/questions/{questionId}")
+  public ResponseEntity<Map<String, Object>> linkQuestion(
+    HttpServletRequest request,
+    @PathVariable String id,
+    @PathVariable String questionId
+  ) {
+    UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
+    PublicExam exam = findOwnedExam(id, user);
+
+    if (!"Draft".equals(exam.status())) {
+      throw new ApiException(HttpStatus.CONFLICT, "Questions can only be added before publishing");
+    }
+
+    Question sourceQuestion = questionService.findRawById(questionId).orElse(null);
+    if (sourceQuestion == null || !sourceQuestion.getCreatedBy().equals(user.id())) {
+      throw new ApiException(HttpStatus.NOT_FOUND, "Question not found");
+    }
+
+    findOwnedExam(sourceQuestion.getExamId(), user);
+
+    if (questionService.isDuplicateOnExam(exam.id(), sourceQuestion)) {
+      throw new ApiException(HttpStatus.CONFLICT, "Question already exists on this exam");
+    }
+
+    PublicQuestion question = questionService.linkToExam(exam.id(), sourceQuestion, user.id());
+    return ResponseEntity.status(201).body(Map.of("message", "Question added to exam", "question", question));
   }
 
   @PatchMapping("/{id}")
@@ -98,6 +131,14 @@ public class ExamController {
     ExamValues values = validateExam(body);
     PublicExam updatedExam = examService.updateSettings(id, values);
     return Map.of("message", "Exam updated", "exam", updatedExam);
+  }
+
+  private PublicExam findOwnedExam(String id, UserPrincipal user) {
+    PublicExam exam = examService.findPublicById(id).orElse(null);
+    if (exam == null || !exam.createdBy().equals(user.id())) {
+      throw new ApiException(HttpStatus.NOT_FOUND, "Exam not found");
+    }
+    return exam;
   }
 
   private ExamValues validateExam(Map<String, Object> body) {
