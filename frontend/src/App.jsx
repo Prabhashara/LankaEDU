@@ -5,6 +5,8 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
 import ExamCreatePage from "./pages/exams/ExamCreatePage.jsx";
 import ExamDetailPage from "./pages/exams/ExamDetailPage.jsx";
+import QuestionBankPage from "./pages/questions/QuestionBankPage.jsx";
+import QuestionFormPage from "./pages/questions/QuestionFormPage.jsx";
 import { clearAuthSession } from "./services/authStorage.js";
 
 export default function App() {
@@ -19,6 +21,9 @@ export default function App() {
       <Route path="/admin/users" element={<UserManagementPage />} />
       <Route path="/lecturer/exams/new" element={<ExamCreatePage />} />
       <Route path="/lecturer/exams/:id" element={<ExamDetailPage />} />
+      <Route path="/lecturer/exams/:examId/question-bank" element={<QuestionBankPage />} />
+      <Route path="/lecturer/exams/:examId/questions/new" element={<QuestionFormPage />} />
+      <Route path="/lecturer/exams/:examId/questions/:questionId/edit" element={<QuestionFormPage />} />
       <Route path="/logout" element={<LogoutRedirect />} />
     </Routes>
   );
