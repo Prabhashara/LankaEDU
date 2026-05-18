@@ -107,7 +107,7 @@ public class QuestionController {
 
     List<PublicQuestion> questions = questionService.reorder(exam.id(), questionIds);
     if (questions == null) {
-      throw new ApiException(HttpStatus.BAD_REQUEST, "Question order must include every question once");
+      throw new ApiException(HttpStatus.BAD_REQUEST, "Question order must include question once");
     }
 
     auditService.record(user, "QUESTION_REORDERED", "exam", exam.id(), "Question order updated", Map.of("questionCount", questions.size()));
