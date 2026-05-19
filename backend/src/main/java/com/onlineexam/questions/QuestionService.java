@@ -83,7 +83,7 @@ public class QuestionService {
       .filter(question -> examId.equals(question.getExamId()))
       .anyMatch(question -> sourceKey.equals(sourceKey(question)));
   }
-
+//link question
   public PublicQuestion linkToExam(String examId, Question sourceQuestion, String lecturerId) {
     List<Question> questions = new ArrayList<>(store.readAll());
     Question question = new Question();
