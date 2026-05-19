@@ -38,6 +38,7 @@ public class Result {
  
 //List of answers submitted by the student for this result
   private List<ResultAnswer> answers = new ArrayList<>();
+   // Returns the result ID
 
   public String getId() {
     return id;
