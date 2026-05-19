@@ -3,6 +3,7 @@ package com.onlineexam.questions;
 import java.util.List;
 
 public record PublicQuestion(
+  //variable
   String id,
   String examId,
   String questionText,
