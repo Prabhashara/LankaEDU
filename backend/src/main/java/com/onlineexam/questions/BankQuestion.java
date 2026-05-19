@@ -4,6 +4,7 @@ import com.onlineexam.exams.PublicExam;
 import java.util.List;
 
 public record BankQuestion(
+  // variable
   String id,
   String examId,
   String examTitle,
