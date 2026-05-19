@@ -32,7 +32,7 @@ public class ResultAnswer {
   /**
    * Returns the question ID.
    *
-   * @return question ID
+   
    */
   public String getQuestionId() {
     return questionId;
