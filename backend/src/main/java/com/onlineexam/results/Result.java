@@ -9,6 +9,8 @@ public class Result {
  // Unique identifier for the result
   
   private String id;
+ 
+  // Grade received by the student
   private String grade;
 
   @JsonProperty("attempt_id")
