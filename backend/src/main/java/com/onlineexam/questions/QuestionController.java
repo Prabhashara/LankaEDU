@@ -53,7 +53,7 @@ public class QuestionController {
     PublicQuestion question = findOwnedQuestion(id, user);
     return Map.of("question", question);
   }
-
+// post mapping
   @PostMapping
   public ResponseEntity<Map<String, Object>> create(HttpServletRequest request, @RequestBody Map<String, Object> body) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
