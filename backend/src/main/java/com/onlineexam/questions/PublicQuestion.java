@@ -15,6 +15,7 @@ public record PublicQuestion(
   String createdBy,
   String createdAt
 ) {
+  // static keyword
   public static PublicQuestion from(Question question) {
     return new PublicQuestion(
       question.getId(),
