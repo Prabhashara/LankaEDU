@@ -4,13 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Result {
- 
-  
   private String id;
- 
-  
   private String grade;
 
   @JsonProperty("attempt_id")
@@ -35,10 +30,8 @@ public class Result {
 
   @JsonProperty("published_at")
   private String publishedAt;
- 
 
   private List<ResultAnswer> answers = new ArrayList<>();
-   
 
   public String getId() {
     return id;
