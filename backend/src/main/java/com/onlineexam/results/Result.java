@@ -35,7 +35,8 @@ public class Result {
 
   @JsonProperty("published_at")
   private String publishedAt;
-
+ 
+//List of answers submitted by the student for this result
   private List<ResultAnswer> answers = new ArrayList<>();
 
   public String getId() {
