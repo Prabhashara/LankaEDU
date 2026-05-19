@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
+  // encapsulation
   private String id;
   private String type;
   private double marks;
