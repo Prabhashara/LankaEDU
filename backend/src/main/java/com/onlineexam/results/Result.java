@@ -3,8 +3,11 @@ package com.onlineexam.results;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
+// Result class represents the final result of a student's exam attempt
 
 public class Result {
+ // Unique identifier for the result
+  
   private String id;
   private String grade;
 
