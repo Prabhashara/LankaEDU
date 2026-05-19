@@ -39,11 +39,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reports")
-
 public class ExamReportController {
   private static final List<String> BUCKET_LABELS = List.of("0-20%", "20-40%", "40-60%", "60-80%", "80-100%");
 
- // [OOP: ENCAPSULATION] - Private final fields dapu nisa me services direct pita ayaata modify karanna baha.
   private final ExamService examService;
   private final ResultService resultService;
   private final QuestionService questionService;
@@ -60,8 +58,7 @@ public class ExamReportController {
     this.questionService = questionService;
     this.userService = userService;
   }
-  // [CRUD: READ] - GET request ekak. Web browser / frontend eken exam report data
-  // kiyawala (READ) ganna use karanawa.
+
   @GetMapping("/exam/{id}")
   public Map<String, Object> examReport(HttpServletRequest request, @PathVariable String id) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
