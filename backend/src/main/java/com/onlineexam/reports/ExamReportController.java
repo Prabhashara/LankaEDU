@@ -52,17 +52,18 @@ public class ExamReportController {
   private final UserService userService;
 
   public ExamReportController(
-    ExamService examService,
-    ResultService resultService,
-    QuestionService questionService,
-    UserService userService
+         ExamService examService,
+         ResultService resultService,
+         QuestionService questionService,
+         UserService userService
   ) {
     this.examService = examService;
     this.resultService = resultService;
     this.questionService = questionService;
     this.userService = userService;
   }
-
+  // [CRUD: READ] - GET request ekak. Web browser / frontend eken exam report data
+  // kiyawala (READ) ganna use karanawa.
   @GetMapping("/exam/{id}")
   public Map<String, Object> examReport(HttpServletRequest request, @PathVariable String id) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
