@@ -10,7 +10,7 @@ public class Result {
   
   private String id;
  
-  // Grade received by the student
+  
   private String grade;
 
   @JsonProperty("attempt_id")
