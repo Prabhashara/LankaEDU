@@ -78,6 +78,7 @@ public class QuestionController {
     PublicQuestion question = questionService.update(id, values);
     return Map.of("message", "Question updated", "question", question);
   }
+  // delete question
 
   @DeleteMapping("/{id}")
   public Map<String, Object> delete(HttpServletRequest request, @PathVariable String id) {
