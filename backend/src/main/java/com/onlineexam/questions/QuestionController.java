@@ -46,18 +46,18 @@ public class QuestionController {
 
   @GetMapping("/bank")
   public Map<String, Object> bank(HttpServletRequest request) {
-    UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
-    List<PublicExam> exams = examService.listForLecturer(user.id());
-    return Map.of("questions", questionService.listForLecturer(exams));
+    AuthSupport.requireRole(request, "lecturer");
+    List<PublicExam> exams = examService.listAllPublic();
+    return Map.of("questions", questionService.listForBank(exams));
   }
 
   @GetMapping("/{id}")
   public Map<String, Object> detail(HttpServletRequest request, @PathVariable String id) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
-    PublicQuestion question = findOwnedQuestion(id, user);
+    PublicQuestion question = findEditableQuestion(id, user);
     return Map.of("question", question);
   }
-// post mapping
+
   @PostMapping
   public ResponseEntity<Map<String, Object>> create(HttpServletRequest request, @RequestBody Map<String, Object> body) {
     body = RequestBodySupport.emptyIfNull(body);
@@ -69,12 +69,12 @@ public class QuestionController {
     auditService.record(user, "QUESTION_CREATED", "question", question.id(), "Question created", Map.of("examId", question.examId(), "type", question.type(), "marks", question.marks()));
     return ResponseEntity.status(201).body(Map.of("message", "Question created", "question", question));
   }
-// patchMApping
+
   @PatchMapping("/{id}")
   public Map<String, Object> update(HttpServletRequest request, @PathVariable String id, @RequestBody Map<String, Object> body) {
     body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
-    PublicQuestion existingQuestion = findOwnedQuestion(id, user);
+    PublicQuestion existingQuestion = findEditableQuestion(id, user);
     PublicExam exam = requireDraftExam(findOwnedExam(existingQuestion.examId(), user));
     QuestionValues values = validateQuestion(body);
 
@@ -86,12 +86,11 @@ public class QuestionController {
     auditService.record(user, "QUESTION_UPDATED", "question", id, "Question updated", Map.of("examId", question.examId(), "type", question.type()));
     return Map.of("message", "Question updated", "question", question);
   }
-  // delete question
 
   @DeleteMapping("/{id}")
   public Map<String, Object> delete(HttpServletRequest request, @PathVariable String id) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
-    PublicQuestion existingQuestion = findOwnedQuestion(id, user);
+    PublicQuestion existingQuestion = findEditableQuestion(id, user);
     requireDraftExam(findOwnedExam(existingQuestion.examId(), user));
 
     PublicQuestion question = questionService.delete(id);
@@ -127,10 +126,13 @@ public class QuestionController {
     return exam;
   }
 
-  private PublicQuestion findOwnedQuestion(String questionId, UserPrincipal user) {
+  private PublicQuestion findEditableQuestion(String questionId, UserPrincipal user) {
     PublicQuestion question = questionService.findPublicById(questionId).orElse(null);
     if (question == null) {
       throw new ApiException(HttpStatus.NOT_FOUND, "Question not found");
+    }
+    if (!user.id().equals(question.createdBy())) {
+      throw new ApiException(HttpStatus.FORBIDDEN, "Only the lecturer who created this question can edit it");
     }
     findOwnedExam(question.examId(), user);
     return question;

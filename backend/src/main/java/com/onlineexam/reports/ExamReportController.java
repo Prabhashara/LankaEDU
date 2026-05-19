@@ -48,10 +48,10 @@ public class ExamReportController {
   private final UserService userService;
 
   public ExamReportController(
-         ExamService examService,
-         ResultService resultService,
-         QuestionService questionService,
-         UserService userService
+    ExamService examService,
+    ResultService resultService,
+    QuestionService questionService,
+    UserService userService
   ) {
     this.examService = examService;
     this.resultService = resultService;
@@ -63,7 +63,7 @@ public class ExamReportController {
   public Map<String, Object> examReport(HttpServletRequest request, @PathVariable String id) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     PublicExam exam = examService.findPublicById(id).orElse(null);
-   
+
     if (exam == null || !exam.createdBy().equals(user.id())) {
       throw new ApiException(HttpStatus.NOT_FOUND, "Exam not found");
     }

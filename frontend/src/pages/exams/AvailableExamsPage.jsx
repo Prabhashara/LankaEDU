@@ -79,7 +79,7 @@ export default function AvailableExamsPage() {
         </div>
         <div className="header-actions">
           <Link className="secondary-button" to="/student-dashboard" style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="dashboard" size={16} /> Dashboard</Link>
-          <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/login", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="logout" size={16} /> Sign out</button>
+          <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="logout" size={16} /> Sign out</button>
         </div>
       </section>
 

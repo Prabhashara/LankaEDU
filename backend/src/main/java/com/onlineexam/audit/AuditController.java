@@ -17,5 +17,9 @@ public class AuditController {
     this.auditService = auditService;
   }
 
- 
+  @GetMapping
+  public Map<String, Object> list(HttpServletRequest request, @RequestParam(value = "limit", required = false) Integer limit) {
+    AuthSupport.requireRole(request, "admin");
+    return Map.of("events", auditService.listRecent(limit == null ? 100 : limit));
+  }
 }

@@ -3,7 +3,6 @@ package com.onlineexam.questions;
 import java.util.List;
 
 public record PublicQuestion(
-  //variable
   String id,
   String examId,
   String questionText,
@@ -15,7 +14,6 @@ public record PublicQuestion(
   String createdBy,
   String createdAt
 ) {
-  // static keyword
   public static PublicQuestion from(Question question) {
     return new PublicQuestion(
       question.getId(),

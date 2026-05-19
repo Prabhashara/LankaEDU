@@ -4,6 +4,7 @@ import { loginUser } from "../../services/authService";
 import { saveAuthSession } from "../../services/authStorage";
 import { getApiErrorMessage } from "../../services/errorService";
 import { getDashboardPath } from "../../utils/roleRedirect";
+import BrandLogo from "../../components/BrandLogo.jsx";
 import Icon from "../../components/Icons.jsx";
 
 export default function LoginPage() {
@@ -41,8 +42,7 @@ export default function LoginPage() {
       <section className="auth-layout" aria-labelledby="login-title">
         <aside className="auth-visual-panel" aria-label="Platform highlights">
           <div className="auth-brand auth-brand-large">
-            <div className="brand-mark"><Icon name="exam" size={22} /></div>
-            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+            <BrandLogo variant="auth-large" />
           </div>
           <div className="auth-visual-content">
             <span className="home-highlight">Secure assessment workspace</span>
@@ -62,8 +62,7 @@ export default function LoginPage() {
 
         <section className="auth-panel narrow auth-card-premium">
           <div className="auth-brand">
-            <div className="brand-mark"><Icon name="exam" size={22} /></div>
-            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+            <BrandLogo variant="auth" />
           </div>
 
           <div className="auth-copy">

@@ -3,19 +3,13 @@ package com.onlineexam.common;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JsonFileStore<T> {
@@ -31,11 +25,11 @@ public class JsonFileStore<T> {
   }
 
   public synchronized List<T> readAll() {
-    return readAllFromDatabase(databaseUrl());
+    return readAllFromDatabase(DatabaseSupport.databaseUrl());
   }
 
   public synchronized void writeAll(List<T> items) {
-    writeAllToDatabase(databaseUrl(), items);
+    writeAllToDatabase(DatabaseSupport.databaseUrl(), items);
   }
 
   private List<T> readAllFromDatabase(String databaseUrl) {
@@ -44,7 +38,7 @@ public class JsonFileStore<T> {
       String key = storeKey();
 
       try (
-        Connection connection = connection(databaseUrl);
+        Connection connection = DatabaseSupport.connection(databaseUrl);
         PreparedStatement statement = connection.prepareStatement("select data from app_json_store where store_key = ?")
       ) {
         statement.setString(1, key);
@@ -68,7 +62,7 @@ public class JsonFileStore<T> {
       String key = storeKey();
 
       try (
-        Connection connection = connection(databaseUrl);
+        Connection connection = DatabaseSupport.connection(databaseUrl);
         PreparedStatement statement = connection.prepareStatement(
           """
           insert into app_json_store (store_key, data, updated_at)
@@ -89,7 +83,7 @@ public class JsonFileStore<T> {
 
   private void ensureTable(String databaseUrl) {
     try (
-      Connection connection = connection(databaseUrl);
+      Connection connection = DatabaseSupport.connection(databaseUrl);
       PreparedStatement statement = connection.prepareStatement(
         """
         create table if not exists app_json_store (
@@ -114,62 +108,4 @@ public class JsonFileStore<T> {
     return storeKey;
   }
 
-  private String databaseUrl() {
-    String value = System.getProperty("DATABASE_URL");
-    if (value == null || value.isBlank()) {
-      value = System.getenv("DATABASE_URL");
-    }
-    value = value == null ? "" : value.trim();
-    if (value.isBlank()) {
-      throw new IllegalStateException("DATABASE_URL must be set for Supabase storage");
-    }
-    return value;
-  }
-
-  private Connection connection(String databaseUrl) throws SQLException {
-    if (databaseUrl.startsWith("jdbc:")) {
-      return DriverManager.getConnection(databaseUrl);
-    }
-
-    try {
-      URI uri = new URI(databaseUrl);
-      Properties properties = new Properties();
-      String userInfo = uri.getRawUserInfo();
-
-      if (userInfo != null && !userInfo.isBlank()) {
-        String[] credentials = userInfo.split(":", 2);
-        properties.setProperty("user", urlDecode(credentials[0]));
-        if (credentials.length > 1) {
-          properties.setProperty("password", urlDecode(credentials[1]));
-        }
-      }
-
-      return DriverManager.getConnection(jdbcUrl(uri), properties);
-    } catch (URISyntaxException error) {
-      throw new SQLException("Invalid DATABASE_URL", error);
-    }
-  }
-
-  private String jdbcUrl(URI uri) {
-    StringBuilder url = new StringBuilder("jdbc:postgresql://");
-    url.append(uri.getHost());
-
-    if (uri.getPort() > 0) {
-      url.append(":").append(uri.getPort());
-    }
-
-    String pathValue = uri.getPath();
-    url.append(pathValue == null || pathValue.isBlank() ? "/postgres" : pathValue);
-
-    String query = uri.getRawQuery();
-    if (query != null && !query.isBlank()) {
-      url.append("?").append(query);
-    }
-
-    return url.toString();
-  }
-
-  private String urlDecode(String value) {
-    return URLDecoder.decode(value, StandardCharsets.UTF_8);
-  }
 }

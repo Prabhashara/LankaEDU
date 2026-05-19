@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getAuthToken, getStoredRole, getStoredUserId } from "../../services/authStorage";
 import { getApiErrorMessage } from "../../services/errorService";
 import { getExam, getExams } from "../../services/examService";
 import { addQuestionToExam, getQuestionBank, getQuestions } from "../../services/questionService";
@@ -42,6 +42,7 @@ export default function QuestionBankPage() {
   const isDirectBank = !examId;
   const token = getAuthToken();
   const role = getStoredRole();
+  const currentUserId = getStoredUserId();
   const [exam, setExam] = useState(null);
   const [exams, setExams] = useState([]);
   const [targetExamId, setTargetExamId] = useState(examId || "");
@@ -250,8 +251,8 @@ export default function QuestionBankPage() {
           <h1 id="question-bank-title">{isDirectBank ? "Question Bank" : `Add Questions to ${exam?.title || "Exam"}`}</h1>
           <p className="dashboard-copy">
             {isDirectBank
-              ? "Browse reusable questions, add them to draft exams, or create a new bank question."
-              : "Reuse questions you have already created across your exams."}
+              ? "Browse reusable questions from all lecturers, add them to draft exams, or create a new bank question."
+              : "Reuse shared bank questions across your draft exams."}
           </p>
         </div>
         <div className="header-actions">
@@ -358,7 +359,13 @@ export default function QuestionBankPage() {
           <div className="question-list">
             {filteredQuestions.map((question) => {
               const alreadyAdded = existingSourceKeys.has(sourceKey(question));
-              const canEditQuestion = question.examStatus === "Draft";
+              const isQuestionOwner = question.createdBy === currentUserId;
+              const canEditQuestion = isQuestionOwner && question.examStatus === "Draft";
+              const editTitle = canEditQuestion
+                ? "Edit this question"
+                : !isQuestionOwner
+                  ? "Only the lecturer who created this question can edit it"
+                  : "Questions can only be edited while their source exam is Draft";
               return (
                 <article className="question-item" key={question.id}>
                   <div className="question-row-main bank-question-row">
@@ -369,6 +376,7 @@ export default function QuestionBankPage() {
                         <span>{question.marks} marks</span>
                         <span>{question.examTitle}</span>
                         <span className={`status-pill ${question.examStatus?.toLowerCase()}`}>{question.examStatus}</span>
+                        <span>{isQuestionOwner ? "Mine" : "Shared"}</span>
                       </div>
                       <h3>{previewText(question.questionText)}</h3>
                     </div>
@@ -377,7 +385,7 @@ export default function QuestionBankPage() {
                         className="table-button"
                         to={`/lecturer/exams/${question.examId}/questions/${question.id}/edit?from=bank`}
                         aria-disabled={!canEditQuestion}
-                        title={canEditQuestion ? "Edit this question" : "Questions can only be edited while their source exam is Draft"}
+                        title={editTitle}
                         onClick={(event) => {
                           if (!canEditQuestion) event.preventDefault();
                         }}

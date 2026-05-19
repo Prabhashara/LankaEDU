@@ -1,23 +1,46 @@
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
 # Dependencies
 node_modules/
+frontend/node_modules/
 
-# Build output
-dist/
-build/
+# Java and Maven build output
 target/
+backend/target/
+
+# Frontend build and cache output
+dist/
+frontend/dist/
+build/
+coverage/
+.vite/
+frontend/.vite/
+
+# Local runtime and generated data
 backend/private/
 backend/src/data/
-
-# Local environment files
-.env
-!.env.example
-
-# Logs and temporary files
+logs/
 *.log
+
+# Temporary files
 *.tmp
+*.temp
 *.bak
+*.swp
+*.swo
 *~
 
 # OS and editor metadata
 .DS_Store
+Thumbs.db
+.idea/
 .vscode/
+
+# Test and tool caches
+.pytest_cache/
+.nyc_output/
+.cache/

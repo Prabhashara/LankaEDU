@@ -1,6 +1,5 @@
 package com.onlineexam.results;
 
-
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;

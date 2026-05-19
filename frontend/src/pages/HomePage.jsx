@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import BrandLogo from "../components/BrandLogo.jsx";
 import Icon from "../components/Icons.jsx";
 import { getHomeSummary } from "../services/publicService.js";
 
@@ -97,10 +98,7 @@ export default function HomePage() {
     <div className="home-shell">
       <nav className="home-nav">
         <Link className="home-nav-logo" to="/">
-          <div className="nav-logo-icon"><Icon name="exam" size={22} /></div>
-          <span className="nav-logo-text">
-            Lanka<span>Edu</span>
-          </span>
+          <BrandLogo variant="nav" />
         </Link>
         <div className="home-nav-links">
           <Link className="secondary-button home-nav-button" to="/login">
@@ -265,8 +263,7 @@ export default function HomePage() {
 
       <footer className="home-footer">
         <div className="home-footer-brand">
-          <div className="nav-logo-icon home-footer-logo"><Icon name="exam" size={22} /></div>
-          <span>LankaEdu</span>
+          <BrandLogo variant="footer" />
         </div>
         <p>© {new Date().getFullYear()} LankaEdu. Professional Online Assessment Platform.</p>
         <div className="home-footer-links">

@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import BrandLogo from "./BrandLogo.jsx";
 import Icon from "./Icons.jsx";
 import { clearAuthSession, getStoredRole, getStoredUser } from "../services/authStorage.js";
 
@@ -44,18 +45,15 @@ export default function AppShell({ role: explicitRole, children }) {
 
   function handleLogout() {
     clearAuthSession();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   }
 
   return (
     <div className="app-shell">
       <aside className="app-sidebar" aria-label="Primary navigation">
         <NavLink className="app-brand" to={`/${role}-dashboard`}>
-          <span className="app-brand-mark"><Icon name="sparkles" size={21} /></span>
-          <span>
-            <strong>LankaEdu</strong>
-            <small>Exam Platform</small>
-          </span>
+          <BrandLogo variant="sidebar" />
+          <span className="sr-only">LankaEdu Exam Platform</span>
         </NavLink>
 
         <nav className="app-nav">

@@ -131,11 +131,9 @@ public class ExamController {
     }
 
     Question sourceQuestion = questionService.findRawById(questionId).orElse(null);
-    if (sourceQuestion == null || !sourceQuestion.getCreatedBy().equals(user.id())) {
+    if (sourceQuestion == null || examService.findPublicById(sourceQuestion.getExamId()).isEmpty()) {
       throw new ApiException(HttpStatus.NOT_FOUND, "Question not found");
     }
-
-    findOwnedExam(sourceQuestion.getExamId(), user);
 
     if (questionService.isDuplicateOnExam(exam.id(), sourceQuestion)) {
       throw new ApiException(HttpStatus.CONFLICT, "Question already exists on this exam");

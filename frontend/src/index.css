@@ -2841,6 +2841,18 @@ button:disabled,
 }
 
 /* Premium brand mark shared by auth and navigation surfaces */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .auth-brand,
 .home-footer-brand,
 .home-nav-logo {
@@ -2855,6 +2867,54 @@ button:disabled,
 
 .auth-brand-large {
   margin-bottom: 0;
+}
+
+.brand-logo {
+  display: inline-grid;
+  place-items: center;
+  max-width: 100%;
+  line-height: 0;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.brand-logo-image {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-logo-image-dark { display: none; }
+
+html[data-theme="dark"] .brand-logo-image-light { display: none; }
+html[data-theme="dark"] .brand-logo-image-dark { display: block; }
+
+.brand-logo-nav {
+  width: clamp(88px, 12vw, 124px);
+  height: 58px;
+}
+
+.brand-logo-footer {
+  width: 104px;
+  height: 66px;
+}
+
+.brand-logo-auth {
+  width: 118px;
+  height: 90px;
+}
+
+.brand-logo-auth-large {
+  width: min(210px, 62vw);
+  height: min(160px, 48vw);
+}
+
+.brand-logo-sidebar {
+  width: 126px;
+  height: 96px;
+  border-radius: 16px;
 }
 
 .brand-mark,
@@ -3673,8 +3733,8 @@ html[data-theme="dark"] .home-timer-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 58px;
-  padding: 9px;
+  min-height: 108px;
+  padding: 8px;
   border-radius: 20px;
   color: var(--app-text) !important;
   text-decoration: none !important;

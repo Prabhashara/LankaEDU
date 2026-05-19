@@ -95,6 +95,28 @@ public class ApiExceptionHandler {
     return badRequest(error.getMessage(), request);
   }
 
+  @ExceptionHandler(MissingDatabaseConfigurationException.class)
+  public ResponseEntity<Map<String, Object>> handleMissingDatabaseConfiguration(
+    MissingDatabaseConfigurationException error,
+    HttpServletRequest request
+  ) {
+    LOGGER.warning(error.getMessage());
+    return ResponseEntity
+      .status(HttpStatus.SERVICE_UNAVAILABLE)
+      .body(ApiErrorResponse.body(HttpStatus.SERVICE_UNAVAILABLE, error.getMessage(), request));
+  }
+
+  @ExceptionHandler(DatabaseConnectionException.class)
+  public ResponseEntity<Map<String, Object>> handleDatabaseConnection(
+    DatabaseConnectionException error,
+    HttpServletRequest request
+  ) {
+    LOGGER.log(Level.SEVERE, "Database connection error", error);
+    return ResponseEntity
+      .status(HttpStatus.SERVICE_UNAVAILABLE)
+      .body(ApiErrorResponse.body(HttpStatus.SERVICE_UNAVAILABLE, error.getMessage(), request));
+  }
+
   @ExceptionHandler(IllegalStateException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalState(
     IllegalStateException error,

@@ -117,7 +117,7 @@ export default function DashboardPage({ role }) {
   if (!token) return <Navigate to="/login" replace />;
   if (storedRole && storedRole !== role) return <Navigate to={`/${storedRole}-dashboard`} replace />;
 
-  function handleLogout() { clearAuthSession(); navigate("/login", { replace: true }); }
+  function handleLogout() { clearAuthSession(); navigate("/", { replace: true }); }
 
   const stats = role === "student" ? getStudentStats(exams) : role === "lecturer" ? getLecturerStats(exams) : [];
   const actions = [...(role === "student" ? studentActions : role === "lecturer" ? lecturerActions : adminActions), profileAction];

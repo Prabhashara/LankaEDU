@@ -8,6 +8,8 @@ import com.onlineexam.common.RequestBodySupport;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+  private static final Logger LOGGER = Logger.getLogger(UserController.class.getName());
   private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
 
   private final UserService userService;
@@ -48,14 +51,18 @@ public class UserController {
     User user = userService.addUser(input.fullName(), null, input.email(), input.password(), input.role());
     PublicUser publicUser = PublicUser.from(user);
 
-    auditService.record(
-      currentUser,
-      "USER_CREATED",
-      "user",
-      user.getId(),
-      "Admin created a staff account",
-      Map.of("targetEmail", user.getEmail(), "targetRole", user.getRole())
-    );
+    try {
+      auditService.record(
+        currentUser,
+        "USER_CREATED",
+        "user",
+        user.getId(),
+        "Admin created a staff account",
+        Map.of("targetEmail", user.getEmail(), "targetRole", user.getRole())
+      );
+    } catch (RuntimeException error) {
+      LOGGER.log(Level.WARNING, "Staff account was created but audit logging failed", error);
+    }
 
     return ResponseEntity.status(201).body(Map.of(
       "message", "Staff account created",

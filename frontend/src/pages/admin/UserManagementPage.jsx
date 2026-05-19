@@ -102,7 +102,12 @@ export default function UserManagementPage() {
         password: createForm.password,
         confirmPassword: createForm.confirmPassword
       });
-      setUsers(current => [newUser, ...current]);
+      const refreshedUsers = await getUsers();
+      if (refreshedUsers.length > 0) {
+        setUsers(refreshedUsers);
+      } else if (newUser.id) {
+        setUsers(current => [newUser, ...current.filter(user => user.id !== newUser.id)]);
+      }
       setCreateForm(initialCreateForm);
       setCreateErrors({});
       setSuccessMessage(`${newUser.role === "admin" ? "Admin" : "Lecturer"} account created for ${newUser.email}.`);
@@ -119,7 +124,7 @@ export default function UserManagementPage() {
     setActionUserId(user.id); setError(""); setSuccessMessage("");
     try {
       const updated = await updateUserStatus(user.id, isActive);
-      setUsers(cur => cur.map(u => u.id === updated.id ? updated : u));
+      setUsers(cur => updated.id ? cur.map(u => u.id === updated.id ? updated : u) : cur);
     } catch (err) { setError(getApiErrorMessage(err, "Unable to update user status.")); }
     finally { setActionUserId(""); }
   }
@@ -151,7 +156,7 @@ export default function UserManagementPage() {
           <p className="dashboard-copy">Create staff accounts, protect admin access, and control who can use the platform.</p>
         </div>
         <div className="header-actions">
-          <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/login", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}>
+          <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}>
             <Icon name="logout" size={16} /> Sign out
           </button>
         </div>

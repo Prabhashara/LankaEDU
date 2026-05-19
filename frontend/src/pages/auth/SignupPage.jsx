@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerStudent } from "../../services/authService";
 import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
+import BrandLogo from "../../components/BrandLogo.jsx";
 import Icon from "../../components/Icons.jsx";
 
 const initialForm = {
@@ -64,8 +65,7 @@ export default function SignupPage() {
       <section className="auth-layout auth-layout-signup" aria-labelledby="signup-title">
         <aside className="auth-visual-panel" aria-label="Student account benefits">
           <div className="auth-brand auth-brand-large">
-            <div className="brand-mark"><Icon name="exam" size={22} /></div>
-            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+            <BrandLogo variant="auth-large" />
           </div>
           <div className="auth-visual-content">
             <span className="home-highlight">Student exam portal</span>
@@ -83,8 +83,7 @@ export default function SignupPage() {
 
         <section className="auth-panel auth-card-premium">
           <div className="auth-brand">
-            <div className="brand-mark"><Icon name="exam" size={22} /></div>
-            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+            <BrandLogo variant="auth" />
           </div>
 
           <div className="auth-copy">

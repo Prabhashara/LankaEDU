@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
-  // encapsulation
   private String id;
   private String type;
   private double marks;
@@ -19,7 +18,7 @@ public class Question {
 
   @JsonProperty("question_text")
   private String questionText;
-// jason property
+
   @JsonProperty("source_question_id")
   private String sourceQuestionId;
 
@@ -36,7 +35,7 @@ public class Question {
   public void setId(String id) {
     this.id = id;
   }
-// getters
+
   public String getExamId() {
     return examId;
   }
@@ -56,7 +55,7 @@ public class Question {
   public String getSourceQuestionId() {
     return sourceQuestionId;
   }
-// setter
+
   public void setSourceQuestionId(String sourceQuestionId) {
     this.sourceQuestionId = sourceQuestionId;
   }
