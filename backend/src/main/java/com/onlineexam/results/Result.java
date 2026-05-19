@@ -38,7 +38,7 @@ public class Result {
  
 
   private List<ResultAnswer> answers = new ArrayList<>();
-   // Returns the result ID
+   
 
   public String getId() {
     return id;
