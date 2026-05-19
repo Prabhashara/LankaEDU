@@ -35,7 +35,7 @@ public class Question {
   public void setId(String id) {
     this.id = id;
   }
-
+// getters
   public String getExamId() {
     return examId;
   }
