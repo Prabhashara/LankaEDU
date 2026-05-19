@@ -2,10 +2,7 @@ package com.onlineexam.results;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Represents a student's answer for a specific question in the exam result.
- * Stores selected option details, correctness status, and awarded marks.
- */
+
 public class ResultAnswer {
 
   /**
