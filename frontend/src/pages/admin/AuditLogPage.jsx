@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { getAuditEvents } from "../../services/auditService";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
+import Icon from "../../components/Icons.jsx";
+import { EmptyState, SkeletonGrid } from "../../components/UiKit.jsx";
 
 function formatDate(value) {
   if (!value) return "—";
@@ -30,7 +33,7 @@ export default function AuditLogPage() {
         const data = await getAuditEvents(150);
         if (mounted) { setEvents(data); setError(""); }
       } catch (err) {
-        if (mounted) setError(err.response?.data?.message || "Unable to load audit events.");
+        if (mounted) setError(getApiErrorMessage(err, "Unable to load audit events."));
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -59,8 +62,8 @@ export default function AuditLogPage() {
           <p className="dashboard-copy">Review sign-ins, exam changes, question updates, user actions, and submissions.</p>
         </div>
         <div className="header-actions">
-          <Link className="secondary-button" to="/admin-dashboard">Dashboard</Link>
-          <Link className="primary-button" to="/admin/users">Manage users</Link>
+          <Link className="secondary-button" to="/admin-dashboard"><Icon name="dashboard" size={16} /> Dashboard</Link>
+          <Link className="primary-button" to="/admin/users"><Icon name="users" size={16} /> Manage users</Link>
         </div>
       </section>
 
@@ -71,13 +74,13 @@ export default function AuditLogPage() {
         </div>
       </section>
 
-      {error && <div className="alert alert-error admin-alert">⚠ {error}</div>}
+      {error && <div className="alert alert-error admin-alert"><Icon name="warning" size={16} /> {error}</div>}
 
       <section className="audit-timeline" aria-label="Recent audit events">
         {isLoading ? (
-          <p className="empty-state">Loading audit trail…</p>
+          <SkeletonGrid count={4} variant="list" />
         ) : filteredEvents.length === 0 ? (
-          <p className="empty-state">No audit events found.</p>
+          <EmptyState icon="audit" title="No audit events found" message="Try another keyword or check again after system activity." />
         ) : filteredEvents.map(event => (
           <article className="audit-event" key={event.id}>
             <div className="audit-dot" aria-hidden="true" />

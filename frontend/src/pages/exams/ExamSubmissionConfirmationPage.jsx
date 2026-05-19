@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import { getAttempt } from "../../services/attemptService";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { getExam } from "../../services/examService";
 import { getResultByAttempt } from "../../services/resultService";
+import Icon from "../../components/Icons.jsx";
 import "./ExamTakingPage.css";
 
 function formatDateTime(value) {
@@ -42,8 +44,8 @@ export default function ExamSubmissionConfirmationPage() {
           exam || getExam(loadedAttempt.exam_id || loadedAttempt.examId)
         ]);
         if (isMounted) { setAttempt(loadedAttempt); setResult(loadedResult); setExam(loadedExam); setError(""); }
-      } catch {
-        if (isMounted) setError("Unable to load submission confirmation.");
+      } catch (requestError) {
+        if (isMounted) setError(getApiErrorMessage(requestError, "Unable to load submission confirmation."));
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -92,7 +94,7 @@ export default function ExamSubmissionConfirmationPage() {
           Your answers have been recorded. Results are processed automatically — check below to view your score.
         </p>
 
-        {error && <div className="alert alert-error" style={{ marginBottom: 16 }}>⚠ {error}</div>}
+        {error && <div className="alert alert-error" style={{ marginBottom: 16 }}><Icon name="warning" size={16} /> {error}</div>}
 
         <dl className="submission-summary">
           <div>

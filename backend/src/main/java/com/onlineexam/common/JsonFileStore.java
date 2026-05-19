@@ -7,8 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,45 +20,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class JsonFileStore<T> {
   private static final Map<String, Object> LOCKS = new ConcurrentHashMap<>();
-  private final Path path;
+  private final String storeKey;
   private final ObjectMapper objectMapper;
   private final TypeReference<List<T>> typeReference;
 
-  public JsonFileStore(Path path, ObjectMapper objectMapper, TypeReference<List<T>> typeReference) {
-    this.path = path;
+  public JsonFileStore(String storeKey, ObjectMapper objectMapper, TypeReference<List<T>> typeReference) {
+    this.storeKey = storeKey;
     this.objectMapper = objectMapper;
     this.typeReference = typeReference;
   }
 
   public synchronized List<T> readAll() {
-    if (useDatabase()) {
-      String databaseUrl = databaseUrl();
-      return readAllFromDatabase(databaseUrl);
-    }
-
-    try {
-      if (!Files.exists(path)) {
-        return new ArrayList<>();
-      }
-      return objectMapper.readValue(path.toFile(), typeReference);
-    } catch (IOException error) {
-      throw new IllegalStateException("Unable to read " + path, error);
-    }
+    return readAllFromDatabase(databaseUrl());
   }
 
   public synchronized void writeAll(List<T> items) {
-    if (useDatabase()) {
-      String databaseUrl = databaseUrl();
-      writeAllToDatabase(databaseUrl, items);
-      return;
-    }
-
-    try {
-      Files.createDirectories(path.getParent());
-      objectMapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), items);
-    } catch (IOException error) {
-      throw new IllegalStateException("Unable to write " + path, error);
-    }
+    writeAllToDatabase(databaseUrl(), items);
   }
 
   private List<T> readAllFromDatabase(String databaseUrl) {
@@ -75,7 +50,7 @@ public class JsonFileStore<T> {
         statement.setString(1, key);
         try (ResultSet resultSet = statement.executeQuery()) {
           if (!resultSet.next()) {
-            List<T> initialItems = readInitialItemsFromFile();
+            List<T> initialItems = new ArrayList<>();
             writeAllToDatabase(databaseUrl, initialItems);
             return initialItems;
           }
@@ -112,17 +87,6 @@ public class JsonFileStore<T> {
     }
   }
 
-  private List<T> readInitialItemsFromFile() {
-    try {
-      if (!Files.exists(path)) {
-        return new ArrayList<>();
-      }
-      return objectMapper.readValue(path.toFile(), typeReference);
-    } catch (IOException error) {
-      throw new IllegalStateException("Unable to read initial data from " + path, error);
-    }
-  }
-
   private void ensureTable(String databaseUrl) {
     try (
       Connection connection = connection(databaseUrl);
@@ -147,7 +111,7 @@ public class JsonFileStore<T> {
   }
 
   private String storeKey() {
-    return path.getFileName().toString();
+    return storeKey;
   }
 
   private String databaseUrl() {
@@ -157,17 +121,9 @@ public class JsonFileStore<T> {
     }
     value = value == null ? "" : value.trim();
     if (value.isBlank()) {
-      throw new IllegalStateException("APP_STORAGE=database requires DATABASE_URL to be set");
+      throw new IllegalStateException("DATABASE_URL must be set for Supabase storage");
     }
     return value;
-  }
-
-  private boolean useDatabase() {
-    String storage = System.getProperty("APP_STORAGE");
-    if (storage == null || storage.isBlank()) {
-      storage = System.getenv("APP_STORAGE");
-    }
-    return "database".equalsIgnoreCase(storage == null ? "" : storage.trim());
   }
 
   private Connection connection(String databaseUrl) throws SQLException {

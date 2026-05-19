@@ -2,7 +2,7 @@ import api from "./api";
 
 export async function getExams(params = {}) {
   const response = await api.get("/exams", { params });
-  return response.data.exams;
+  return Array.isArray(response.data?.exams) ? response.data.exams : [];
 }
 
 export async function getExam(examId) {
@@ -36,5 +36,10 @@ export async function publishExam(examId, scheduleData) {
 
 export async function archiveExam(examId) {
   const response = await api.patch(`/exams/${examId}`, { status: "Archived" });
+  return response.data.exam;
+}
+
+export async function deleteExam(examId) {
+  const response = await api.delete(`/exams/${examId}`);
   return response.data.exam;
 }

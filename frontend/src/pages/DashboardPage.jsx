@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { clearAuthSession, getAuthToken, getStoredRole, getStoredUser } from "../services/authStorage";
+import { getApiErrorMessage } from "../services/errorService";
 import { getExams } from "../services/examService";
+import Icon from "../components/Icons.jsx";
+import { EmptyState, SkeletonGrid, StatCard } from "../components/UiKit.jsx";
 
 const roleTitles = {
   student: "Student Dashboard",
@@ -18,9 +21,9 @@ const roleGreetings = {
 function getStudentStats(exams) {
   const active = exams.filter(e => e.status?.toLowerCase() === "active").length;
   return [
-    { label: "Active Exams", value: active, sub: "available now", cls: "teal" },
-    { label: "Scheduled", value: exams.filter(e => e.status?.toLowerCase() === "upcoming").length, sub: "upcoming", cls: "amber" },
-    { label: "Total Exams", value: exams.length, sub: "all time", cls: "" },
+    { label: "Active Exams", value: active, sub: "available now", cls: "teal", icon: "exam" },
+    { label: "Scheduled", value: exams.filter(e => e.status?.toLowerCase() === "upcoming").length, sub: "upcoming", cls: "amber", icon: "calendar" },
+    { label: "Total Exams", value: exams.length, sub: "all time", cls: "", icon: "analytics" },
   ];
 }
 
@@ -28,44 +31,45 @@ function getLecturerStats(exams) {
   const active = exams.filter(e => e.status?.toLowerCase() === "active").length;
   const drafts = exams.filter(e => e.status?.toLowerCase() === "draft").length;
   return [
-    { label: "Active Exams", value: active, sub: "currently live", cls: "emerald" },
-    { label: "Drafts", value: drafts, sub: "in progress", cls: "amber" },
-    { label: "Total Exams", value: exams.length, sub: "created", cls: "teal" },
+    { label: "Active Exams", value: active, sub: "currently live", cls: "emerald", icon: "exam" },
+    { label: "Drafts", value: drafts, sub: "in progress", cls: "amber", icon: "book" },
+    { label: "Total Exams", value: exams.length, sub: "created", cls: "teal", icon: "analytics" },
   ];
 }
 
 const studentActions = [
-  { icon: "📋", title: "Available Exams", desc: "Browse active assessments", to: "/student/exams" },
-  { icon: "📈", title: "My Report Card", desc: "View scores and grades", to: "/student/report-card" },
+  { icon: "exam", title: "Available Exams", desc: "Browse active assessments", to: "/student/exams" },
+  { icon: "report", title: "My Report Card", desc: "View scores and grades", to: "/student/report-card" },
 ];
 
 const lecturerActions = [
-  { icon: "➕", title: "Create Exam", desc: "Build a new assessment", to: "/lecturer/exams/new" },
-  { icon: "📊", title: "Analytics", desc: "Class performance insights", to: "/lecturer/analytics" },
+  { icon: "plus", title: "Create Exam", desc: "Build a new assessment", to: "/lecturer/exams/new" },
+  { icon: "book", title: "Question Bank", desc: "Reuse saved questions", to: "/lecturer/question-bank" },
+  { icon: "analytics", title: "Analytics", desc: "Class performance insights", to: "/lecturer/analytics" },
 ];
 
 const adminActions = [
-  { icon: "👥", title: "Manage Users", desc: "Activate & assign roles", to: "/admin/users" },
-  { icon: "🧾", title: "Audit Log", desc: "Review security events", to: "/admin/audit" },
+  { icon: "users", title: "Manage Users", desc: "Activate & assign roles", to: "/admin/users" },
+  { icon: "audit", title: "Audit Log", desc: "Review security events", to: "/admin/audit" },
 ];
 
-const profileAction = { icon: "ID", title: "Profile", desc: "Manage this browser profile", to: "/profile" };
+const profileAction = { icon: "profile", title: "Profile", desc: "Manage this browser profile", to: "/profile" };
 
 const activityByRole = {
   student: [
-    { dot: "green", icon: "✓", title: "Exam results available", meta: "Data Structures — 84%" },
-    { dot: "teal", icon: "📋", title: "New exam scheduled", meta: "Algorithms — starts in 2 days" },
-    { dot: "amber", icon: "⏰", title: "Upcoming deadline", meta: "Database Systems — 3 days left" },
+    { dot: "green", icon: "check", title: "Exam results available", meta: "Data Structures — 84%" },
+    { dot: "teal", icon: "exam", title: "New exam scheduled", meta: "Algorithms — starts in 2 days" },
+    { dot: "amber", icon: "clock", title: "Upcoming deadline", meta: "Database Systems — 3 days left" },
   ],
   lecturer: [
-    { dot: "green", icon: "✓", title: "Exam published successfully", meta: "Web Development Final" },
-    { dot: "teal", icon: "📊", title: "15 new submissions", meta: "Data Structures Midterm" },
-    { dot: "amber", icon: "⚠️", title: "Draft exam pending review", meta: "Algorithms Quiz 3" },
+    { dot: "green", icon: "check", title: "Exam published successfully", meta: "Web Development Final" },
+    { dot: "teal", icon: "analytics", title: "15 new submissions", meta: "Data Structures Midterm" },
+    { dot: "amber", icon: "warning", title: "Draft exam pending review", meta: "Algorithms Quiz 3" },
   ],
   admin: [
-    { dot: "green", icon: "✓", title: "Audit trail enabled", meta: "Sign-ins and critical actions are logged" },
-    { dot: "teal", icon: "👤", title: "User access managed", meta: "Activate, deactivate, and delete users" },
-    { dot: "amber", icon: "⚠️", title: "Security headers active", meta: "API responses include hardened browser headers" },
+    { dot: "green", icon: "check", title: "Audit trail enabled", meta: "Sign-ins and critical actions are logged" },
+    { dot: "teal", icon: "userCheck", title: "User access managed", meta: "Activate, deactivate, and delete users" },
+    { dot: "amber", icon: "shield", title: "Security headers active", meta: "API responses include hardened browser headers" },
   ]
 };
 
@@ -78,6 +82,7 @@ function getInitials(name, role) {
 }
 
 export default function DashboardPage({ role }) {
+  const location = useLocation();
   const navigate = useNavigate();
   const token = getAuthToken();
   const storedRole = getStoredRole();
@@ -85,6 +90,15 @@ export default function DashboardPage({ role }) {
   const [exams, setExams] = useState([]);
   const [isLoadingExams, setIsLoadingExams] = useState(role === "lecturer" || role === "student");
   const [examError, setExamError] = useState("");
+  const [toast, setToast] = useState(location.state?.toast || "");
+
+  useEffect(() => {
+    const stateToast = location.state?.toast;
+    if (stateToast) {
+      setToast(stateToast);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.pathname, location.state, navigate]);
 
   useEffect(() => {
     if (!token || !["lecturer", "student"].includes(role) || storedRole !== role) return;
@@ -93,7 +107,7 @@ export default function DashboardPage({ role }) {
       try {
         const data = await getExams();
         if (isMounted) { setExams(data); setExamError(""); }
-      } catch { if (isMounted) setExamError("Unable to load exams."); }
+      } catch (error) { if (isMounted) setExamError(getApiErrorMessage(error, "Unable to load exams.")); }
       finally { if (isMounted) setIsLoadingExams(false); }
     }
     loadExams();
@@ -111,56 +125,51 @@ export default function DashboardPage({ role }) {
   const profileName = profile?.name || "Profile";
 
   return (
-    <main className="dashboard-shell">
-      {/* Header panel */}
-      <div className="dashboard-panel">
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-          <div>
+    <main className={`dashboard-shell dashboard-shell-${role}`}>
+      <div className="dashboard-panel dashboard-hero-panel">
+        <div className="dashboard-hero-header">
+          <div className="dashboard-heading-group">
             <span className="eyebrow">{role}</span>
-            <h1 style={{ marginBottom: 6 }}>{roleTitles[role]}</h1>
-            <p className="dashboard-copy" style={{ margin: 0 }}>{roleGreetings[role]}</p>
+            <h1>{roleTitles[role]}</h1>
+            <p className="dashboard-copy">{roleGreetings[role]}</p>
           </div>
           <div className="dashboard-header-actions">
             <Link className="dashboard-profile-chip" to="/profile" aria-label="Open profile management">
               <span className="dashboard-profile-avatar">{getInitials(profileName, role)}</span>
               <span>{profileName}</span>
             </Link>
-            <button className="secondary-button" type="button" onClick={handleLogout} style={{ minHeight: 40, padding: "8px 16px" }}>
+            <button className="secondary-button dashboard-logout-button" type="button" onClick={handleLogout}>
               Sign out
             </button>
           </div>
         </div>
 
-        {/* Stats */}
+        {toast ? <div className="toast" role="status"><Icon name="check" size={16} /> {toast}</div> : null}
+
         {stats.length > 0 && (
-          <div className="stat-grid" style={{ marginTop: 28 }}>
+          <div className="stat-grid dashboard-stat-grid">
             {stats.map(s => (
-              <div key={s.label} className={`stat-card ${s.cls}`}>
-                <div className="stat-card-label">{s.label}</div>
-                <div className="stat-card-value">{isLoadingExams ? "—" : s.value}</div>
-                <div className="stat-card-sub">{s.sub}</div>
-              </div>
+              <StatCard key={s.label} label={s.label} value={isLoadingExams ? "—" : s.value} sub={s.sub} tone={s.cls} icon={s.icon} />
             ))}
           </div>
         )}
 
-        {/* Quick actions */}
         <div>
-          <h3 style={{ margin: "0 0 14px", fontSize: "0.9rem", color: "#64748b", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>Quick Actions</h3>
+          <h3 className="quick-actions-heading">Quick Actions</h3>
           <div className="quick-action-grid">
             {actions.map(a => (
               <Link key={a.to} className="quick-action-card" to={a.to}>
-                <div className="quick-action-icon">{a.icon}</div>
+                <div className="quick-action-icon"><Icon name={a.icon} size={22} /></div>
                 <div>
                   <div className="quick-action-title">{a.title}</div>
                   <div className="quick-action-desc">{a.desc}</div>
                 </div>
               </Link>
             ))}
-            <button className="quick-action-card" onClick={handleLogout} style={{ border: "1.5px solid #fee2e2", background: "#fff1f2" }}>
-              <div className="quick-action-icon" style={{ background: "#ffe4e6" }}>🚪</div>
+            <button className="quick-action-card quick-action-card-danger" onClick={handleLogout}>
+              <div className="quick-action-icon"><Icon name="logout" size={22} /></div>
               <div>
-                <div className="quick-action-title" style={{ color: "#be123c" }}>Sign Out</div>
+                <div className="quick-action-title">Sign Out</div>
                 <div className="quick-action-desc">End your session</div>
               </div>
             </button>
@@ -168,62 +177,60 @@ export default function DashboardPage({ role }) {
         </div>
       </div>
 
-      {/* Exam list + activity feed side by side */}
-      <div style={{ width: "min(100%, 940px)", margin: "0 auto", display: "grid", gridTemplateColumns: role === "admin" ? "1fr" : "minmax(0,1.4fr) minmax(0,0.6fr)", gap: 20 }}>
-        {/* Exam list */}
+      <div className={`dashboard-content-grid ${role === "admin" ? "admin-only" : ""}`}>
         {(role === "lecturer" || role === "student") && (
-          <div style={{ border: "1px solid #e2e8f0", borderRadius: 24, background: "#fff", padding: "24px 28px", boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+          <section className="dashboard-card dashboard-exam-card">
             <div className="section-heading">
               <div>
                 <p className="eyebrow">{role === "lecturer" ? "Exams" : "Available"}</p>
                 <h2>{role === "lecturer" ? "Your Exam List" : "Available Exams"}</h2>
               </div>
               {role === "lecturer" ? (
-                <Link className="secondary-button" to="/lecturer/exams/new" style={{ minHeight: 38, padding: "8px 14px", fontSize: "0.875rem" }}>+ New exam</Link>
+                <Link className="secondary-button compact-button" to="/lecturer/exams/new">+ New exam</Link>
               ) : (
-                <Link className="secondary-button" to="/student/exams" style={{ minHeight: 38, padding: "8px 14px", fontSize: "0.875rem" }}>View all</Link>
+                <Link className="secondary-button compact-button" to="/student/exams">View all</Link>
               )}
             </div>
 
             {examError && <div className="alert alert-error admin-alert">{examError}</div>}
 
             {isLoadingExams ? (
-              <p className="empty-state">Loading exams…</p>
+              <SkeletonGrid count={3} variant="list" />
             ) : exams.length > 0 ? (
               <div className="exam-list">
                 {exams.slice(0, 6).map(exam => (
-                  <Link className="exam-row" key={exam.id}
+                  <Link className="exam-row dashboard-exam-row" key={exam.id}
                     to={role === "lecturer" ? `/lecturer/exams/${exam.id}` : "#"}
-                    aria-disabled={role === "student" ? "true" : undefined}
-                    style={{ fontSize: "0.9rem" }}>
+                    aria-disabled={role === "student" ? "true" : undefined}>
                     <span>
                       <strong>{exam.title}</strong>
                       <small>{exam.subject}</small>
                     </span>
-                    <span style={{ fontSize: "0.82rem", color: "#64748b" }}>{exam.durationMinutes} min</span>
-                    <span style={{ fontSize: "0.82rem", color: "#64748b" }}>{exam.passMark}% pass</span>
+                    <span className="exam-row-meta">{exam.durationMinutes} min</span>
+                    <span className="exam-row-meta">{exam.passMark}% pass</span>
                     <span className={`status-pill ${exam.status?.toLowerCase()}`}>{exam.status}</span>
                   </Link>
                 ))}
               </div>
             ) : (
-              <p className="empty-state">
-                {role === "lecturer" ? "No exams yet. Create your first draft exam." : "No active exams are available."}
-              </p>
+              <EmptyState
+                icon="exam"
+                title={role === "lecturer" ? "No exams created yet" : "No active exams"}
+                message={role === "lecturer" ? "Create your first draft exam and add questions from the question bank." : "Your lecturer has not published any exam at the moment."}
+              />
             )}
-          </div>
+          </section>
         )}
 
-        {/* Activity feed */}
-        <div style={{ border: "1px solid #e2e8f0", borderRadius: 24, background: "#fff", padding: "24px 28px", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", height: "fit-content" }}>
-          <div style={{ marginBottom: 18 }}>
+        <section className="dashboard-card dashboard-activity-card">
+          <div className="dashboard-card-heading">
             <p className="eyebrow">Activity</p>
             <h2>Recent Updates</h2>
           </div>
           <div className="activity-feed">
             {activity.map((a, i) => (
               <div key={i} className="activity-item">
-                <div className={`activity-dot ${a.dot}`}>{a.icon}</div>
+                <div className={`activity-dot ${a.dot}`}><Icon name={a.icon} size={15} /></div>
                 <div className="activity-body">
                   <div className="activity-title">{a.title}</div>
                   <div className="activity-meta">{a.meta}</div>
@@ -231,22 +238,21 @@ export default function DashboardPage({ role }) {
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Admin-specific panel */}
         {role === "admin" && (
-          <div style={{ border: "1px solid #e2e8f0", borderRadius: 24, background: "#fff", padding: "24px 28px", boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+          <section className="dashboard-card dashboard-admin-card">
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Users</p>
                 <h2>User Management</h2>
               </div>
-              <Link className="primary-button" to="/admin/users" style={{ minHeight: 38, padding: "8px 16px", fontSize: "0.875rem" }}>
+              <Link className="primary-button compact-button" to="/admin/users">
                 Manage users
               </Link>
             </div>
-            <p style={{ color: "#64748b", margin: 0 }}>Control user access, manage roles, and activate or deactivate accounts across the platform.</p>
-          </div>
+            <p className="muted-text">Control user access, manage roles, and activate or deactivate accounts across the platform.</p>
+          </section>
         )}
       </div>
     </main>

@@ -2,7 +2,10 @@ import { CategoryScale, Chart, Legend, LineController, LineElement, LinearScale,
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { getAuthToken, getStoredRole, getStoredUserId } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { getStudentReport } from "../../services/reportService";
+import Icon from "../../components/Icons.jsx";
+import { EmptyState, SkeletonGrid } from "../../components/UiKit.jsx";
 import "./ExamTakingPage.css";
 
 Chart.register(CategoryScale, Legend, LineController, LineElement, LinearScale, PointElement, Tooltip);
@@ -31,7 +34,7 @@ export default function StudentReportCardPage() {
       try {
         const data = await getStudentReport(userId);
         if (isMounted) { setReport(data); setError(""); }
-      } catch { if (isMounted) setError("Unable to load report card."); }
+      } catch (requestError) { if (isMounted) setError(getApiErrorMessage(requestError, "Unable to load report card.")); }
       finally { if (isMounted) setIsLoading(false); }
     }
     loadReport();
@@ -89,22 +92,22 @@ export default function StudentReportCardPage() {
           <p className="dashboard-copy">Track your exam performance and progress over time.</p>
         </div>
         <div className="header-actions">
-          <Link className="secondary-button" to="/student-dashboard" style={{ minHeight: 40, padding: "8px 16px" }}>← Dashboard</Link>
+          <Link className="secondary-button" to="/student-dashboard" style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="dashboard" size={16} /> Dashboard</Link>
         </div>
       </section>
 
-      {error && <div className="alert alert-error admin-alert">⚠ {error}</div>}
+      {error && <div className="alert alert-error admin-alert"><Icon name="warning" size={16} /> {error}</div>}
 
       {isLoading ? (
-        <div className="detail-panel wide"><p className="empty-state">Loading report card…</p></div>
+        <div className="detail-panel wide"><SkeletonGrid count={3} /></div>
       ) : results.length === 0 ? (
         <div className="detail-panel wide">
-          <div style={{ textAlign: "center", padding: "48px 24px" }}>
-            <div style={{ fontSize: "3rem", marginBottom: 16 }}>📊</div>
-            <h3 style={{ color: "#334155", marginBottom: 8 }}>No exams completed yet</h3>
-            <p style={{ color: "#64748b", marginBottom: 24 }}>Take your first exam to start building your report card.</p>
-            <Link className="primary-button" to="/student/exams">Browse available exams</Link>
-          </div>
+          <EmptyState
+            icon="report"
+            title="No exams completed yet"
+            message="Take your first exam to start building your report card."
+            action={<Link className="primary-button" to="/student/exams"><Icon name="exam" size={16} /> Browse available exams</Link>}
+          />
         </div>
       ) : (
         <div className="analytics-panel">
@@ -184,7 +187,7 @@ export default function StudentReportCardPage() {
                       <td style={{ fontWeight: 700 }}>{formatNumber(result.score)} / {formatNumber(result.maxScore)}</td>
                       <td style={{ fontWeight: 800, color: result.passed ? "#059669" : "#f43f5e" }}>{formatNumber(result.percentage)}%</td>
                       <td><span className="grade-badge compact">{result.grade || "F"}</span></td>
-                      <td><span className={`status-badge compact ${result.passed ? "pass" : "fail"}`}>{result.passed ? "✓ Pass" : "✗ Fail"}</span></td>
+                      <td><span className={`status-badge compact ${result.passed ? "pass" : "fail"}`}>{result.passed ? <><Icon name="check" size={13} /> Pass</> : <><Icon name="warning" size={13} /> Fail</>}</span></td>
                       <td>
                         {result.resultId && (
                           <Link className="table-button" to={`/student/results/${result.resultId}`}>Review</Link>

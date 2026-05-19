@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useLocation, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
-import { archiveExam, getExam, publishExam, updateExam } from "../../services/examService";
+import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
+import { archiveExam, deleteExam, getExam, publishExam, updateExam } from "../../services/examService";
 import { deleteQuestion, getQuestions, reorderQuestions } from "../../services/questionService";
+import Icon from "../../components/Icons.jsx";
+import { ConfirmModal } from "../../components/UiKit.jsx";
 
 function toFormValues(exam) {
   return {
@@ -113,6 +116,7 @@ function previewText(value) {
 export default function ExamDetailPage() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const token = getAuthToken();
   const role = getStoredRole();
   const [exam, setExam] = useState(null);
@@ -132,9 +136,11 @@ export default function ExamDetailPage() {
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
   const [questionError, setQuestionError] = useState("");
   const [pendingDeleteQuestion, setPendingDeleteQuestion] = useState(null);
+  const [pendingDeleteExam, setPendingDeleteExam] = useState(false);
   const [actionQuestionId, setActionQuestionId] = useState("");
   const [draggedQuestionId, setDraggedQuestionId] = useState("");
   const [isReordering, setIsReordering] = useState(false);
+  const [isDeletingExam, setIsDeletingExam] = useState(false);
 
   useEffect(() => {
     if (!token || role !== "lecturer") {
@@ -152,9 +158,9 @@ export default function ExamDetailPage() {
           setScheduleValues(toScheduleValues(data));
           setError("");
         }
-      } catch (_error) {
+      } catch (requestError) {
         if (isMounted) {
-          setError("Unable to load exam.");
+          setError(getApiErrorMessage(requestError, "Unable to load exam."));
         }
       } finally {
         if (isMounted) {
@@ -184,9 +190,9 @@ export default function ExamDetailPage() {
           setQuestions(data);
           setQuestionError("");
         }
-      } catch (_error) {
+      } catch (requestError) {
         if (isMounted) {
-          setQuestionError("Unable to load questions.");
+          setQuestionError(getApiErrorMessage(requestError, "Unable to load questions."));
         }
       } finally {
         if (isMounted) {
@@ -215,6 +221,7 @@ export default function ExamDetailPage() {
   const canArchive = isActive && exam?.endAt && new Date(exam.endAt) <= new Date();
   const canViewResults = exam?.status === "Archived" || (exam?.endAt && new Date(exam.endAt) <= new Date());
   const totalMarks = questions.reduce((sum, question) => sum + Number(question.marks || 0), 0);
+  const canPublish = isDraft && !isLoadingQuestions && questions.length > 0;
 
   function handleEdit() {
     if (!exam || !isDraft) {
@@ -227,6 +234,17 @@ export default function ExamDetailPage() {
     setToast("");
     setActiveTab("settings");
     setIsEditing(true);
+  }
+
+  function handlePublishShortcut() {
+    if (!exam || !isDraft) {
+      return;
+    }
+
+    setIsEditing(false);
+    setError("");
+    setToast("");
+    setActiveTab("schedule");
   }
 
   function handleChange(event) {
@@ -269,11 +287,11 @@ export default function ExamDetailPage() {
       setIsEditing(false);
       setToast("Exam settings updated successfully.");
     } catch (requestError) {
-      const responseErrors = requestError.response?.data?.errors;
-      if (responseErrors) {
+      const responseErrors = getApiFieldErrors(requestError);
+      if (Object.keys(responseErrors).length > 0) {
         setFormErrors(responseErrors);
       }
-      setError(requestError.response?.data?.message || "Unable to update exam.");
+      setError(getApiErrorMessage(requestError, "Unable to update exam."));
     } finally {
       setIsSaving(false);
     }
@@ -292,6 +310,11 @@ export default function ExamDetailPage() {
     setError("");
     setToast("");
 
+    if (questions.length === 0) {
+      setError("Add at least one question before publishing.");
+      return;
+    }
+
     if (Object.keys(validationErrors).length > 0) {
       return;
     }
@@ -308,13 +331,36 @@ export default function ExamDetailPage() {
       setScheduleValues(toScheduleValues(updatedExam));
       setToast("Exam published successfully.");
     } catch (requestError) {
-      const responseErrors = requestError.response?.data?.errors;
-      if (responseErrors) {
+      const responseErrors = getApiFieldErrors(requestError);
+      if (Object.keys(responseErrors).length > 0) {
         setScheduleErrors(responseErrors);
       }
-      setError(requestError.response?.data?.message || "Unable to publish exam.");
+      setError(getApiErrorMessage(requestError, "Unable to publish exam."));
     } finally {
       setIsPublishing(false);
+    }
+  }
+
+  async function confirmDeleteExam() {
+    if (!exam) {
+      return;
+    }
+
+    setError("");
+    setToast("");
+    setIsDeletingExam(true);
+
+    try {
+      await deleteExam(id);
+      navigate("/lecturer-dashboard", {
+        replace: true,
+        state: { toast: "Exam deleted successfully." }
+      });
+    } catch (requestError) {
+      setPendingDeleteExam(false);
+      setError(getApiErrorMessage(requestError, "Unable to delete exam."));
+    } finally {
+      setIsDeletingExam(false);
     }
   }
 
@@ -328,7 +374,7 @@ export default function ExamDetailPage() {
       setExam(updatedExam);
       setToast("Exam archived successfully.");
     } catch (requestError) {
-      setError(requestError.response?.data?.message || "Unable to archive exam.");
+      setError(getApiErrorMessage(requestError, "Unable to archive exam."));
     } finally {
       setIsArchiving(false);
     }
@@ -353,7 +399,7 @@ export default function ExamDetailPage() {
       setPendingDeleteQuestion(null);
       setToast("Question deleted successfully.");
     } catch (requestError) {
-      setQuestionError(requestError.response?.data?.message || "Unable to delete question.");
+      setQuestionError(getApiErrorMessage(requestError, "Unable to delete question."));
     } finally {
       setActionQuestionId("");
     }
@@ -403,7 +449,7 @@ export default function ExamDetailPage() {
       setQuestions(savedQuestions);
     } catch (requestError) {
       setQuestions(previousQuestions);
-      setQuestionError(requestError.response?.data?.message || "Unable to reorder questions.");
+      setQuestionError(getApiErrorMessage(requestError, "Unable to reorder questions."));
     } finally {
       setIsReordering(false);
     }
@@ -420,9 +466,17 @@ export default function ExamDetailPage() {
         <div className="header-actions">
           {exam && !isEditing ? (
             isDraft ? (
-              <button className="secondary-button" type="button" onClick={handleEdit}>
-                Edit
-              </button>
+              <>
+                <button className="secondary-button" type="button" onClick={handleEdit}>
+                  <Icon name="settings" size={16} /> Edit
+                </button>
+                <button className="primary-button" type="button" onClick={handlePublishShortcut}>
+                  <Icon name="calendar" size={16} /> Publish
+                </button>
+                <button className="danger-button" type="button" onClick={() => setPendingDeleteExam(true)}>
+                  <Icon name="trash" size={16} /> Delete
+                </button>
+              </>
             ) : (
               <span
                 className="icon-button locked"
@@ -431,7 +485,7 @@ export default function ExamDetailPage() {
                 role="img"
                 tabIndex="0"
               >
-                🔒
+                <Icon name="lock" size={16} />
               </span>
             )
           ) : null}
@@ -640,6 +694,12 @@ export default function ExamDetailPage() {
 
             {activeTab === "schedule" ? (
               <form className="auth-form" onSubmit={handlePublish} noValidate>
+                {isDraft && !isLoadingQuestions && questions.length === 0 ? (
+                  <div className="alert alert-warning">
+                    Add at least one question before publishing this exam.
+                  </div>
+                ) : null}
+
                 <div className="form-grid">
                   <div className="field">
                     <label htmlFor="startAt">Start At</label>
@@ -698,7 +758,7 @@ export default function ExamDetailPage() {
                     <button
                       className="primary-button"
                       type="submit"
-                      disabled={isPublishing || !scheduleValues.startAt || !scheduleValues.endAt}
+                      disabled={isPublishing || !scheduleValues.startAt || !scheduleValues.endAt || !canPublish}
                     >
                       {isPublishing ? "Publishing..." : "Publish exam"}
                     </button>
@@ -843,6 +903,22 @@ export default function ExamDetailPage() {
             </div>
           </div>
         </div>
+      ) : null}
+
+      {pendingDeleteExam ? (
+        <ConfirmModal
+          icon="trash"
+          title="Delete exam?"
+          message={`This will permanently delete "${exam?.title || "this exam"}" and its draft questions.`}
+          confirmLabel="Delete exam"
+          cancelLabel="Cancel"
+          danger
+          isBusy={isDeletingExam}
+          onConfirm={confirmDeleteExam}
+          onCancel={() => setPendingDeleteExam(false)}
+        >
+          <p className="muted-text">Only draft exams with no student activity can be deleted.</p>
+        </ConfirmModal>
       ) : null}
     </main>
   );

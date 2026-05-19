@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.common.JsonFileStore;
 import com.onlineexam.common.ApiException;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class UserService {
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   public UserService(ObjectMapper objectMapper) {
-    this.store = new JsonFileStore<>(Path.of("src/data/users.json"), objectMapper, new TypeReference<>() {
+    this.store = new JsonFileStore<>("users.json", objectMapper, new TypeReference<>() {
     });
     seedDemoUsersIfMissing();
   }

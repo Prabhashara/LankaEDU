@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { clearAuthSession, getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { getExams } from "../../services/examService";
+import Icon from "../../components/Icons.jsx";
+import { EmptyState, SkeletonGrid } from "../../components/UiKit.jsx";
 
 function formatDateTime(value) {
   if (!value) return "Not scheduled";
@@ -54,7 +57,7 @@ export default function AvailableExamsPage() {
       try {
         const data = await getExams({ status: "Active" });
         if (isMounted) { setExams(data); setError(""); }
-      } catch { if (isMounted) setError("Unable to load available exams."); }
+      } catch (requestError) { if (isMounted) setError(getApiErrorMessage(requestError, "Unable to load available exams.")); }
       finally { if (isMounted) setIsLoading(false); }
     }
     loadExams();
@@ -75,15 +78,15 @@ export default function AvailableExamsPage() {
           <p className="dashboard-copy">Browse active, upcoming, and ended assessments.</p>
         </div>
         <div className="header-actions">
-          <Link className="secondary-button" to="/student-dashboard" style={{ minHeight: 40, padding: "8px 16px" }}>← Dashboard</Link>
-          <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/login", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}>Sign out</button>
+          <Link className="secondary-button" to="/student-dashboard" style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="dashboard" size={16} /> Dashboard</Link>
+          <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/login", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="logout" size={16} /> Sign out</button>
         </div>
       </section>
 
       {error && <div className="alert alert-error admin-alert">{error}</div>}
 
       {isLoading ? (
-        <div className="detail-panel wide"><p className="empty-state">Loading exams…</p></div>
+        <div className="detail-panel wide"><SkeletonGrid count={6} /></div>
       ) : activeExams.length > 0 ? (
         <section className="available-exam-grid" aria-label="Available exam list">
           {activeExams.map((exam) => {
@@ -129,12 +132,12 @@ export default function AvailableExamsPage() {
                   <div className="available-card-actions">
                     {canStart && (
                       <Link className="primary-button" to={`/student/exams/${exam.id}/take`} style={{ fontSize: "0.9rem", minHeight: 40 }}>
-                        Start Exam →
+                        <Icon name="arrowRight" size={16} /> Start Exam
                       </Link>
                     )}
                     {exam.attempted && (
                       <Link className="secondary-button" to={`/student/results/${exam.resultId || exam.attemptId}`} style={{ fontSize: "0.9rem", minHeight: 40 }}>
-                        View Result
+                        <Icon name="report" size={16} /> View Result
                       </Link>
                     )}
                     {w === "upcoming" && !exam.attempted && <span className="muted-text" style={{ fontSize: "0.85rem" }}>Opens at scheduled time</span>}
@@ -147,11 +150,11 @@ export default function AvailableExamsPage() {
         </section>
       ) : (
         <div className="detail-panel wide">
-          <div style={{ textAlign: "center", padding: "48px 24px" }}>
-            <div style={{ fontSize: "3rem", marginBottom: 16 }}>📋</div>
-            <h3 style={{ color: "#334155", marginBottom: 8 }}>No active exams</h3>
-            <p style={{ color: "#64748b" }}>Check back later — your lecturer will publish exams when they're ready.</p>
-          </div>
+          <EmptyState
+            icon="exam"
+            title="No active exams"
+            message="Check back later — your lecturer will publish exams when they are ready."
+          />
         </div>
       )}
     </main>

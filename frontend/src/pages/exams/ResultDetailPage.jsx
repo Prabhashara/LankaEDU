@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { downloadResultPdf } from "../../services/reportService";
 import { getResultDetail } from "../../services/resultService";
+import Icon from "../../components/Icons.jsx";
 import "./ExamTakingPage.css";
 
 export default function ResultDetailPage() {
@@ -23,7 +25,7 @@ export default function ResultDetailPage() {
       try {
         const detail = await getResultDetail(resultId);
         if (isMounted) { setResult(detail.result); setExam(detail.exam); setQuestions(detail.questions || []); }
-      } catch { if (isMounted) setError("Unable to load result."); }
+      } catch (requestError) { if (isMounted) setError(getApiErrorMessage(requestError, "Unable to load result.")); }
       finally { if (isMounted) setIsLoading(false); }
     }
     loadResult();
@@ -38,7 +40,7 @@ export default function ResultDetailPage() {
     if (!attemptId) return;
     setIsDownloading(true); setError("");
     try { await downloadResultPdf(attemptId); }
-    catch { setError("Unable to download PDF report."); }
+    catch (requestError) { setError(getApiErrorMessage(requestError, "Unable to download PDF report.")); }
     finally { setIsDownloading(false); }
   }
 
@@ -68,7 +70,7 @@ export default function ResultDetailPage() {
         </div>
 
         {isLoading && <p className="empty-state">Loading result…</p>}
-        {error && <div className="alert alert-error admin-alert">⚠ {error}</div>}
+        {error && <div className="alert alert-error admin-alert"><Icon name="warning" size={16} /> {error}</div>}
 
         {result && (
           <>
@@ -94,7 +96,7 @@ export default function ResultDetailPage() {
               <div style={{ display: "grid", gap: 12 }}>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
                   <span className={`status-badge ${passed ? "pass" : "fail"}`} style={{ fontSize: "1rem", padding: "6px 16px" }}>
-                    {passed ? "✓ Passed" : "✗ Failed"}
+                    {passed ? <><Icon name="check" size={14} /> Passed</> : <><Icon name="warning" size={14} /> Failed</>}
                   </span>
                   <span className="grade-badge" style={{ fontSize: "1rem", padding: "6px 16px" }}>
                     Grade {result.grade || "F"}

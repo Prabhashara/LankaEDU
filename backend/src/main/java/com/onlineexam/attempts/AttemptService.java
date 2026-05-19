@@ -3,7 +3,6 @@ package com.onlineexam.attempts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.common.JsonFileStore;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ public class AttemptService {
   private final JsonFileStore<Attempt> store;
 
   public AttemptService(ObjectMapper objectMapper) {
-    this.store = new JsonFileStore<>(Path.of("src/data/attempts.json"), objectMapper, new TypeReference<>() {
+    this.store = new JsonFileStore<>("attempts.json", objectMapper, new TypeReference<>() {
     });
   }
 
@@ -29,6 +28,11 @@ public class AttemptService {
     return store.readAll().stream()
         .filter(attempt -> studentId.equals(attempt.getStudentId()) && examId.equals(attempt.getExamId()))
         .findFirst();
+  }
+
+  public boolean hasForExam(String examId) {
+    return store.readAll().stream()
+        .anyMatch(attempt -> examId.equals(attempt.getExamId()));
   }
 
   public Attempt create(String studentId, String examId) {

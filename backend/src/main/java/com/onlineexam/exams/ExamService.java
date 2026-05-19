@@ -3,7 +3,6 @@ package com.onlineexam.exams;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.common.JsonFileStore;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,18 @@ public class ExamService {
   private final JsonFileStore<Exam> store;
 
   public ExamService(ObjectMapper objectMapper) {
-    this.store = new JsonFileStore<>(Path.of("src/data/exams.json"), objectMapper, new TypeReference<>() {});
+    this.store = new JsonFileStore<>("exams.json", objectMapper, new TypeReference<>() {});
   }
 
   public List<PublicExam> listForLecturer(String lecturerId) {
     return store.readAll().stream()
       .filter(exam -> lecturerId.equals(exam.getCreatedBy()))
+      .map(PublicExam::from)
+      .toList();
+  }
+
+  public List<PublicExam> listAllPublic() {
+    return store.readAll().stream()
       .map(PublicExam::from)
       .toList();
   }
@@ -96,5 +101,25 @@ public class ExamService {
       }
     }
     return null;
+  }
+
+  public PublicExam delete(String id) {
+    List<Exam> exams = new ArrayList<>(store.readAll());
+    Exam found = null;
+
+    for (Exam exam : exams) {
+      if (id.equals(exam.getId())) {
+        found = exam;
+        break;
+      }
+    }
+
+    if (found == null) {
+      return null;
+    }
+
+    exams.remove(found);
+    store.writeAll(exams);
+    return PublicExam.from(found);
   }
 }

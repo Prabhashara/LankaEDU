@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/authService";
 import { saveAuthSession } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { getDashboardPath } from "../../utils/roleRedirect";
+import Icon from "../../components/Icons.jsx";
 
 export default function LoginPage() {
   const location = useLocation();
@@ -27,48 +29,70 @@ export default function LoginPage() {
       const data = await loginUser({ email: form.email.trim(), password: form.password });
       saveAuthSession({ token: data.token, role: data.role, userId: data.user.id, user: data.user });
       navigate(getDashboardPath(data.role), { replace: true });
-    } catch {
-      setError("Invalid email or password. Please try again.");
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, "Invalid email or password. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-panel narrow" aria-labelledby="login-title">
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 28 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg,#006880,#00a3c4)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "1.1rem" }}>📋</div>
-          <span style={{ fontWeight: 900, fontSize: "1.1rem", color: "#0f172a", letterSpacing: "-0.02em" }}>Lanka<span style={{ color: "#006880" }}>Edu</span></span>
-        </div>
-
-        <div className="auth-copy">
-          <p className="eyebrow">Welcome back</p>
-          <h1 id="login-title" style={{ fontSize: "1.75rem", marginBottom: 6 }}>Sign in to your account</h1>
-          <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Access exams, review results, and track your progress.</p>
-        </div>
-
-        {successMessage && <div className="alert alert-success" style={{ marginBottom: 18 }}>✓ {successMessage}</div>}
-        {error && <div className="alert alert-error" style={{ marginBottom: 18 }}>⚠ {error}</div>}
-
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="field">
-            <label htmlFor="email">Email address</label>
-            <input id="email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" placeholder="you@university.edu" required />
+    <main className="auth-shell auth-shell-premium">
+      <section className="auth-layout" aria-labelledby="login-title">
+        <aside className="auth-visual-panel" aria-label="Platform highlights">
+          <div className="auth-brand auth-brand-large">
+            <div className="brand-mark"><Icon name="exam" size={22} /></div>
+            <span className="brand-wordmark">Lanka<span>Edu</span></span>
           </div>
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" value={form.password} onChange={updateField} autoComplete="current-password" placeholder="••••••••" required />
+          <div className="auth-visual-content">
+            <span className="home-highlight">Secure assessment workspace</span>
+            <h2>Manage exams, progress, and results from one clean portal.</h2>
+            <p>
+              Role-based access, real-time exam timers, instant reporting, and analytics are kept ready for students, lecturers, and administrators.
+            </p>
           </div>
-          <button className="primary-button" type="submit" disabled={isSubmitting} style={{ marginTop: 4, width: "100%", justifyContent: "center" }}>
-            {isSubmitting ? "Signing in…" : "Sign in →"}
-          </button>
-        </form>
+          <div className="auth-preview-card">
+            <div className="preview-score-ring">84%</div>
+            <div>
+              <strong>Latest Result</strong>
+              <small>Data Structures Final · Grade A</small>
+            </div>
+          </div>
+        </aside>
 
-        <p className="auth-footer" style={{ marginTop: 20 }}>
-          Don't have an account? <Link to="/signup">Create one free</Link>
-        </p>
+        <section className="auth-panel narrow auth-card-premium">
+          <div className="auth-brand">
+            <div className="brand-mark"><Icon name="exam" size={22} /></div>
+            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+          </div>
+
+          <div className="auth-copy">
+            <p className="eyebrow">Welcome back</p>
+            <h1 id="login-title">Sign in to your account</h1>
+            <p>Access exams, review results, and track your progress.</p>
+          </div>
+
+          {successMessage && <div className="alert alert-success auth-alert"><Icon name="check" size={16} /> {successMessage}</div>}
+          {error && <div className="alert alert-error auth-alert"><Icon name="warning" size={16} /> {error}</div>}
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="field">
+              <label htmlFor="email">Email address</label>
+              <input id="email" name="email" type="email" value={form.email} onChange={updateField} autoComplete="email" placeholder="you@university.edu" required />
+            </div>
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <input id="password" name="password" type="password" value={form.password} onChange={updateField} autoComplete="current-password" placeholder="••••••••" required />
+            </div>
+            <button className="primary-button full-width-button" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in…" : <>Sign in <Icon name="arrowRight" size={16} /></>}
+            </button>
+          </form>
+
+          <p className="auth-footer">
+            Don't have an account? <Link to="/signup">Create one free</Link>
+          </p>
+        </section>
       </section>
     </main>
   );

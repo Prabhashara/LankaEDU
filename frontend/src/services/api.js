@@ -1,5 +1,6 @@
 import axios from "axios";
 import { clearAuthSession, getAuthToken } from "./authStorage";
+import { normalizeApiError, shouldShowGlobalApiError } from "./errorService";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
@@ -22,11 +23,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   response => response,
   error => {
-    const status = error.response?.status;
+    const normalizedError = normalizeApiError(error);
+    const status = normalizedError.status;
     const url = error.config?.url || "";
     const isAuthEndpoint = url.includes("/auth/login") || url.includes("/auth/register");
+    const isPublicEndpoint = url.includes("/public/");
 
-    if (status === 401 && !isAuthEndpoint) {
+    if (status === 401 && !isAuthEndpoint && !isPublicEndpoint) {
       clearAuthSession();
       window.dispatchEvent(new CustomEvent("online-exam:session-expired"));
       if (!window.location.pathname.includes("/login")) {
@@ -34,7 +37,17 @@ api.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error);
+    if (shouldShowGlobalApiError(normalizedError) && !isPublicEndpoint) {
+      window.dispatchEvent(new CustomEvent("online-exam:api-error", {
+        detail: {
+          message: normalizedError.userMessage,
+          requestId: normalizedError.requestId,
+          status: normalizedError.status
+        }
+      }));
+    }
+
+    return Promise.reject(normalizedError);
   }
 );
 

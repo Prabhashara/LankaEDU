@@ -1,277 +1,628 @@
-# Online Examination and Results Management System
+# 🎓 LankaEdu - Online Examination System
 
-> Complete full-stack Online Examination System with a Java Spring Boot backend and a JavaScript/CSS frontend.
+A comprehensive full-stack online examination and results management system for educational institutions. LankaEdu streamlines exam creation, student assessment, and results management with role-based access control and real-time analytics.
 
-![Status](https://img.shields.io/badge/status-complete-brightgreen)
-![Frontend](https://img.shields.io/badge/frontend-JavaScript%20%2B%20CSS-0ea5e9)
-![Backend](https://img.shields.io/badge/backend-Java%20Spring%20Boot-16a34a)
+## 📋 Table of Contents
 
-## Overview
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Project Structure](#-project-structure)
+- [Makefile Commands](#-makefile-commands)
+- [Installation & Setup](#-installation--setup)
+- [Database Setup](#-database-setup)
+- [Running the Application](#-running-the-application)
+- [Test Credentials](#-test-credentials)
+- [API Endpoints](#-api-endpoints)
+- [Environment Variables](#-environment-variables)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-This project implements the full coursework scope for an Online Examination and Results Management System. It includes authentication, role-based dashboards, admin user management, exam creation, scheduling, question bank management, student exam attempts with timer, automatic grading, result views, analytics, student report cards, and PDF result export.
+## ✨ Features
 
-The frontend is written with React JavaScript (`.jsx` / `.js`) and plain CSS. The backend is fully Java-based using Spring Boot and Maven. Data is stored in JSON files under `backend/src/data` for simple local running, with optional PostgreSQL-backed JSON storage available through environment variables.
+### Student Features
+- ✅ User registration and authentication with JWT tokens
+- ✅ Dashboard with personal exam statistics
+- ✅ View available exams with scheduling information
+- ✅ Timed exam taking with countdown timer
+- ✅ Auto-save exam answers during attempt
+- ✅ Submission confirmation before finalizing
+- ✅ View detailed exam results and scores
+- ✅ Download result PDF reports
+- ✅ Student report card with performance metrics
+- ✅ Track exam attempts and history
 
-## Completed Feature Coverage
+### Lecturer Features
+- ✅ Comprehensive exam management (create, edit, schedule, archive)
+- ✅ Draft mode for exam preparation
+- ✅ Question management with reusable question bank
+- ✅ Multiple question types support
+- ✅ Scheduled exam publishing and activation
+- ✅ Real-time exam analytics and statistics
+- ✅ View student results and detailed answers
+- ✅ Result publishing controls
+- ✅ Export exam data for reporting
 
-| Jira ID | Module | Status |
-|---|---|---|
-| OES-001 | Student self-registration | Complete |
-| OES-002 | Login with role-based redirect | Complete |
-| OES-003 | Admin user management | Complete |
-| OES-004 | Lecturer exam creation | Complete |
-| OES-005 | View and edit draft exam settings | Complete |
-| OES-006 | Schedule, publish, and archive exams | Complete |
-| OES-007 | Add MCQ, True/False, and Short Answer questions | Complete |
-| OES-008 | View, edit, delete, and reorder questions | Complete |
-| OES-009 | Question bank and add-to-exam reuse | Complete |
-| OES-010 | Student available exams | Complete |
-| OES-011 | Exam taking page with countdown timer | Complete |
-| OES-012 | Submit exam and confirmation screen | Complete |
-| OES-013 | Auto-grade MCQ and True/False answers | Complete |
-| OES-014 | Student result detail page | Complete |
-| OES-015 | Lecturer exam results table and summary | Complete |
-| OES-016 | Lecturer analytics dashboard | Complete |
-| OES-017 | Student report card | Complete |
-| OES-018 | Download result as PDF | Complete |
+### Admin Features
+- ✅ Staff account creation and management
+- ✅ User activation and deactivation
+- ✅ Role-based access control (RBAC)
+- ✅ Safe user deletion with validation
+- ✅ Comprehensive audit logging
+- ✅ View system activity and user actions
+- ✅ Security monitoring
 
-## Professional UI Update
+### General Features
+- ✅ Light and dark theme support
+- ✅ Fully responsive design with mobile support
+- ✅ CSS-only styling (no frameworks)
+- ✅ Role-based redirects
+- ✅ Global error handling and toast notifications
+- ✅ RESTful API architecture
+- ✅ Backend validation and security
 
-The frontend includes a polished responsive design with:
-
-- Complete light and dark theme support across every page.
-- A bottom-right floating theme toggle with saved preference, so it does not cover the login/header actions.
-- More colorful but professional blue, violet, cyan, emerald, amber, and rose design tokens.
-- Theme-matched buttons with gradients, hover states, focus states, and disabled states.
-- Role-based dashboards for student, lecturer, and admin users.
-- Professional cards, tables, forms, badges, charts, analytics panels, status states, and exam-taking screens.
-- Plain CSS styling in `frontend/src/index.css` plus page-specific CSS for the exam-taking, results, and analytics screens.
-
-
-## Industrial-Level Completion Additions
-
-This build now includes extra production-style hardening on top of the original 18 Jira stories:
-
-- Centralized frontend route protection for student, lecturer, and admin pages.
-- Admin-only staff account creation for lecturer and admin users; public registration remains student-only.
-- Safeguards preventing admins from deleting/deactivating themselves or removing the last active admin.
-- 403 Unauthorized and 404 Not Found screens.
-- React error boundary with safe recovery controls.
-- Axios timeout handling and automatic session cleanup on expired JWTs.
-- Backend security headers for API responses.
-- Login throttling after repeated failed attempts.
-- Server-side prevention of duplicate student exam attempts.
-- Server-side submission-window enforcement for late exam submissions.
-- Persistent audit trail for registration, login, admin user actions, exam lifecycle changes, question changes, question-bank reuse, attempt saves, and submissions.
-- Admin Audit Log page with search and event timeline.
-- Health endpoint now returns service and timestamp metadata.
-
-
-## Role and Permission Matrix
-
-| Role | Allowed actions | Not allowed |
-|---|---|---|
-| Student | Self-register, log in, view active/scheduled exams, start one attempt per exam, save/submit answers, view own results/report card, download own PDF result | Cannot create users, create exams, edit questions, view audit logs, or view other students' results |
-| Lecturer | Create draft exams, edit own draft exams, publish/archive own exams, manage own question bank, view own exam analytics/results, download reports for own exam results | Cannot create users, manage admins, view audit logs, or access exams owned by other lecturers |
-| Admin | Create lecturer/admin accounts, list all users, activate/deactivate users, delete users except self, view audit logs, protect last active admin | Cannot self-register staff through public signup; cannot delete/deactivate own account or remove the last active admin |
-
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
-|---|---|
-| Frontend | React 18, JavaScript, React Router, Axios, Chart.js, Vite |
-| Styling | Plain CSS only |
-| Backend | Java 17+, Spring Boot 3.3, Maven |
-| Storage | JSON files in `backend/src/data` |
-| Optional Database | PostgreSQL JSON storage |
-| Authentication | JWT and bcrypt password hashing |
-| PDF Export | Apache PDFBox |
+|-------|-----------|
+| **Frontend** | React 18, Vite, React Router, Axios, Chart.js |
+| **Styling** | Plain CSS with dark mode support |
+| **Backend** | Java 17, Spring Boot 3.3, Maven |
+| **Authentication** | JWT tokens with bcrypt hashing |
+| **Database** | PostgreSQL with JSON storage (`app_json_store`) |
+| **Deployment** | Supabase (optional) |
+| **Reporting** | Apache PDFBox |
 
-## Project Structure
+## 📋 Prerequisites
 
-```text
-online-exam-system/
+- **Java 17** or newer
+- **Maven 3.9** or newer
+- **Node.js 18** or newer
+- **npm 9** or newer
+- **PostgreSQL 12+** (optional, for production)
+- **Git**
+
+## 📁 Project Structure
+
+```
+LankaEdu/
 ├── backend/
 │   ├── pom.xml
 │   ├── .env.example
-│   └── src/
-│       ├── data/
-│       │   ├── users.json
-│       │   ├── exams.json
-│       │   ├── questions.json
-│       │   ├── attempts.json
-│       │   ├── results.json
-│       │   └── audit.json
-│       └── main/
-│           ├── java/com/onlineexam/
-│           │   ├── audit/
-│           │   ├── auth/
-│           │   ├── attempts/
-│           │   ├── common/
-│           │   ├── config/
-│           │   ├── exams/
-│           │   ├── questions/
-│           │   ├── reports/
-│           │   ├── results/
-│           │   ├── users/
-│           │   └── OnlineExamApplication.java
-│           └── resources/application.properties
+│   └── src/main/
+│       ├── java/com/onlineexam/
+│       │   ├── audit/          # Audit logging
+│       │   ├── auth/           # Authentication & JWT
+│       │   ├── attempts/       # Exam attempts
+│       │   ├── common/         # Shared utilities & handlers
+│       │   ├── config/         # Spring configuration
+│       │   ├── exams/          # Exam management
+│       │   ├── questions/      # Question bank
+│       │   ├── reports/        # PDF reporting
+│       │   ├── results/        # Result management
+│       │   ├── users/          # User management
+│       │   └── OnlineExamApplication.java
+│       └── resources/
+│           └── application.properties
 ├── frontend/
 │   ├── package.json
 │   ├── .env.example
 │   ├── index.html
+│   ├── vite.config.js
 │   └── src/
 │       ├── App.jsx
 │       ├── main.jsx
 │       ├── index.css
-│       ├── components/
-│       ├── pages/
-│       ├── services/
-│       └── utils/
+│       ├── components/         # Reusable UI components
+│       ├── pages/              # Page components
+│       ├── services/           # API services
+│       └── utils/              # Utility functions
 └── README.md
 ```
 
-## Getting Started
+## �️ Makefile Commands
 
-### Prerequisites
+LankaEdu includes a comprehensive **Makefile** for easy project automation. Instead of manually running commands, use `make` to simplify your workflow:
 
-- Java 17 or higher
-- Maven 3.9 or higher
-- Node.js 18 or higher
-- npm 9 or higher
+### Quick Setup
+```bash
+make setup          # Complete setup (install + build + db-init)
+make dev            # Start entire application (backend + frontend)
+make build-prod     # Production build
+```
 
-### 1. Run the backend
+### Development
+```bash
+make install        # Install all dependencies
+make build          # Build entire project
+make dev            # Run in development mode
+make dev-backend    # Backend only
+make dev-frontend   # Frontend only
+make test           # Run all tests
+make clean          # Clean build artifacts
+```
+
+### Database
+```bash
+make db-init        # Initialize database
+make db-seed        # Load mock data
+make db-reset       # Reset database
+make db-backup      # Backup database
+```
+
+### Docker
+```bash
+make docker-build   # Build Docker images
+make docker-up      # Start containers
+make docker-down    # Stop containers
+make docker-logs    # View logs
+```
+
+### Full List of Commands
+```bash
+make help           # Show all available commands
+```
+
+**Example Workflow:**
+```bash
+make setup          # One-time setup
+make dev            # Start development
+make test           # Run tests
+make clean          # Cleanup
+```
+
+## �🚀 Installation & Setup
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <repository-url>
+cd LankaEdu
+```
+
+### Step 2: Backend Setup
+
+```bash
+# Navigate to backend directory
+cd backend
+
+# Copy environment variables
+cp .env.example .env
+
+# Install dependencies (Maven downloads automatically)
+# Build the project
+mvn clean install
+```
+
+### Step 3: Frontend Setup
+
+```bash
+# Navigate to frontend directory
+cd ../frontend
+
+# Copy environment variables
+cp .env.example .env
+
+# Install npm dependencies
+npm install
+```
+
+## 🗄️ Database Setup
+
+### Option 1: Local PostgreSQL (Recommended for Development)
+
+1. **Install PostgreSQL** if not already installed
+2. **Create a new database:**
+   ```bash
+   createdb lankaedu
+   ```
+3. **Set DATABASE_URL in backend/.env:**
+   ```
+   DATABASE_URL=postgresql://username:password@localhost:5432/lankaedu
+   ```
+
+### Option 2: Supabase (Cloud-based)
+
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Copy the database URL from project settings
+3. Update `DATABASE_URL` in backend/.env
+
+### Step 3: Load Mock Data
+
+Connect to your database and run the SQL script:
+
+```sql
+-- See mock-data.sql for complete sample data
+-- Includes: 8 users, 6 exams, 19 questions, and exam attempts
+```
+
+## ▶️ Running the Application
+
+### Terminal 1: Start Backend
 
 ```bash
 cd backend
-cp .env.example .env
 mvn spring-boot:run
 ```
 
-Backend URL:
+Backend will be available at: `http://localhost:5001`
 
-```text
-http://localhost:5000
-```
-
-### 2. Run the frontend
-
-Open a second terminal:
+### Terminal 2: Start Frontend
 
 ```bash
 cd frontend
-cp .env.example .env
-npm install
 npm run dev
 ```
 
-Frontend URL:
+Frontend will be available at: `http://localhost:5173`
 
-```text
-http://localhost:5173
-```
+### Build for Production
 
-If Vite automatically starts on another port such as `5174`, login still works because the frontend now uses `/api` through the Vite proxy and the backend also allows local development origins.
-
-### 3. Production build check
-
-```bash
-cd frontend
-npm run build
-```
-
+**Backend:**
 ```bash
 cd backend
-mvn test
+mvn clean package
+java -jar target/onlineexam-*.jar
 ```
 
-
-## Verification Completed in This Environment
-
+**Frontend:**
 ```bash
 cd frontend
 npm run build
+npm run preview
 ```
 
-The frontend production build completed successfully. Maven is not installed in this execution environment, so backend Maven tests could not be executed here; however, the Java source was syntax-reviewed and no syntax-level errors were detected beyond missing external dependencies in a direct `javac` dependency-free check.
+## 🔐 Test Credentials
 
-## Demo Accounts
-
-All demo accounts use this password:
-
-```text
-password123
+### Admin User
+```
+Email:    admin@example.com
+Password: admin123
+Role:     Admin
 ```
 
-| Role | Email | Main pages |
-|---|---|---|
-| Admin | `admin@example.com` | User management, audit log |
-| Lecturer | `lecturer@example.com` | Exams, questions, analytics, results |
-| Student | `student@example.com` | Available exams, attempts, results, report card |
+### Lecturer Users
+```
+Email:    lecturer@example.com
+Password: lecturer123
+Role:     Lecturer
 
-The included seed data contains:
+Email:    emily.wilson@example.com
+Password: lecturer123
 
-- One active Java mock exam for testing student attempts.
-- One archived Database Systems exam with a demo result for analytics and PDF export.
-- One draft Algorithms quiz for lecturer editing and publishing.
+Email:    michael.chen@example.com
+Password: lecturer123
+
+Email:    sarah.johnson@example.com
+Password: lecturer123
+```
+
+### Student Users
+```
+Email:    student@example.com
+Password: student123
+Role:     Student
+
+Email:    amal.kumar@example.com
+Password: student123
+Student ID: STU001
+
+Email:    priya.sharma@example.com
+Password: student123
+Student ID: STU002
+
+Email:    roshan.desilva@example.com
+Password: student123
+Student ID: STU003
+
+Email:    navya.patel@example.com
+Password: student123
+Student ID: STU004
+
+Email:    keshan.bandara@example.com
+Password: student123
+Student ID: STU005
+
+Email:    disha.gupta@example.com
+Password: student123
+Student ID: STU006
+
+Email:    lahiru.fernando@example.com
+Password: student123
+Student ID: STU007
+```
+
+## 📡 API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/signup` - New user registration
+- `POST /api/auth/logout` - User logout
+
+### Users
+- `GET /api/users/me` - Get current user profile
+- `GET /api/users` - List all users (Admin only)
+- `POST /api/users` - Create new user (Admin only)
+- `PUT /api/users/:id` - Update user (Admin only)
+- `DELETE /api/users/:id` - Delete user (Admin only)
+
+### Exams
+- `GET /api/exams` - List exams (filters by user role)
+- `POST /api/exams` - Create new exam (Lecturer)
+- `PUT /api/exams/:id` - Update exam (Lecturer)
+- `DELETE /api/exams/:id` - Delete exam (Lecturer)
+- `GET /api/exams/:id/available` - Check if exam is available
+- `GET /api/exams/:id/analytics` - Get exam analytics (Lecturer)
+
+### Questions
+- `GET /api/questions` - List questions (filtered by exam)
+- `POST /api/questions` - Create question (Lecturer)
+- `PUT /api/questions/:id` - Update question (Lecturer)
+- `DELETE /api/questions/:id` - Delete question (Lecturer)
+
+### Attempts
+- `POST /api/attempts` - Start new exam attempt
+- `GET /api/attempts/:id` - Get attempt details
+- `PUT /api/attempts/:id` - Save answers (auto-save)
+- `POST /api/attempts/:id/submit` - Submit exam attempt
+
+### Results
+- `GET /api/results` - List results
+- `GET /api/results/:id` - Get result details
+- `POST /api/results/:id/publish` - Publish result (Lecturer)
+- `GET /api/results/:id/pdf` - Download result as PDF
+
+### Audit
+- `GET /api/audit` - Get audit logs (Admin only)
+
+## ⚙️ Environment Variables
+
+### Backend (.env)
+
+```properties
+# Server Configuration
+PORT=5001
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/lankaedu
+
+# JWT Authentication
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=7d
+
+# CORS
+ALLOWED_ORIGIN=http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173
+
+# Storage Type
+APP_STORAGE=database
+```
+
+### Frontend (.env)
+
+```
+VITE_API_URL=http://localhost:5001
+VITE_JWT_STORAGE_KEY=lankaedu_token
+```
+
+## 🐛 Troubleshooting
+
+### Backend Issues
+
+**Port already in use:**
+```bash
+# Change port in backend/.env
+PORT=5002
+```
+
+**Database connection error:**
+```bash
+# Verify DATABASE_URL format
+postgresql://user:password@host:5432/dbname
+
+# Check PostgreSQL is running
+pg_isready -h localhost
+```
+
+**Maven build fails:**
+```bash
+# Clear cache and rebuild
+mvn clean install -U
+```
+
+### Frontend Issues
+
+**Port 5173 already in use:**
+```bash
+# Run on different port
+npm run dev -- --port 5174
+```
+
+**Module not found errors:**
+```bash
+# Reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**API connection errors:**
+```bash
+# Check VITE_API_URL matches backend port
+# Default: http://localhost:5001
+```
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| 401 Unauthorized | Token expired, login again or clear localStorage |
+| 403 Forbidden | Insufficient permissions for this action |
+| CORS errors | Update ALLOWED_ORIGIN in backend .env |
+| Exam not visible | Check exam status (Draft/Active/Inactive) |
+| Cannot submit answer | Exam time window may have passed |
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow existing code style and conventions
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation as needed
+
+## 📄 License
+
+This project is licensed under the MIT License - see LICENSE file for details.
+
+## 📞 Support
+
+For issues, questions, or suggestions:
+- Open an issue on GitHub
+- Check existing documentation
+- Review API documentation
+
+## 🔄 Version History
+
+- **v1.0.0** - Initial release
+  - Core exam management system
+  - Student exam taking
+  - Result management
+  - Admin panel
+
+---
+
+**Last Updated:** May 19, 2026
+**Maintained by:** LankaEdu Development Team
+```
+
+The frontend uses `/api` through the Vite proxy. `frontend/.env.example` points the proxy to `http://localhost:5001`.
 
 ## Environment Variables
 
 ### Backend `.env`
 
 ```env
-PORT=5000
-ALLOWED_ORIGIN=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175
+PORT=5001
+ALLOWED_ORIGIN=http://localhost:5173,http://localhost:5174
 JWT_SECRET=replace_this_with_a_long_random_secret_at_least_32_chars
 JWT_EXPIRES_IN=7d
-APP_STORAGE=file
-```
 
-Optional PostgreSQL-backed JSON storage:
-
-```env
+# Use Supabase/Postgres JSON storage.
 APP_STORAGE=database
-DATABASE_URL=postgres://user:password@localhost:5432/online_exam
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
 ```
 
 ### Frontend `.env`
 
 ```env
-# Development default uses the Vite proxy and avoids CORS issues.
 VITE_API_URL=/api
+VITE_PROXY_TARGET=http://localhost:5001
 ```
 
+## Demo Accounts
 
-## Fixes Included for Common Local Errors
+All included demo accounts use this password:
 
-### CORS login error from `localhost:5174`
+```text
+password123
+```
 
-The frontend now calls `/api` by default, and `vite.config.js` proxies `/api` to `http://localhost:5000`. This means development requests are same-origin from the browser and no longer fail preflight CORS checks.
+| Role | Email | Main Area |
+|---|---|---|
+| Admin | `admin@example.com` | User management and audit log |
+| Lecturer | `lecturer@example.com` | Exams, question bank, analytics, results |
+| Student | `student@example.com` | Available exams, attempts, results, report card |
 
-The backend also includes a high-priority CORS response filter that allows local development origins such as `http://localhost:5173`, `http://localhost:5174`, `http://localhost:5175`, and matching `127.0.0.1` URLs.
+Seed data includes an active Java mock exam, an archived Database Systems exam with result data, and a draft Algorithms quiz for lecturer editing and publishing.
 
-### 404 resource error
+## Main Workflows
 
-`frontend/index.html` now includes an inline SVG favicon so the browser does not request a missing `/favicon.ico` file. If you refresh nested React routes, Vite serves the app correctly in development.
+### Student
 
-## API Endpoints
+1. Sign up or log in as a student.
+2. Open the student dashboard.
+3. View active exams.
+4. Start one attempt per exam.
+5. Save answers during the attempt.
+6. Submit the exam.
+7. View the result detail and report card.
+8. Download the result as a PDF.
 
-### Health and Auth
+### Lecturer
+
+1. Create a draft exam.
+2. Edit draft settings: title, subject, duration, pass mark, and description.
+3. Add questions directly or reuse questions from the question bank.
+4. Reorder, edit, or delete draft questions.
+5. Publish the draft by setting a future start and end time.
+6. View analytics and results after submissions are available.
+7. Archive ended active exams.
+8. Delete draft exams that have no student activity.
+
+### Admin
+
+1. Create lecturer or admin staff accounts.
+2. Activate or deactivate users.
+3. Delete eligible users.
+4. Review audit events.
+
+## Lecturer Exam Rules
+
+- Only the lecturer who created an exam can manage it.
+- Only draft exams can be edited.
+- Only draft exams can have questions added, edited, deleted, or reordered.
+- A draft exam must contain at least one question before publishing.
+- Publishing requires a future start time and an end time after the start time.
+- Active exams are locked for settings and question edits.
+- Active exams can be archived only after the exam end time.
+- Only draft exams can be deleted.
+- Draft exam deletion also removes that exam's draft questions.
+- Exams with student attempts or results cannot be deleted.
+
+## Question Bank Rules
+
+- Lecturers can open the bank directly at `/lecturer/question-bank`.
+- The bank shows reusable questions from the lecturer's own exams.
+- New bank questions are created inside the selected draft exam.
+- Existing bank questions can be added to a selected draft exam.
+- Questions from active or archived source exams are visible but locked for editing.
+- Draft-source questions can be edited from the question bank and return back to the bank after saving.
+- Duplicate bank questions cannot be linked to the same target exam.
+
+## Role Permissions
+
+| Role | Can Do | Cannot Do |
+|---|---|---|
+| Student | Register, log in, take active exams, submit answers, view own results, download own reports | Manage users, create exams, edit questions, view other students' results |
+| Lecturer | Manage own exams, manage own draft questions, use question bank, publish/archive exams, view own analytics and results | Manage users, access audit log, edit exams owned by other lecturers |
+| Admin | Create staff accounts, manage users, view audit log | Take exams as a student, create lecturer exam content |
+
+## API Summary
+
+### Public and Auth
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| GET | `/api/health` | Public | Health check |
-| POST | `/api/auth/register` | Public | Register a student |
-| POST | `/api/auth/login` | Public | Login and receive JWT |
+| GET | `/api/health` | Public | Service health metadata |
+| GET | `/api/public/home-summary` | Public | Home page statistics |
+| POST | `/api/auth/register` | Public | Register a student account |
+| POST | `/api/auth/login` | Public | Log in and receive a JWT |
+| PATCH | `/api/auth/profile` | Auth | Update current profile |
+| PATCH | `/api/auth/profile/password` | Auth | Change current password |
 
-### Users
+### Users and Audit
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
 | GET | `/api/users` | Admin | List users |
 | POST | `/api/users` | Admin | Create lecturer or admin account |
-| PATCH | `/api/users/:id/status` | Admin | Activate/deactivate user |
-| DELETE | `/api/users/:id` | Admin | Delete a user except self |
+| PATCH | `/api/users/:id/status` | Admin | Activate or deactivate user |
+| DELETE | `/api/users/:id` | Admin | Delete an eligible user |
 | GET | `/api/audit?limit=100` | Admin | View recent audit events |
 
 ### Exams
@@ -279,11 +630,12 @@ The backend also includes a high-priority CORS response filter that allows local
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
 | GET | `/api/exams` | Auth | Lecturer sees own exams; student sees active exams |
-| POST | `/api/exams` | Lecturer | Create draft exam |
-| GET | `/api/exams/:id` | Lecturer owner / Student active exam | Exam detail |
-| PATCH | `/api/exams/:id` | Lecturer owner | Edit draft, publish, or archive |
-| GET | `/api/exams/:id/results` | Lecturer owner | Exam result table and summary |
-| POST | `/api/exams/:id/questions/:questionId` | Lecturer owner | Add question bank item to exam |
+| POST | `/api/exams` | Lecturer | Create a draft exam |
+| GET | `/api/exams/:id` | Owner lecturer or eligible student | Get exam detail |
+| PATCH | `/api/exams/:id` | Lecturer owner | Edit draft settings, publish, or archive |
+| DELETE | `/api/exams/:id` | Lecturer owner | Delete eligible draft exam |
+| GET | `/api/exams/:id/results` | Lecturer owner | Result table and summary |
+| POST | `/api/exams/:id/questions/:questionId` | Lecturer owner | Add a bank question to a draft exam |
 
 ### Questions
 
@@ -292,39 +644,86 @@ The backend also includes a high-priority CORS response filter that allows local
 | GET | `/api/questions?examId=:id` | Lecturer owner | List exam questions |
 | GET | `/api/questions/bank` | Lecturer | List reusable question bank |
 | GET | `/api/questions/:id` | Lecturer owner | Get one question |
-| POST | `/api/questions` | Lecturer owner | Create question |
-| PATCH | `/api/questions/:id` | Lecturer owner | Update question |
-| DELETE | `/api/questions/:id` | Lecturer owner | Delete question |
-| PATCH | `/api/questions/reorder` | Lecturer owner | Reorder questions |
+| POST | `/api/questions` | Lecturer owner | Create a question on a draft exam |
+| PATCH | `/api/questions/:id` | Lecturer owner | Update a draft question |
+| DELETE | `/api/questions/:id` | Lecturer owner | Delete a draft question |
+| PATCH | `/api/questions/reorder` | Lecturer owner | Reorder draft questions |
 
 ### Attempts, Results, Reports
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
 | POST | `/api/attempts` | Student | Start an exam attempt |
-| GET | `/api/attempts/:id` | Student owner | Get attempt |
+| GET | `/api/attempts/:id` | Student owner | Get attempt with questions |
 | PATCH | `/api/attempts/:id` | Student owner | Save answers |
 | POST | `/api/attempts/:id/submit` | Student owner | Submit and auto-grade |
-| GET | `/api/results/:id` | Student owner / Lecturer owner | Result detail |
-| GET | `/api/results/attempt/:attemptId` | Student owner / Lecturer owner | Result by attempt |
+| GET | `/api/results/:id` | Student owner or lecturer owner | Result detail |
+| GET | `/api/results/attempt/:attemptId` | Student owner or lecturer owner | Result by attempt |
 | GET | `/api/reports/exam/:id` | Lecturer owner | Exam analytics |
 | GET | `/api/reports/student/:id` | Student owner | Student report card |
-| GET | `/api/reports/pdf/:attemptId` | Student owner / Lecturer owner | Download PDF result report |
+| GET | `/api/reports/pdf/:attemptId` | Student owner or lecturer owner | Download PDF result report |
 
-## Notes for Development
+## Validation and Security
 
-- Keep frontend API calls inside `frontend/src/services`.
-- Keep visual styling in CSS files; the project does not use Tailwind or TypeScript.
-- The backend controllers validate role permissions before returning protected data.
-- Only draft exams can be edited or have questions modified.
-- Only active exams inside the schedule window can be attempted.
-- MCQ and True/False answers are auto-graded immediately on submit.
-- Short Answer questions are displayed and stored as part of exams, but the current auto-grader awards marks only for MCQ and True/False.
+- JWT-protected API routes with role checks.
+- Server-side ownership checks for lecturer exam and question access.
+- Login throttling after repeated failures.
+- Automatic frontend session cleanup on expired JWT responses.
+- Server-side prevention of duplicate student attempts.
+- Server-side exam-window enforcement for starts, saves, and submissions.
+- Audit events for major auth, admin, exam, question, attempt, and result actions.
+- Security headers added to API responses.
 
-## Build Status
+## Build and Verification
 
-- Frontend production build passed with `npm run build`.
-- Backend Java source was reviewed and the duplicate unreachable return in `AttemptController` was fixed. Run `mvn test` locally where Maven is installed.
+Run frontend production build:
+
+```bash
+cd frontend
+npm run build
+```
+
+Run backend compile/tests:
+
+```bash
+cd backend
+mvn test
+```
+
+Current verification status in this workspace:
+
+- `npm run build` passes.
+- `mvn test` passes. There are currently no backend test source files, so this mainly verifies Java compilation.
+- Backend smoke test passed for lecturer exam publishing validation and draft exam deletion.
+
+## Supabase Storage Notes
+
+- Set `APP_STORAGE=database` and `DATABASE_URL` to use Supabase only.
+- The backend currently stores application collections in the `app_json_store` table.
+- Required Supabase table:
+
+```sql
+create table if not exists public.app_json_store (
+  store_key text primary key,
+  data jsonb not null default '[]'::jsonb,
+  updated_at timestamp with time zone not null default now()
+);
+```
+
+- Expected `app_json_store.store_key` values are `users.json`, `exams.json`, `questions.json`, `attempts.json`, `results.json`, and `audit.json`.
+- If a key is missing, the backend creates it with an empty JSON array.
+- If the users store is empty, the backend creates the demo admin, lecturer, and student accounts automatically.
+- The normalized Supabase tables such as `users`, `exams`, and `questions` are not used by the current backend unless repository code is rewritten for them.
+- Deleting a draft exam removes the related draft questions from the database-backed `questions.json` collection.
+- Avoid committing real secrets in `backend/.env` or `frontend/.env`.
+
+## Development Notes
+
+- Keep frontend API calls in `frontend/src/services`.
+- Keep route-level access control in `frontend/src/App.jsx` and backend role validation in controllers.
+- Keep reusable UI in `frontend/src/components`.
+- Keep styling in CSS files; this project does not use Tailwind or TypeScript.
+- Prefer changing backend lifecycle rules in services/controllers instead of only hiding frontend buttons.
 
 ## License
 

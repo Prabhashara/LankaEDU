@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.common.JsonFileStore;
 import com.onlineexam.exams.PublicExam;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +20,7 @@ public class QuestionService {
   private final JsonFileStore<Question> store;
 
   public QuestionService(ObjectMapper objectMapper) {
-    this.store = new JsonFileStore<>(Path.of("src/data/questions.json"), objectMapper, new TypeReference<>() {});
+    this.store = new JsonFileStore<>("questions.json", objectMapper, new TypeReference<>() {});
   }
 
   public List<PublicQuestion> listForExam(String examId) {
@@ -51,6 +50,10 @@ public class QuestionService {
     return (int) store.readAll().stream()
       .filter(question -> examId.equals(question.getExamId()))
       .count();
+  }
+
+  public int countAll() {
+    return store.readAll().size();
   }
 
   public List<BankQuestion> listForLecturer(List<PublicExam> exams) {
@@ -160,6 +163,17 @@ public class QuestionService {
     renumberExamQuestions(questions, found.getExamId());
     store.writeAll(questions);
     return PublicQuestion.from(found);
+  }
+
+  public int deleteForExam(String examId) {
+    List<Question> questions = new ArrayList<>(store.readAll());
+    int beforeCount = questions.size();
+    questions.removeIf(question -> examId.equals(question.getExamId()));
+    int deletedCount = beforeCount - questions.size();
+    if (deletedCount > 0) {
+      store.writeAll(questions);
+    }
+    return deletedCount;
   }
 
   public List<PublicQuestion> reorder(String examId, List<String> questionIds) {

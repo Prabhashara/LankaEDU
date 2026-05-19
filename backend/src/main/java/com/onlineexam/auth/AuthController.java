@@ -4,6 +4,7 @@ import com.onlineexam.audit.AuditService;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.common.ApiException;
+import com.onlineexam.common.RequestBodySupport;
 import com.onlineexam.users.User;
 import com.onlineexam.users.UserService;
 import com.onlineexam.users.UserRole;
@@ -40,6 +41,7 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     Map<String, String> errors = new LinkedHashMap<>();
     String fullName = trim(body.get("fullName"));
     String studentId = trim(body.get("studentId"));
@@ -92,6 +94,7 @@ public class AuthController {
 
   @PostMapping("/login")
   public Map<String, Object> login(@RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     String email = trim(body.get("email")).toLowerCase();
     String password = string(body.get("password"));
 
@@ -126,6 +129,7 @@ public class AuthController {
 
   @PatchMapping("/profile")
   public Map<String, Object> updateProfile(HttpServletRequest request, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal currentUser = AuthSupport.currentUser(request);
     String name = trim(body.get("name"));
     String email = trim(body.get("email")).toLowerCase();
@@ -153,6 +157,7 @@ public class AuthController {
 
   @PatchMapping("/profile/password")
   public Map<String, Object> changePassword(HttpServletRequest request, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal currentUser = AuthSupport.currentUser(request);
     String currentPassword = string(body.get("currentPassword"));
     String newPassword = string(body.get("newPassword"));

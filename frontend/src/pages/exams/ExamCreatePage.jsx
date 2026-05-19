@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { createExam } from "../../services/examService";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
 
 const initialValues = {
   title: "",
@@ -82,11 +83,11 @@ export default function ExamCreatePage() {
         state: { toast: "Exam created successfully." }
       });
     } catch (error) {
-      const responseErrors = error.response?.data?.errors;
-      if (responseErrors) {
+      const responseErrors = getApiFieldErrors(error);
+      if (Object.keys(responseErrors).length > 0) {
         setErrors(responseErrors);
       }
-      setSubmitError(error.response?.data?.message || "Unable to create exam.");
+      setSubmitError(getApiErrorMessage(error, "Unable to create exam."));
     } finally {
       setIsSubmitting(false);
     }

@@ -5,6 +5,7 @@ import com.onlineexam.attempts.AttemptService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
+import com.onlineexam.common.RequestBodySupport;
 import com.onlineexam.questions.PublicQuestion;
 import com.onlineexam.questions.Question;
 import com.onlineexam.questions.QuestionService;
@@ -21,6 +22,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,6 +76,7 @@ public class ExamController {
 
   @PostMapping
   public ResponseEntity<Map<String, Object>> create(HttpServletRequest request, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     ExamValues values = validateExam(body);
     PublicExam exam = examService.create(user.id(), values);
@@ -145,6 +148,7 @@ public class ExamController {
 
   @PatchMapping("/{id}")
   public Map<String, Object> patch(HttpServletRequest request, @PathVariable String id, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     PublicExam exam = examService.findPublicById(id).orElse(null);
 
@@ -156,6 +160,10 @@ public class ExamController {
     if ("Active".equals(status)) {
       if (!"Draft".equals(exam.status())) {
         throw new ApiException(HttpStatus.CONFLICT, "Only draft exams can be published");
+      }
+
+      if (questionService.countForExam(id) == 0) {
+        throw new ApiException(HttpStatus.CONFLICT, "Add at least one question before publishing");
       }
 
       ScheduleValues schedule = validateSchedule(body);
@@ -187,6 +195,32 @@ public class ExamController {
     PublicExam updatedExam = examService.updateSettings(id, values);
     auditService.record(user, "EXAM_UPDATED", "exam", id, "Exam settings updated", Map.of("title", updatedExam.title(), "subject", updatedExam.subject()));
     return Map.of("message", "Exam updated", "exam", updatedExam);
+  }
+
+  @DeleteMapping("/{id}")
+  public Map<String, Object> delete(HttpServletRequest request, @PathVariable String id) {
+    UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
+    PublicExam exam = findOwnedExam(id, user);
+
+    if (!"Draft".equals(exam.status())) {
+      throw new ApiException(HttpStatus.CONFLICT, "Only draft exams can be deleted");
+    }
+
+    if (attemptService.hasForExam(id) || !resultService.listByExam(id).isEmpty()) {
+      throw new ApiException(HttpStatus.CONFLICT, "Exam cannot be deleted because it already has student activity");
+    }
+
+    int questionCount = questionService.deleteForExam(id);
+    PublicExam deletedExam = examService.delete(id);
+    auditService.record(
+      user,
+      "EXAM_DELETED",
+      "exam",
+      id,
+      "Exam deleted",
+      Map.of("title", exam.title(), "questionCount", questionCount)
+    );
+    return Map.of("message", "Exam deleted", "exam", deletedExam);
   }
 
   private PublicExam findOwnedExam(String id, UserPrincipal user) {

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { getAuthToken, getStoredRole, getStoredUser, saveAuthSession } from "../../services/authStorage";
+import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
 import { changePassword, updateProfile } from "../../services/userService";
 
 function capitalize(value) {
@@ -128,11 +129,12 @@ export default function ProfileManagementPage() {
       setProfileErrors({});
       setProfileMessage("Profile updated successfully.");
     } catch (error) {
-      if (error.response?.data?.errors) {
-        setProfileErrors(error.response.data.errors);
+      const responseErrors = getApiFieldErrors(error);
+      if (Object.keys(responseErrors).length > 0) {
+        setProfileErrors(responseErrors);
         setProfileMessage("");
       } else {
-        setProfileMessage(error.response?.data?.message || "Failed to update profile.");
+        setProfileMessage(getApiErrorMessage(error, "Failed to update profile."));
       }
     } finally {
       setProfileLoading(false);
@@ -174,11 +176,12 @@ export default function ProfileManagementPage() {
       setPasswordErrors({});
       setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
-      if (error.response?.data?.errors) {
-        setPasswordErrors(error.response.data.errors);
+      const responseErrors = getApiFieldErrors(error);
+      if (Object.keys(responseErrors).length > 0) {
+        setPasswordErrors(responseErrors);
         setPasswordMessage("");
       } else {
-        setPasswordMessage(error.response?.data?.message || "Failed to change password.");
+        setPasswordMessage(getApiErrorMessage(error, "Failed to change password."));
       }
     } finally {
       setPasswordLoading(false);

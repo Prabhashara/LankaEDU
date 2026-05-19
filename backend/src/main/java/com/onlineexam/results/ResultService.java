@@ -3,7 +3,6 @@ package com.onlineexam.results;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.common.JsonFileStore;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +13,7 @@ public class ResultService {
   private final JsonFileStore<Result> store;
 
   public ResultService(ObjectMapper objectMapper) {
-    this.store = new JsonFileStore<>(Path.of("src/data/results.json"), objectMapper, new TypeReference<>() {});
+    this.store = new JsonFileStore<>("results.json", objectMapper, new TypeReference<>() {});
   }
 
   public Optional<Result> findById(String id) {
@@ -23,6 +22,10 @@ public class ResultService {
 
   public Optional<Result> findByAttemptId(String attemptId) {
     return store.readAll().stream().filter(result -> attemptId.equals(result.getAttemptId())).findFirst();
+  }
+
+  public List<Result> listAll() {
+    return store.readAll();
   }
 
   public List<Result> listByExam(String examId) {

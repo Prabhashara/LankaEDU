@@ -1,6 +1,7 @@
 package com.onlineexam.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlineexam.common.ApiErrorResponse;
 import com.onlineexam.users.User;
 import com.onlineexam.users.UserService;
 import jakarta.servlet.FilterChain;
@@ -8,7 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,15 +37,22 @@ public class AuthFilter extends OncePerRequestFilter {
 
     String header = request.getHeader("Authorization");
     if (header == null || !header.startsWith("Bearer ")) {
-      unauthorized(response);
+      unauthorized(request, response);
       return;
     }
 
-    UserPrincipal principal = jwtService.verify(header.substring("Bearer ".length()));
-    User user = principal == null ? null : userService.findRawById(principal.id()).orElse(null);
+    UserPrincipal principal;
+    User user;
+    try {
+      principal = jwtService.verify(header.substring("Bearer ".length()));
+      user = principal == null ? null : userService.findRawById(principal.id()).orElse(null);
+    } catch (IllegalStateException error) {
+      serviceUnavailable(request, response);
+      return;
+    }
 
     if (user == null || !user.isActive()) {
-      unauthorized(response);
+      unauthorized(request, response);
       return;
     }
 
@@ -53,12 +61,29 @@ public class AuthFilter extends OncePerRequestFilter {
   }
 
   private boolean isPublicPath(String path) {
-    return path.equals("/api/health") || path.equals("/api/auth/login") || path.equals("/api/auth/register");
+    return path.equals("/api/health")
+      || path.startsWith("/api/public/")
+      || path.equals("/api/auth/login")
+      || path.equals("/api/auth/register");
   }
 
-  private void unauthorized(HttpServletResponse response) throws IOException {
-    response.setStatus(401);
+  private void unauthorized(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    writeError(request, response, HttpStatus.UNAUTHORIZED, "Authentication required");
+  }
+
+  private void serviceUnavailable(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    writeError(request, response, HttpStatus.SERVICE_UNAVAILABLE, "Service is temporarily unavailable.");
+  }
+
+  private void writeError(
+    HttpServletRequest request,
+    HttpServletResponse response,
+    HttpStatus status,
+    String message
+  ) throws IOException {
+    response.setStatus(status.value());
     response.setContentType("application/json");
-    objectMapper.writeValue(response.getWriter(), Map.of("message", "Authentication required"));
+    response.setCharacterEncoding("UTF-8");
+    objectMapper.writeValue(response.getWriter(), ApiErrorResponse.body(status, message, request));
   }
 }

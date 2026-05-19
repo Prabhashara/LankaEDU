@@ -4,6 +4,7 @@ import com.onlineexam.audit.AuditService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
+import com.onlineexam.common.RequestBodySupport;
 import com.onlineexam.exams.ExamService;
 import com.onlineexam.questions.AttemptQuestion;
 import com.onlineexam.questions.Question;
@@ -55,6 +56,7 @@ public class AttemptController {
   @PostMapping
   public ResponseEntity<Map<String, Object>> createAttempt(HttpServletRequest request,
       @RequestBody Map<String, String> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "student");
     String examId = body.get("exam_id");
 
@@ -113,6 +115,7 @@ public class AttemptController {
       HttpServletRequest request,
       @PathVariable String id,
       @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "student");
     Attempt attempt = attemptService.findById(id).orElse(null);
 
@@ -142,6 +145,7 @@ public class AttemptController {
       HttpServletRequest request,
       @PathVariable String id,
       @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "student");
     Attempt attempt = attemptService.findById(id).orElse(null);
 

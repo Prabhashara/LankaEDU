@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerStudent } from "../../services/authService";
+import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
+import Icon from "../../components/Icons.jsx";
 
 const initialForm = {
   fullName: "", studentId: "", email: "", password: "", confirmPassword: ""
@@ -49,46 +51,66 @@ export default function SignupPage() {
       });
       navigate("/login", { replace: true, state: { successMessage: data.message || "Registration successful, please log in" } });
     } catch (error) {
-      const responseErrors = error.response?.data?.errors;
-      if (responseErrors) setErrors(responseErrors);
-      else setFormError(error.response?.data?.message || "Registration failed. Please try again.");
+      const responseErrors = getApiFieldErrors(error);
+      if (Object.keys(responseErrors).length > 0) setErrors(responseErrors);
+      else setFormError(getApiErrorMessage(error, "Registration failed. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-panel" aria-labelledby="signup-title">
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 28 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg,#006880,#00a3c4)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "1.1rem" }}>📋</div>
-          <span style={{ fontWeight: 900, fontSize: "1.1rem", color: "#0f172a", letterSpacing: "-0.02em" }}>Lanka<span style={{ color: "#006880" }}>Edu</span></span>
-        </div>
+    <main className="auth-shell auth-shell-premium">
+      <section className="auth-layout auth-layout-signup" aria-labelledby="signup-title">
+        <aside className="auth-visual-panel" aria-label="Student account benefits">
+          <div className="auth-brand auth-brand-large">
+            <div className="brand-mark"><Icon name="exam" size={22} /></div>
+            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+          </div>
+          <div className="auth-visual-content">
+            <span className="home-highlight">Student exam portal</span>
+            <h2>Create an account and enter a focused digital exam space.</h2>
+            <p>
+              Students can access active exams, complete timed attempts, and review detailed scores through a polished learning dashboard.
+            </p>
+          </div>
+          <div className="auth-feature-stack">
+            <div><span><Icon name="clock" size={15} /></span> Timed online exams</div>
+            <div><span><Icon name="check" size={15} /></span> Instant result review</div>
+            <div><span><Icon name="report" size={15} /></span> Personal report card</div>
+          </div>
+        </aside>
 
-        <div className="auth-copy">
-          <p className="eyebrow">Get started free</p>
-          <h1 id="signup-title" style={{ fontSize: "1.75rem", marginBottom: 6 }}>Create your student account</h1>
-          <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Open your student portal and begin taking exams online.</p>
-        </div>
+        <section className="auth-panel auth-card-premium">
+          <div className="auth-brand">
+            <div className="brand-mark"><Icon name="exam" size={22} /></div>
+            <span className="brand-wordmark">Lanka<span>Edu</span></span>
+          </div>
 
-        <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          {formError && <div className="alert alert-error">⚠ {formError}</div>}
+          <div className="auth-copy">
+            <p className="eyebrow">Get started free</p>
+            <h1 id="signup-title">Create your student account</h1>
+            <p>Open your student portal and begin taking exams online.</p>
+          </div>
 
-          <Field label="Full Name" name="fullName" value={form.fullName} error={errors.fullName} onChange={updateField} autoComplete="name" placeholder="Jane Smith" />
-          <Field label="Student ID" name="studentId" value={form.studentId} error={errors.studentId} onChange={updateField} autoComplete="username" placeholder="e.g. S2024001" />
-          <Field label="Email address" name="email" type="email" value={form.email} error={errors.email} onChange={updateField} autoComplete="email" placeholder="you@university.edu" />
-          <Field label="Password" name="password" type="password" value={form.password} error={errors.password} onChange={updateField} autoComplete="new-password" placeholder="Minimum 8 characters" />
-          <Field label="Confirm Password" name="confirmPassword" type="password" value={form.confirmPassword} error={errors.confirmPassword} onChange={updateField} autoComplete="new-password" placeholder="Re-enter password" />
+          <form className="auth-form" onSubmit={handleSubmit} noValidate>
+            {formError && <div className="alert alert-error"><Icon name="warning" size={16} /> {formError}</div>}
 
-          <button className="primary-button" type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center", marginTop: 4 }}>
-            {isSubmitting ? "Creating account…" : "Create account →"}
-          </button>
-        </form>
+            <Field label="Full Name" name="fullName" value={form.fullName} error={errors.fullName} onChange={updateField} autoComplete="name" placeholder="Jane Smith" />
+            <Field label="Student ID" name="studentId" value={form.studentId} error={errors.studentId} onChange={updateField} autoComplete="username" placeholder="e.g. S2024001" />
+            <Field label="Email address" name="email" type="email" value={form.email} error={errors.email} onChange={updateField} autoComplete="email" placeholder="you@university.edu" />
+            <Field label="Password" name="password" type="password" value={form.password} error={errors.password} onChange={updateField} autoComplete="new-password" placeholder="Minimum 8 characters" />
+            <Field label="Confirm Password" name="confirmPassword" type="password" value={form.confirmPassword} error={errors.confirmPassword} onChange={updateField} autoComplete="new-password" placeholder="Re-enter password" />
 
-        <p className="auth-footer" style={{ marginTop: 20 }}>
-          Already registered? <Link to="/login">Sign in</Link>
-        </p>
+            <button className="primary-button full-width-button" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating account…" : <>Create account <Icon name="arrowRight" size={16} /></>}
+            </button>
+          </form>
+
+          <p className="auth-footer">
+            Already registered? <Link to="/login">Sign in</Link>
+          </p>
+        </section>
       </section>
     </main>
   );

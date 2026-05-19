@@ -2,12 +2,12 @@ import api from "./api";
 
 export async function getQuestions(examId) {
   const response = await api.get("/questions", { params: { examId } });
-  return response.data.questions;
+  return Array.isArray(response.data?.questions) ? response.data.questions : [];
 }
 
 export async function getQuestionBank() {
   const response = await api.get("/questions/bank");
-  return response.data.questions;
+  return Array.isArray(response.data?.questions) ? response.data.questions : [];
 }
 
 export async function getQuestion(questionId) {

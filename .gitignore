@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+target/
+backend/private/
+backend/src/data/
+
+# Local environment files
+.env
+!.env.example
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*~
+
+# OS and editor metadata
+.DS_Store
+.vscode/

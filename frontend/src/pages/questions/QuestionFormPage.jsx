@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
 import { getExam } from "../../services/examService";
 import { createQuestion, getQuestion, updateQuestion } from "../../services/questionService";
 
@@ -90,6 +91,7 @@ function validate(values) {
 export default function QuestionFormPage() {
   const { examId, questionId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const token = getAuthToken();
   const role = getStoredRole();
   const [values, setValues] = useState(initialValues);
@@ -100,6 +102,7 @@ export default function QuestionFormPage() {
   const [isLoading, setIsLoading] = useState(true);
   const isEditing = Boolean(questionId);
   const canManageQuestions = exam?.status === "Draft";
+  const returnTo = searchParams.get("from") === "bank" ? "/lecturer/question-bank" : `/lecturer/exams/${examId}`;
 
   useEffect(() => {
     if (!token || role !== "lecturer") {
@@ -121,9 +124,9 @@ export default function QuestionFormPage() {
           }
           setSubmitError("");
         }
-      } catch (_error) {
+      } catch (error) {
         if (isMounted) {
-          setSubmitError("Unable to load question form.");
+          setSubmitError(getApiErrorMessage(error, "Unable to load question form."));
         }
       } finally {
         if (isMounted) {
@@ -234,16 +237,16 @@ export default function QuestionFormPage() {
         await createQuestion(payload);
       }
 
-      navigate(`/lecturer/exams/${examId}`, {
+      navigate(returnTo, {
         replace: true,
         state: { toast: isEditing ? "Question updated successfully." : "Question added successfully.", tab: "questions" }
       });
     } catch (error) {
-      const responseErrors = error.response?.data?.errors;
-      if (responseErrors) {
+      const responseErrors = getApiFieldErrors(error);
+      if (Object.keys(responseErrors).length > 0) {
         setErrors(responseErrors);
       }
-      setSubmitError(error.response?.data?.message || "Unable to add question.");
+      setSubmitError(getApiErrorMessage(error, "Unable to add question."));
     } finally {
       setIsSubmitting(false);
     }
@@ -259,8 +262,8 @@ export default function QuestionFormPage() {
             {isEditing ? "Update the question before publishing the exam." : "Create a question and link it to this exam."}
           </p>
         </div>
-        <Link className="secondary-button" to={`/lecturer/exams/${examId}`}>
-          Back to exam
+        <Link className="secondary-button" to={returnTo}>
+          Back
         </Link>
       </section>
 

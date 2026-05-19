@@ -1,14 +1,27 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import Icon from "../components/Icons.jsx";
+import { getHomeSummary } from "../services/publicService.js";
 
-const heroStats = [
-  { label: "Exams Taken", value: "247" },
-  { label: "Pass Rate", value: "91%" },
-  { label: "Avg Score", value: "78%" }
-];
+const defaultHomeSummary = {
+  totalExams: 0,
+  activeExams: 0,
+  completedAttempts: 0,
+  passRate: 0,
+  averageScore: 0,
+  questionCount: 0,
+  timer: {
+    status: "none",
+    label: "No Scheduled Exam",
+    targetAt: "",
+    examTitle: "",
+    subject: ""
+  }
+};
 
 const roleFeatures = [
   {
-    icon: "🎓",
+    icon: "profile",
     badge: "For Students",
     title: "Focus on learning, not paperwork.",
     desc: "Access available exams in one click, take assessments with a live countdown, and instantly view detailed results and your personal report card.",
@@ -16,7 +29,7 @@ const roleFeatures = [
     tone: "student"
   },
   {
-    icon: "📝",
+    icon: "book",
     badge: "For Lecturers",
     title: "Create and publish exams with confidence.",
     desc: "Build question banks, schedule exam windows, publish to students, and review performance using bar charts and donut pass/fail analytics.",
@@ -24,7 +37,7 @@ const roleFeatures = [
     tone: "lecturer"
   },
   {
-    icon: "🛡️",
+    icon: "shield",
     badge: "For Admins",
     title: "Keep the platform secure and organized.",
     desc: "Control user access across all roles, search and manage accounts from a unified dashboard, and activate or deactivate users instantly.",
@@ -34,20 +47,57 @@ const roleFeatures = [
 ];
 
 const workflowSteps = [
-  { step: "01", icon: "✏️", title: "Sign up", desc: "Create your account and get assigned a role: student, lecturer, or admin." },
-  { step: "02", icon: "📋", title: "Access exams", desc: "Students see active exam cards. Lecturers create and publish question banks." },
-  { step: "03", icon: "⏱️", title: "Take the exam", desc: "A live countdown and question navigator guide students through each assessment." },
-  { step: "04", icon: "📊", title: "Review results", desc: "Instant scores, grade badges, PDF reports, and class-wide analytics dashboards." }
+  { step: "01", icon: "profile", title: "Sign up", desc: "Create your account and get assigned a role: student, lecturer, or admin." },
+  { step: "02", icon: "exam", title: "Access exams", desc: "Students see active exam cards. Lecturers create and publish question banks." },
+  { step: "03", icon: "clock", title: "Take the exam", desc: "A live countdown and question navigator guide students through each assessment." },
+  { step: "04", icon: "analytics", title: "Review results", desc: "Instant scores, grade badges, PDF reports, and class-wide analytics dashboards." }
 ];
 
-const questionCells = Array.from({ length: 8 }, (_, index) => index + 1);
-
 export default function HomePage() {
+  const [summary, setSummary] = useState(defaultHomeSummary);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadSummary() {
+      try {
+        const data = await getHomeSummary();
+        if (isMounted) {
+          setSummary(normalizeHomeSummary(data));
+        }
+      } catch {
+        if (isMounted) {
+          setSummary(defaultHomeSummary);
+        }
+      }
+    }
+
+    loadSummary();
+    return () => { isMounted = false; };
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const heroStats = useMemo(() => ([
+    { label: "Exams Taken", value: formatCount(summary.completedAttempts) },
+    { label: "Pass Rate", value: formatPercent(summary.passRate) },
+    { label: "Avg Score", value: formatPercent(summary.averageScore) }
+  ]), [summary.averageScore, summary.completedAttempts, summary.passRate]);
+
+  const timer = useMemo(() => buildTimerDisplay(summary.timer, now), [summary.timer, now]);
+  const questionCells = useMemo(() => buildQuestionCells(summary.questionCount), [summary.questionCount]);
+  const averageScore = formatPercent(summary.averageScore);
+  const passRate = formatPercent(summary.passRate);
+
   return (
     <div className="home-shell">
       <nav className="home-nav">
         <Link className="home-nav-logo" to="/">
-          <div className="nav-logo-icon">📋</div>
+          <div className="nav-logo-icon"><Icon name="exam" size={22} /></div>
           <span className="nav-logo-text">
             Lanka<span>Edu</span>
           </span>
@@ -66,7 +116,7 @@ export default function HomePage() {
         <div className="home-container home-hero-stack">
           <div>
             <span className="home-eyebrow">
-              <span aria-hidden="true">🎓</span>
+              <Icon name="sparkles" size={16} />
               Professional Online Exam Platform
             </span>
           </div>
@@ -99,34 +149,34 @@ export default function HomePage() {
 
             <div className="home-visual" aria-label="Exam dashboard preview">
               <div className="home-score-card">
-                <div className="home-score-ring">
-                  <div className="home-score-ring-inner">84%</div>
+                <div className="home-score-ring" style={{ "--home-score-value": `${clampPercent(summary.averageScore)}%` }}>
+                  <div className="home-score-ring-inner">{averageScore}</div>
                 </div>
                 <div>
-                  <div className="home-card-title">Data Structures Final</div>
+                  <div className="home-card-title">Platform Average</div>
                   <div className="home-chip-row">
-                    <span className="home-chip home-chip-success">Passed</span>
-                    <span className="home-chip home-chip-primary">Grade A</span>
+                    <span className="home-chip home-chip-success">{passRate} pass rate</span>
+                    <span className="home-chip home-chip-primary">{formatCount(summary.completedAttempts)} submissions</span>
                   </div>
                 </div>
               </div>
 
-              <div className="home-timer-card">
+              <div className={`home-timer-card ${timer.tone}`}>
                 <div>
-                  <div className="home-timer-label">Time Remaining</div>
-                  <div className="home-timer-value">32:14</div>
+                  <div className="home-timer-label">{timer.label}</div>
+                  <div className="home-timer-value">{timer.value}</div>
+                  {timer.caption ? <div className="home-timer-caption">{timer.caption}</div> : null}
                 </div>
                 <div className="home-question-grid" aria-hidden="true">
-                  {questionCells.map((cell) => (
-                    <div
-                      key={cell}
-                      className={`home-question-cell ${
-                        cell <= 6 ? "answered" : cell === 7 ? "current" : "muted"
-                      }`}
-                    >
-                      {cell}
-                    </div>
-                  ))}
+                  {questionCells.length > 0 ? (
+                    questionCells.map(({ number, state }) => (
+                      <div key={number} className={`home-question-cell ${state}`}>
+                        {number}
+                      </div>
+                    ))
+                  ) : (
+                    <span className="home-question-empty">No questions</span>
+                  )}
                 </div>
               </div>
 
@@ -157,7 +207,7 @@ export default function HomePage() {
             {roleFeatures.map(({ icon, badge, title, desc, points, tone }) => (
               <div key={badge} className="feature-card">
                 <div className="feature-card-top">
-                  <div className={`feature-icon feature-icon-${tone}`}>{icon}</div>
+                  <div className={`feature-icon feature-icon-${tone}`}><Icon name={icon} size={26} /></div>
                   <span className="home-highlight">{badge}</span>
                 </div>
                 <strong>{title}</strong>
@@ -186,7 +236,7 @@ export default function HomePage() {
           <div className="home-steps-grid">
             {workflowSteps.map(({ step, icon, title, desc }) => (
               <div key={step} className="home-step">
-                <div className="home-step-icon">{icon}</div>
+                <div className="home-step-icon"><Icon name={icon} size={22} /></div>
                 <div className="home-step-number">Step {step}</div>
                 <div className="home-step-title">{title}</div>
                 <div className="home-step-copy">{desc}</div>
@@ -215,7 +265,7 @@ export default function HomePage() {
 
       <footer className="home-footer">
         <div className="home-footer-brand">
-          <div className="nav-logo-icon home-footer-logo">📋</div>
+          <div className="nav-logo-icon home-footer-logo"><Icon name="exam" size={22} /></div>
           <span>LankaEdu</span>
         </div>
         <p>© {new Date().getFullYear()} LankaEdu. Professional Online Assessment Platform.</p>
@@ -229,4 +279,97 @@ export default function HomePage() {
       </footer>
     </div>
   );
+}
+
+function normalizeHomeSummary(data) {
+  const timer = data?.timer && typeof data.timer === "object" ? data.timer : defaultHomeSummary.timer;
+
+  return {
+    totalExams: numberValue(data?.totalExams),
+    activeExams: numberValue(data?.activeExams),
+    completedAttempts: numberValue(data?.completedAttempts),
+    passRate: numberValue(data?.passRate),
+    averageScore: numberValue(data?.averageScore),
+    questionCount: numberValue(data?.questionCount),
+    timer: {
+      status: text(timer.status) || "none",
+      label: text(timer.label) || "No Scheduled Exam",
+      targetAt: text(timer.targetAt),
+      examTitle: text(timer.examTitle),
+      subject: text(timer.subject)
+    }
+  };
+}
+
+function buildTimerDisplay(timer, now) {
+  const targetTime = Date.parse(timer.targetAt);
+  if (!Number.isFinite(targetTime)) {
+    return {
+      label: timer.label || "No Scheduled Exam",
+      value: "00:00",
+      caption: "Publish an exam to start the live timer",
+      tone: "idle"
+    };
+  }
+
+  const remainingSeconds = Math.max(0, Math.floor((targetTime - now) / 1000));
+  const captionParts = [timer.examTitle, timer.subject].filter(Boolean);
+  const isEndingTimer = timer.status === "remaining";
+  const tone = isEndingTimer && remainingSeconds <= 3600 ? "critical" : isEndingTimer && remainingSeconds <= 86400 ? "warning" : "";
+
+  return {
+    label: timer.label || "Time Remaining",
+    value: formatDuration(remainingSeconds),
+    caption: captionParts.join(" · "),
+    tone
+  };
+}
+
+function buildQuestionCells(questionCount) {
+  const visibleCount = Math.min(8, Math.max(0, Math.round(numberValue(questionCount))));
+  return Array.from({ length: visibleCount }, (_, index) => {
+    const number = index + 1;
+    const state = number < visibleCount ? "answered" : "current";
+    return { number, state };
+  });
+}
+
+function formatDuration(totalSeconds) {
+  const seconds = Math.max(0, Math.floor(totalSeconds));
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainder = seconds % 60;
+
+  if (days > 0) {
+    return `${days}d ${String(hours).padStart(2, "0")}h`;
+  }
+
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+  }
+
+  return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+}
+
+function formatPercent(value) {
+  const percentage = numberValue(value);
+  return `${Number.isInteger(percentage) ? percentage : percentage.toFixed(1)}%`;
+}
+
+function formatCount(value) {
+  return new Intl.NumberFormat("en-US").format(numberValue(value));
+}
+
+function numberValue(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function clampPercent(value) {
+  return Math.max(0, Math.min(100, numberValue(value)));
+}
+
+function text(value) {
+  return value == null ? "" : String(value).trim();
 }

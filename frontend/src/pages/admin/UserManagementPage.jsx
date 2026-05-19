@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { clearAuthSession, getAuthToken, getStoredRole, getStoredUserId } from "../../services/authStorage";
+import { getApiErrorMessage, getApiFieldErrors } from "../../services/errorService";
 import { createStaffUser, deleteUser, getUsers, updateUserStatus } from "../../services/userService";
+import Icon from "../../components/Icons.jsx";
+import { ConfirmModal, EmptyState, SkeletonGrid, StatCard } from "../../components/UiKit.jsx";
 
 const initialCreateForm = {
   fullName: "",
@@ -54,7 +57,7 @@ export default function UserManagementPage() {
       try {
         const data = await getUsers();
         if (isMounted) { setUsers(data); setError(""); }
-      } catch { if (isMounted) setError("Unable to load users."); }
+      } catch (err) { if (isMounted) setError(getApiErrorMessage(err, "Unable to load users.")); }
       finally { if (isMounted) setIsLoading(false); }
     }
     loadUsers();
@@ -104,9 +107,9 @@ export default function UserManagementPage() {
       setCreateErrors({});
       setSuccessMessage(`${newUser.role === "admin" ? "Admin" : "Lecturer"} account created for ${newUser.email}.`);
     } catch (err) {
-      const responseErrors = err.response?.data?.errors;
-      if (responseErrors) setCreateErrors(responseErrors);
-      setError(err.response?.data?.message || "Unable to create staff user.");
+      const responseErrors = getApiFieldErrors(err);
+      if (Object.keys(responseErrors).length > 0) setCreateErrors(responseErrors);
+      setError(getApiErrorMessage(err, "Unable to create staff user."));
     } finally {
       setIsCreating(false);
     }
@@ -117,7 +120,7 @@ export default function UserManagementPage() {
     try {
       const updated = await updateUserStatus(user.id, isActive);
       setUsers(cur => cur.map(u => u.id === updated.id ? updated : u));
-    } catch (err) { setError(err.response?.data?.message || "Unable to update user status."); }
+    } catch (err) { setError(getApiErrorMessage(err, "Unable to update user status.")); }
     finally { setActionUserId(""); }
   }
 
@@ -128,7 +131,7 @@ export default function UserManagementPage() {
       await deleteUser(pendingDelete.id);
       setUsers(cur => cur.filter(u => u.id !== pendingDelete.id));
       setPendingDelete(null);
-    } catch (err) { setError(err.response?.data?.message || "Unable to delete user."); }
+    } catch (err) { setError(getApiErrorMessage(err, "Unable to delete user.")); }
     finally { setActionUserId(""); }
   }
 
@@ -149,32 +152,16 @@ export default function UserManagementPage() {
         </div>
         <div className="header-actions">
           <button className="secondary-button" type="button" onClick={() => { clearAuthSession(); navigate("/login", { replace: true }); }} style={{ minHeight: 40, padding: "8px 16px" }}>
-            Sign out
+            <Icon name="logout" size={16} /> Sign out
           </button>
         </div>
       </section>
 
       <div className="stat-grid" style={{ marginBottom: 24 }}>
-        <div className="stat-card teal">
-          <div className="stat-card-label">Total Users</div>
-          <div className="stat-card-value">{users.length}</div>
-          <div className="stat-card-sub">all accounts</div>
-        </div>
-        <div className="stat-card emerald">
-          <div className="stat-card-label">Active</div>
-          <div className="stat-card-value">{totalActive}</div>
-          <div className="stat-card-sub">can log in</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-card-label">Students</div>
-          <div className="stat-card-value">{byRole.student}</div>
-          <div className="stat-card-sub">self registered</div>
-        </div>
-        <div className="stat-card amber">
-          <div className="stat-card-label">Staff</div>
-          <div className="stat-card-value">{byRole.lecturer + byRole.admin}</div>
-          <div className="stat-card-sub">lecturers + admins</div>
-        </div>
+        <StatCard label="Total Users" value={users.length} sub="all accounts" tone="teal" icon="users" />
+        <StatCard label="Active" value={totalActive} sub="can log in" tone="emerald" icon="userCheck" />
+        <StatCard label="Students" value={byRole.student} sub="self registered" tone="" icon="profile" />
+        <StatCard label="Staff" value={byRole.lecturer + byRole.admin} sub="lecturers + admins" tone="amber" icon="shield" />
       </div>
 
       <section className="detail-panel wide" style={{ marginBottom: 24 }} aria-labelledby="create-staff-title">
@@ -216,12 +203,12 @@ export default function UserManagementPage() {
         </div>
       </section>
 
-      {successMessage && <div className="alert alert-success admin-alert">✓ {successMessage}</div>}
-      {error && <div className="alert alert-error admin-alert">⚠ {error}</div>}
+      {successMessage && <div className="alert alert-success admin-alert"><Icon name="check" size={16} /> {successMessage}</div>}
+      {error && <div className="alert alert-error admin-alert"><Icon name="warning" size={16} /> {error}</div>}
 
       <section className="table-wrap" aria-label="All users">
         {isLoading ? (
-          <p className="empty-state">Loading users…</p>
+          <SkeletonGrid count={4} variant="list" />
         ) : (
           <table>
             <thead>
@@ -236,7 +223,7 @@ export default function UserManagementPage() {
             <tbody>
               {filteredUsers.length > 0 ? filteredUsers.map(user => (
                 <tr key={user.id}>
-                  <td style={{ fontWeight: 700 }}>
+                  <td data-label="Name" style={{ fontWeight: 700 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <div style={{ width: 32, height: 32, borderRadius: "50%", background: user.role === "admin" ? "#fef3c7" : user.role === "lecturer" ? "#e0f7fb" : "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem", fontWeight: 800, color: user.role === "admin" ? "#92400e" : user.role === "lecturer" ? "#006880" : "#475569", flexShrink: 0 }}>
                         {user.name?.charAt(0)?.toUpperCase() || "?"}
@@ -244,29 +231,29 @@ export default function UserManagementPage() {
                       {user.name}
                     </div>
                   </td>
-                  <td style={{ color: "#64748b", fontSize: "0.9rem" }}>{user.email}</td>
-                  <td><span style={{ textTransform: "capitalize", fontWeight: 700 }}>{user.role}</span></td>
-                  <td>
+                  <td data-label="Email" style={{ color: "#64748b", fontSize: "0.9rem" }}>{user.email}</td>
+                  <td data-label="Role"><span style={{ textTransform: "capitalize", fontWeight: 700 }}>{user.role}</span></td>
+                  <td data-label="Status">
                     <span className={user.isActive ? "status-pill active" : "status-pill inactive"}>
                       {user.isActive ? "● Active" : "○ Inactive"}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Actions">
                     <div className="row-actions">
                       <button className="table-button" type="button" disabled={user.isActive || actionUserId === user.id} onClick={() => handleStatusChange(user, true)}>
-                        Activate
+                        <Icon name="check" size={14} /> Activate
                       </button>
                       <button className="table-button" type="button" disabled={!user.isActive || user.id === currentUserId || actionUserId === user.id} onClick={() => handleStatusChange(user, false)} title={user.id === currentUserId ? "You cannot deactivate your own account" : undefined}>
-                        Deactivate
+                        <Icon name="lock" size={14} /> Deactivate
                       </button>
                       <button className="danger-button" type="button" disabled={user.id === currentUserId || actionUserId === user.id} onClick={() => setPendingDelete(user)}>
-                        Delete
+                        <Icon name="trash" size={14} /> Delete
                       </button>
                     </div>
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan="5" className="empty-cell">No users found matching your search.</td></tr>
+                <tr><td colSpan="5" className="empty-cell"><EmptyState icon="search" title="No users found" message="Try a different name, email, or role filter." /></td></tr>
               )}
             </tbody>
           </table>
@@ -274,19 +261,17 @@ export default function UserManagementPage() {
       </section>
 
       {pendingDelete && (
-        <div className="modal-backdrop" role="presentation">
-          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-description">
-            <div style={{ fontSize: "2rem", marginBottom: 12 }}>⚠️</div>
-            <h2 id="delete-title">Delete this user?</h2>
-            <p id="delete-description" style={{ marginTop: 8 }}>
-              This will permanently remove <strong>{pendingDelete.name}</strong> and revoke their access to the platform.
-            </p>
-            <div className="modal-actions">
-              <button className="secondary-button" type="button" onClick={() => setPendingDelete(null)} style={{ minHeight: 40 }}>Cancel</button>
-              <button className="danger-button solid" type="button" onClick={confirmDelete} style={{ minHeight: 40 }}>Delete permanently</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          icon="warning"
+          title="Delete this user?"
+          message={`This will permanently remove ${pendingDelete.name} and revoke their access to the platform.`}
+          confirmLabel="Delete permanently"
+          cancelLabel="Cancel"
+          danger
+          isBusy={actionUserId === pendingDelete.id}
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDelete(null)}
+        />
       )}
     </main>
   );

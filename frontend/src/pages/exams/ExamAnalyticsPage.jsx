@@ -2,8 +2,11 @@ import { ArcElement, BarController, BarElement, CategoryScale, Chart, DoughnutCo
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { getExams } from "../../services/examService";
 import { getExamReport } from "../../services/reportService";
+import Icon from "../../components/Icons.jsx";
+import { EmptyState, SkeletonGrid } from "../../components/UiKit.jsx";
 import "./ExamTakingPage.css";
 
 Chart.register(ArcElement, BarController, BarElement, CategoryScale, DoughnutController, Legend, LinearScale, Tooltip);
@@ -19,7 +22,8 @@ export default function ExamAnalyticsPage() {
   const [exams, setExams] = useState([]);
   const [selectedExamId, setSelectedExamId] = useState(id || "");
   const [report, setReport] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingExams, setIsLoadingExams] = useState(true);
+  const [isLoadingReport, setIsLoadingReport] = useState(Boolean(id));
   const [error, setError] = useState("");
   const [themeVersion, setThemeVersion] = useState(0);
 
@@ -32,15 +36,31 @@ export default function ExamAnalyticsPage() {
   useEffect(() => {
     if (!token || role !== "lecturer") return;
     let isMounted = true;
+    setIsLoadingExams(true);
+
     async function loadExams() {
       try {
         const data = await getExams();
         if (isMounted) {
           setExams(data);
-          if (!selectedExamId && data.length > 0) setSelectedExamId(data[0].id);
+          setError("");
+          if (!selectedExamId) {
+            if (data.length > 0) {
+              setSelectedExamId(data[0].id);
+            } else {
+              setReport(null);
+              setIsLoadingReport(false);
+            }
+          }
         }
-      } catch {
-        if (isMounted) { setError("Unable to load exams."); setIsLoading(false); }
+      } catch (requestError) {
+        if (isMounted) {
+          setError(getApiErrorMessage(requestError, "Unable to load exams."));
+          setReport(null);
+          setIsLoadingReport(false);
+        }
+      } finally {
+        if (isMounted) setIsLoadingExams(false);
       }
     }
     loadExams();
@@ -48,17 +68,23 @@ export default function ExamAnalyticsPage() {
   }, [role, token]);
 
   useEffect(() => {
-    if (!token || role !== "lecturer" || !selectedExamId) return;
+    if (!token || role !== "lecturer") return;
+    if (!selectedExamId) {
+      setReport(null);
+      setIsLoadingReport(false);
+      return;
+    }
+
     let isMounted = true;
-    setIsLoading(true);
+    setIsLoadingReport(true);
     async function loadReport() {
       try {
         const data = await getExamReport(selectedExamId);
-        if (isMounted) { setReport(data); setError(""); }
+        if (isMounted) { setReport(normalizeReport(data)); setError(""); }
       } catch (err) {
-        if (isMounted) { setReport(null); setError(err.response?.data?.message || "Unable to load analytics."); }
+        if (isMounted) { setReport(null); setError(getApiErrorMessage(err, "Unable to load analytics.")); }
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) setIsLoadingReport(false);
       }
     }
     loadReport();
@@ -148,6 +174,7 @@ export default function ExamAnalyticsPage() {
   if (role !== "lecturer") return <Navigate to={`/${role || "student"}-dashboard`} replace />;
 
   const selectedExam = exams.find(e => e.id === selectedExamId);
+  const isLoading = isLoadingExams || isLoadingReport;
 
   return (
     <main className="admin-shell">
@@ -162,7 +189,7 @@ export default function ExamAnalyticsPage() {
         </div>
       </section>
 
-      {error && <div className="alert alert-error admin-alert">⚠ {error}</div>}
+      {error && <div className="alert alert-error admin-alert"><Icon name="warning" size={16} /> {error}</div>}
 
       <div style={{ display: "grid", gap: 20 }}>
         {/* Exam selector */}
@@ -192,7 +219,18 @@ export default function ExamAnalyticsPage() {
           )}
         </div>
 
-        {isLoading && <div style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 16, padding: 32 }}><p className="empty-state">Loading analytics…</p></div>}
+        {isLoading && <div style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 16, padding: 32 }}><SkeletonGrid count={3} /></div>}
+
+        {!isLoading && exams.length === 0 && !error && (
+          <div style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 16, padding: 32 }}>
+            <EmptyState
+              icon="analytics"
+              title="No exams to analyse"
+              message="Create an exam, add questions, and collect submissions before analytics can be shown."
+              action={<Link className="primary-button compact-button" to="/lecturer/exams/new">Create exam</Link>}
+            />
+          </div>
+        )}
 
         {!isLoading && report && (
           <>
@@ -301,10 +339,8 @@ export default function ExamAnalyticsPage() {
         )}
 
         {!isLoading && !report && !error && selectedExamId && (
-          <div style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 16, padding: 32, textAlign: "center" }}>
-            <div style={{ fontSize: "3rem", marginBottom: 12 }}>📊</div>
-            <h3 style={{ marginBottom: 8 }}>No data yet</h3>
-            <p style={{ color: "#64748b" }}>This exam has no submitted attempts to analyse.</p>
+          <div style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 16, padding: 32 }}>
+            <EmptyState icon="analytics" title="No data yet" message="This exam has no submitted attempts to analyse." />
           </div>
         )}
       </div>
@@ -325,4 +361,23 @@ function previewText(value) {
 function formatType(type) {
   const labels = { MCQ: "MCQ", TRUE_FALSE: "True/False", SHORT_ANSWER: "Short Answer" };
   return labels[type] || type;
+}
+
+function normalizeReport(data) {
+  const safeScoreDistribution = Array.isArray(data?.scoreDistribution) ? data.scoreDistribution : [];
+  const safeQuestionAccuracy = Array.isArray(data?.questionAccuracy) ? data.questionAccuracy : [];
+  const passFail = data?.passFail && typeof data.passFail === "object" ? data.passFail : {};
+
+  return {
+    ...data,
+    attemptCount: Number(data?.attemptCount || 0),
+    scoreDistribution: safeScoreDistribution,
+    questionAccuracy: safeQuestionAccuracy,
+    passFail: {
+      passed: Number(passFail.passed || 0),
+      failed: Number(passFail.failed || 0),
+      passPercentage: Number(passFail.passPercentage || 0),
+      failPercentage: Number(passFail.failPercentage || 0)
+    }
+  };
 }

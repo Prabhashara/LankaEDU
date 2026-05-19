@@ -368,3 +368,121 @@ button:disabled,
   .result-summary-grid, .answer-comparison, .analytics-chart-grid { grid-template-columns: 1fr; }
   .result-question-topline, .result-section-header { align-items: flex-start; flex-direction: column; gap: 6px; }
 }
+
+/* FINAL EXAM-TAKING EXPERIENCE UPLIFT */
+.loading-shell-card {
+  width: min(100%, 720px);
+  display: grid;
+  place-items: center;
+  gap: 18px;
+  padding: 34px;
+  border-radius: var(--radius-xl);
+  background: var(--app-surface);
+  border: 1.5px solid var(--app-border);
+  box-shadow: var(--app-shadow-soft);
+}
+.loading-shell-card p { color: var(--app-text-muted); font-weight: 850; }
+
+.premium-start-screen { width: min(100%, 940px); }
+.exam-start-hero { display: flex; align-items: center; gap: 16px; }
+.exam-start-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 22px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-secondary));
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--app-primary) 26%, transparent);
+}
+.exam-start-hero h1 { margin: 0 0 6px; }
+.exam-fact-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.exam-fact {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--app-surface);
+  border: 1.5px solid var(--app-border);
+}
+.exam-fact svg { color: var(--app-primary); }
+.exam-fact span { color: var(--app-text-muted); font-size: .72rem; font-weight: 950; text-transform: uppercase; letter-spacing: .06em; }
+.exam-fact strong { color: var(--app-text); font-size: .95rem; line-height: 1.45; }
+.exam-fact-wide { grid-column: 1 / -1; }
+.start-actions-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.exam-in-progress-shell { padding-top: 16px; }
+.sticky-exam-header {
+  position: sticky;
+  top: 16px;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(240px, .8fr) auto;
+  gap: 18px;
+  align-items: center;
+  border-radius: var(--radius-xl);
+  border: 1.5px solid var(--app-border);
+  margin-bottom: 18px;
+}
+.exam-progress-summary {
+  display: grid;
+  gap: 8px;
+  color: var(--app-text-soft);
+  font-size: .82rem;
+  font-weight: 900;
+}
+.exam-progress-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--app-border);
+}
+.exam-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--app-primary), var(--app-secondary));
+  transition: width .22s ease;
+}
+.refined-exam-content { align-items: start; }
+.refined-question-card { border-radius: var(--radius-xl); border-top: 1.5px solid var(--app-border); }
+.refined-option-label { position: relative; padding: 16px 18px; gap: 12px; }
+.refined-option-label input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.option-letter {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 13px;
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--app-primary) 24%, transparent);
+  font-weight: 950;
+}
+.refined-option-label:has(input[type="radio"]:checked) .option-letter {
+  color: #fff;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-secondary));
+}
+.refined-navigation,
+.refined-exam-actions { border-top: 0; padding-top: 0; }
+.refined-questions-panel { top: 112px; }
+.refined-questions-panel .questions-header h3 { font-size: 1rem; text-transform: none; letter-spacing: 0; }
+
+@media (max-width: 1024px) {
+  .sticky-exam-header { grid-template-columns: 1fr; position: relative; top: 0; }
+  .refined-questions-panel { top: 0; }
+  .exam-fact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .exam-start-hero { align-items: flex-start; }
+  .exam-start-icon { width: 50px; height: 50px; border-radius: 18px; }
+  .exam-fact-grid { grid-template-columns: 1fr; }
+  .start-actions-row { display: grid; }
+  .start-actions-row > * { width: 100%; }
+  .refined-option-label { align-items: flex-start; }
+  .option-letter { width: 30px; height: 30px; }
+}
+.refined-option-label:has(input[type="radio"]:checked) .option-text {
+  color: var(--app-primary);
+  font-weight: 900;
+}

@@ -4,6 +4,7 @@ import com.onlineexam.audit.AuditService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
+import com.onlineexam.common.RequestBodySupport;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class UserController {
 
   @PostMapping
   public ResponseEntity<Map<String, Object>> createStaffUser(HttpServletRequest request, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal currentUser = AuthSupport.requireRole(request, UserRole.ADMIN);
     StaffUserInput input = validateStaffUser(body);
 
@@ -67,6 +69,7 @@ public class UserController {
     @PathVariable String id,
     @RequestBody Map<String, Object> body
   ) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal currentUser = AuthSupport.requireRole(request, UserRole.ADMIN);
     Object isActive = body.get("isActive");
     if (!(isActive instanceof Boolean active)) {

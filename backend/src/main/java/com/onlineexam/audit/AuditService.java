@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.JsonFileStore;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,7 +19,7 @@ public class AuditService {
   private final JsonFileStore<AuditEvent> store;
 
   public AuditService(ObjectMapper objectMapper) {
-    this.store = new JsonFileStore<>(Path.of("src/data/audit.json"), objectMapper, new TypeReference<>() {});
+    this.store = new JsonFileStore<>("audit.json", objectMapper, new TypeReference<>() {});
   }
 
   public List<AuditEvent> listRecent(int limit) {

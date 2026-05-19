@@ -4,6 +4,7 @@ import com.onlineexam.audit.AuditService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
 import com.onlineexam.common.ApiException;
+import com.onlineexam.common.RequestBodySupport;
 import com.onlineexam.exams.ExamService;
 import com.onlineexam.exams.PublicExam;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,7 @@ public class QuestionController {
 
   @PostMapping
   public ResponseEntity<Map<String, Object>> create(HttpServletRequest request, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     QuestionValues values = validateQuestion(body);
     requireDraftExam(findOwnedExam(values.examId(), user));
@@ -70,6 +72,7 @@ public class QuestionController {
 
   @PatchMapping("/{id}")
   public Map<String, Object> update(HttpServletRequest request, @PathVariable String id, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     PublicQuestion existingQuestion = findOwnedQuestion(id, user);
     PublicExam exam = requireDraftExam(findOwnedExam(existingQuestion.examId(), user));
@@ -97,6 +100,7 @@ public class QuestionController {
 
   @PatchMapping("/reorder")
   public Map<String, Object> reorder(HttpServletRequest request, @RequestBody Map<String, Object> body) {
+    body = RequestBodySupport.emptyIfNull(body);
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     String examId = first(body, "exam_id", "examId");
     PublicExam exam = requireDraftExam(findOwnedExam(examId, user));
@@ -107,7 +111,7 @@ public class QuestionController {
 
     List<PublicQuestion> questions = questionService.reorder(exam.id(), questionIds);
     if (questions == null) {
-      throw new ApiException(HttpStatus.BAD_REQUEST, "Question order must include question once");
+      throw new ApiException(HttpStatus.BAD_REQUEST, "Question order must include every question once");
     }
 
     auditService.record(user, "QUESTION_REORDERED", "exam", exam.id(), "Question order updated", Map.of("questionCount", questions.size()));

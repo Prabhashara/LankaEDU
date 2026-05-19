@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { getAuthToken, getStoredRole } from "../../services/authStorage";
+import { getApiErrorMessage } from "../../services/errorService";
 import { getExam, getExamResults } from "../../services/examService";
 import { downloadResultPdf } from "../../services/reportService";
+import Icon from "../../components/Icons.jsx";
+import { EmptyState, SkeletonGrid } from "../../components/UiKit.jsx";
 import "./ExamTakingPage.css";
 
 export default function LecturerExamResultsPage() {
@@ -41,7 +44,7 @@ export default function LecturerExamResultsPage() {
         const data = await getExamResults(id);
         if (isMounted) { setExam(data.exam); setResults(data.results || []); setSummary(data.summary || null); setError(""); }
       } catch (err) {
-        if (isMounted) setError(err.response?.data?.message || "Unable to load exam results.");
+        if (isMounted) setError(getApiErrorMessage(err, "Unable to load exam results."));
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -72,7 +75,7 @@ export default function LecturerExamResultsPage() {
   async function handleDownloadPdf(attemptId) {
     setDownloadingAttemptId(attemptId); setError("");
     try { await downloadResultPdf(attemptId); }
-    catch { setError("Unable to download PDF report."); }
+    catch (requestError) { setError(getApiErrorMessage(requestError, "Unable to download PDF report.")); }
     finally { setDownloadingAttemptId(""); }
   }
 
@@ -93,22 +96,18 @@ export default function LecturerExamResultsPage() {
           <p className="dashboard-copy">{exam?.subject && <span style={{ marginRight: 12 }}>{exam.subject}</span>}Review class performance and individual submissions.</p>
         </div>
         <div className="header-actions">
-          <Link className="secondary-button" to={`/lecturer/exams/${id}`} style={{ minHeight: 40, padding: "8px 16px" }}>← Back to exam</Link>
-          <Link className="secondary-button" to="/lecturer/analytics" style={{ minHeight: 40, padding: "8px 16px" }}>📊 Analytics</Link>
+          <Link className="secondary-button" to={`/lecturer/exams/${id}`} style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="arrowLeft" size={16} /> Back to exam</Link>
+          <Link className="secondary-button" to="/lecturer/analytics" style={{ minHeight: 40, padding: "8px 16px" }}><Icon name="analytics" size={16} /> Analytics</Link>
         </div>
       </section>
 
-      {error && <div className="alert alert-error admin-alert">⚠ {error}</div>}
+      {error && <div className="alert alert-error admin-alert"><Icon name="warning" size={16} /> {error}</div>}
 
       {isLoading ? (
-        <div className="detail-panel wide"><p className="empty-state">Loading results…</p></div>
+        <div className="detail-panel wide"><SkeletonGrid count={3} variant="list" /></div>
       ) : !summary ? (
         <div className="detail-panel wide">
-          <div style={{ textAlign: "center", padding: "48px 24px" }}>
-            <div style={{ fontSize: "3rem", marginBottom: 16 }}>📋</div>
-            <h3 style={{ marginBottom: 8 }}>No results yet</h3>
-            <p style={{ color: "#64748b" }}>Students haven't submitted any attempts for this exam.</p>
-          </div>
+          <EmptyState icon="report" title="No results yet" message="Students have not submitted any attempts for this exam." />
         </div>
       ) : (
         <div style={{ display: "grid", gap: 20 }}>
@@ -216,7 +215,7 @@ export default function LecturerExamResultsPage() {
                       <td style={{ fontWeight: 700 }}>{formatNumber(result.score)} / {formatNumber(result.maxScore)}</td>
                       <td style={{ fontWeight: 800, color: result.passed ? "#059669" : "#f43f5e" }}>{formatNumber(result.percentage)}%</td>
                       <td><span className="grade-badge compact">{result.grade || "F"}</span></td>
-                      <td><span className={`status-badge compact ${result.passed ? "pass" : "fail"}`}>{result.passed ? "✓ Pass" : "✗ Fail"}</span></td>
+                      <td><span className={`status-badge compact ${result.passed ? "pass" : "fail"}`}>{result.passed ? <><Icon name="check" size={13} /> Pass</> : <><Icon name="warning" size={13} /> Fail</>}</span></td>
                       <td style={{ fontSize: "0.8rem", color: "#64748b" }}>{formatDateTime(result.submittedAt)}</td>
                       <td>
                         <button className="table-button" type="button" onClick={() => handleDownloadPdf(result.attemptId)} disabled={downloadingAttemptId === result.attemptId}>
