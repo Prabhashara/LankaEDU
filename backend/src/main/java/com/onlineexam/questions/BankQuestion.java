@@ -17,6 +17,7 @@ public record BankQuestion(
   String createdBy,
   String createdAt
 ) {
+  // final keyword
   public static BankQuestion from(Question question, PublicExam exam) {
     return new BankQuestion(
       question.getId(),
