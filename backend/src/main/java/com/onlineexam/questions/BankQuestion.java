@@ -4,6 +4,7 @@ import com.onlineexam.exams.PublicExam;
 import java.util.List;
 
 public record BankQuestion(
+  // variable
   String id,
   String examId,
   String examTitle,
@@ -18,6 +19,7 @@ public record BankQuestion(
   String createdBy,
   String createdAt
 ) {
+  // final keyword
   public static BankQuestion from(Question question, PublicExam exam) {
     return new BankQuestion(
       question.getId(),

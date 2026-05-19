@@ -73,7 +73,7 @@ public class QuestionService {
   public Optional<Question> findRawById(String id) {
     return store.readAll().stream().filter(question -> id.equals(question.getId())).findFirst();
   }
-
+// create exam
   public PublicQuestion create(String lecturerId, QuestionValues values) {
     List<Question> questions = new ArrayList<>(store.readAll());
     Question question = new Question();
@@ -107,7 +107,7 @@ public class QuestionService {
       .filter(question -> examId.equals(question.getExamId()))
       .anyMatch(question -> sourceKey.equals(sourceKey(question)));
   }
-
+//link question
   public PublicQuestion linkToExam(String examId, Question sourceQuestion, String lecturerId) {
     List<Question> questions = new ArrayList<>(store.readAll());
     Question question = new Question();

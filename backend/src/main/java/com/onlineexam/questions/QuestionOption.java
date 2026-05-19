@@ -1,4 +1,5 @@
 package com.onlineexam.questions;
+// questionOption
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,6 +23,7 @@ public class QuestionOption {
   public String getOptionText() {
     return optionText;
   }
+  // setters
 
   public void setOptionText(String optionText) {
     this.optionText = optionText;

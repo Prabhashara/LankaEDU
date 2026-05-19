@@ -57,7 +57,7 @@ public class QuestionController {
     PublicQuestion question = findOwnedQuestion(id, user);
     return Map.of("question", question);
   }
-
+// post mapping
   @PostMapping
   public ResponseEntity<Map<String, Object>> create(HttpServletRequest request, @RequestBody Map<String, Object> body) {
     body = RequestBodySupport.emptyIfNull(body);
@@ -69,7 +69,7 @@ public class QuestionController {
     auditService.record(user, "QUESTION_CREATED", "question", question.id(), "Question created", Map.of("examId", question.examId(), "type", question.type(), "marks", question.marks()));
     return ResponseEntity.status(201).body(Map.of("message", "Question created", "question", question));
   }
-
+// patchMApping
   @PatchMapping("/{id}")
   public Map<String, Object> update(HttpServletRequest request, @PathVariable String id, @RequestBody Map<String, Object> body) {
     body = RequestBodySupport.emptyIfNull(body);
@@ -86,6 +86,7 @@ public class QuestionController {
     auditService.record(user, "QUESTION_UPDATED", "question", id, "Question updated", Map.of("examId", question.examId(), "type", question.type()));
     return Map.of("message", "Question updated", "question", question);
   }
+  // delete question
 
   @DeleteMapping("/{id}")
   public Map<String, Object> delete(HttpServletRequest request, @PathVariable String id) {
