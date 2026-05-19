@@ -22,6 +22,7 @@ public class QuestionOption {
   public String getOptionText() {
     return optionText;
   }
+  // setters
 
   public void setOptionText(String optionText) {
     this.optionText = optionText;
