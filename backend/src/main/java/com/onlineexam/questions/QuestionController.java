@@ -63,7 +63,7 @@ public class QuestionController {
     PublicQuestion question = questionService.create(user.id(), values);
     return ResponseEntity.status(201).body(Map.of("message", "Question created", "question", question));
   }
-
+// patchMApping
   @PatchMapping("/{id}")
   public Map<String, Object> update(HttpServletRequest request, @PathVariable String id, @RequestBody Map<String, Object> body) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
