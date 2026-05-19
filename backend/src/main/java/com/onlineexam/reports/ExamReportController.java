@@ -63,7 +63,9 @@ public class ExamReportController {
   public Map<String, Object> examReport(HttpServletRequest request, @PathVariable String id) {
     UserPrincipal user = AuthSupport.requireRole(request, "lecturer");
     PublicExam exam = examService.findPublicById(id).orElse(null);
-
+    // [CRUD: READ] - Exam details JSON/database eken kiyawala gannawa.
+    // [RELATIONSHIP: ASSOCIATION / 1-TO-MANY] - Exam object eka laba gannawa. Eka
+    // exam ekakata questions saha results godak thiyenna puluwan.
     if (exam == null || !exam.createdBy().equals(user.id())) {
       throw new ApiException(HttpStatus.NOT_FOUND, "Exam not found");
     }
