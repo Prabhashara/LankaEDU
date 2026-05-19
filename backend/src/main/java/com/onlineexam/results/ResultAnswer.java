@@ -57,7 +57,7 @@ public class ResultAnswer {
   }
 
   /**
-   * Sets the selected option ID.
+   * 
    *
    * @param selectedOptionId selected option ID
    */
