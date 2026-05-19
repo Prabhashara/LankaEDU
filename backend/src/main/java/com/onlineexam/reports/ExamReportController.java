@@ -39,9 +39,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reports")
+// [OOP: SRP=(Single Responsibility] - Me class eken karanne reporting saha analytics weda vitharai
+/* [RELATIONSHIP: DEPENDENCY] - ExamReportController class eka weda karanna 
+ExamService, ResultService, QuestionService, UserService kiyana dependencies kiyana ewa one */
 public class ExamReportController {
   private static final List<String> BUCKET_LABELS = List.of("0-20%", "20-40%", "40-60%", "60-80%", "80-100%");
 
+ // [OOP: ENCAPSULATION] - Private final fields dapu nisa me services direct pita ayaata modify karanna baha.
   private final ExamService examService;
   private final ResultService resultService;
   private final QuestionService questionService;
