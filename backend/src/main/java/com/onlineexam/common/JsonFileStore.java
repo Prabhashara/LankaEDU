@@ -51,7 +51,7 @@ public class JsonFileStore<T> {
           return objectMapper.readValue(resultSet.getString("data"), typeReference);
         }
       } catch (IOException | SQLException error) {
-        throw new IllegalStateException("Unable to read " + key + " from database", error);
+        throw storageError("Unable to read " + key + " from database", error);
       }
     }
   }
@@ -76,7 +76,7 @@ public class JsonFileStore<T> {
         statement.setString(2, objectMapper.writeValueAsString(items));
         statement.executeUpdate();
       } catch (IOException | SQLException error) {
-        throw new IllegalStateException("Unable to write " + key + " to database", error);
+        throw storageError("Unable to write " + key + " to database", error);
       }
     }
   }
@@ -96,8 +96,18 @@ public class JsonFileStore<T> {
     ) {
       statement.executeUpdate();
     } catch (SQLException error) {
-      throw new IllegalStateException("Unable to initialize database JSON store", error);
+      throw storageError("Unable to initialize database JSON store", error);
     }
+  }
+
+  private IllegalStateException storageError(String message, Exception error) {
+    if (DatabaseSupport.isConnectivityError(error)) {
+      return new DatabaseConnectionException(
+        "Database connection failed. Check DATABASE_URL, Supabase network access, and whether you are using the Supabase pooler connection string.",
+        error
+      );
+    }
+    return new IllegalStateException(message, error);
   }
 
   private Object lock() {

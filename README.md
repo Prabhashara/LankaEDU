@@ -149,7 +149,7 @@ Use a strong `JWT_SECRET` in real deployments. Do not commit real `.env` files.
 
 ## Database Setup
 
-The current application uses Supabase/Postgres as the only database. It stores authentication and user management records in `public.users`. Exams, questions, attempts, results, and audit events are stored as JSON collections in `public.app_json_store`.
+The current application uses Supabase/Postgres as the only database. It stores authentication and user management records in `public.users`, lecturer-created exams in `public.exams`, and the remaining JSON collections in `public.app_json_store`.
 
 The backend can create the required tables automatically when it starts, but running the SQL below in Supabase SQL Editor is recommended for a clean setup:
 
@@ -170,6 +170,22 @@ create table if not exists public.users (
 create unique index if not exists users_email_lower_unique
   on public.users (lower(email));
 
+create table if not exists public.exams (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  subject text not null,
+  description text,
+  status text not null default 'Draft'
+    check (status in ('Draft', 'Active', 'Inactive', 'Archived')),
+  created_by uuid references public.users(id),
+  duration_mins numeric not null check (duration_mins > 0),
+  pass_mark numeric not null default 0 check (pass_mark >= 0),
+  start_at timestamptz,
+  end_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.app_json_store (
   store_key text primary key,
   data jsonb not null default '[]'::jsonb,
@@ -179,13 +195,14 @@ create table if not exists public.app_json_store (
 
 Expected `app_json_store.store_key` values are:
 
-- `exams.json`
 - `questions.json`
 - `attempts.json`
 - `results.json`
 - `audit.json`
 
-If old `users.json` data exists in `app_json_store`, the backend migrates valid legacy users into `public.users` during startup or first user access.
+If old `users.json` or `exams.json` data exists in `app_json_store`, the backend migrates valid legacy users into `public.users` and valid legacy exams into `public.exams` during startup or first access.
+
+Lecturer-created exams now persist directly in `public.exams`. Students only see exams after a lecturer publishes them. Questions, attempts, results, and audit events still use `app_json_store`.
 
 ## Run The Project
 
@@ -328,7 +345,9 @@ make build            # Build backend and frontend
 make dev              # Run backend and frontend together
 make dev-backend      # Run backend only
 make dev-frontend     # Run frontend only
-make clean            # Clean build artifacts
+make clean            # Clean generated build and cache artifacts
+make clean-deps       # Remove frontend node_modules
+make clean-all        # Clean artifacts and dependencies
 ```
 
 Manual commands:
@@ -353,7 +372,15 @@ cd frontend && npm run build
 - Confirm the Supabase database URL is correct.
 - Use the Supabase connection string that is reachable from your machine.
 - Add `?sslmode=require` if it is missing.
-- If direct port `5432` is blocked, use the Supabase pooler connection string.
+- If direct port `5432` is blocked or slow, use the Supabase pooler connection string.
+- Restart the backend after changing `DATABASE_URL`.
+
+`Unable to read questions.json from database` or `Unable to read attempts.json from database`
+
+- This means the backend could not reach Supabase while reading `app_json_store`.
+- Check `DATABASE_URL`, internet access, and Supabase project status.
+- Prefer the Supabase pooler connection string for local development if direct connections time out.
+- Confirm `public.app_json_store` exists with `store_key`, `data`, and `updated_at` columns.
 
 Login works in backend logs but frontend calls fail
 
@@ -372,6 +399,13 @@ Question bank edit is blocked
 
 - This is expected when the signed-in lecturer did not create the original question.
 - Add the bank question to your own draft exam first, then edit the copied question.
+
+Lecturer exam is not visible to students
+
+- The exam must be published, so its status must be `Active`.
+- The exam needs at least one question before publishing.
+- Draft exams are visible only to the lecturer who created them.
+- Published exams are stored in `public.exams`; question counts come from `app_json_store.questions.json`.
 
 Stale role or redirect issues
 

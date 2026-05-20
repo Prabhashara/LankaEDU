@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineexam.common.JsonFileStore;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +31,16 @@ public class AttemptService {
     return store.readAll().stream()
         .filter(attempt -> studentId.equals(attempt.getStudentId()) && examId.equals(attempt.getExamId()))
         .findFirst();
+  }
+
+  public Map<String, Attempt> findByStudentForExams(String studentId, List<String> examIds) {
+    if (examIds.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    return store.readAll().stream()
+        .filter(attempt -> studentId.equals(attempt.getStudentId()) && examIds.contains(attempt.getExamId()))
+        .collect(Collectors.toMap(Attempt::getExamId, Function.identity(), this::preferLatestAttempt));
   }
 
   public boolean hasForExam(String examId) {
@@ -84,5 +97,11 @@ public class AttemptService {
       }
     }
     return null;
+  }
+
+  private Attempt preferLatestAttempt(Attempt first, Attempt second) {
+    String firstCreatedAt = first.getCreatedAt() == null ? "" : first.getCreatedAt();
+    String secondCreatedAt = second.getCreatedAt() == null ? "" : second.getCreatedAt();
+    return secondCreatedAt.compareTo(firstCreatedAt) >= 0 ? second : first;
   }
 }

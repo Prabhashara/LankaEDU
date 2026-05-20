@@ -1,7 +1,7 @@
 # LankaEdu Online Examination System - Makefile
 # Streamlined build and development automation
 
-.PHONY: help setup env-setup install install-backend install-frontend build build-backend build-frontend dev dev-backend dev-frontend clean clean-backend clean-frontend clean-deps
+.PHONY: help setup env-setup install install-backend install-frontend build build-backend build-frontend dev dev-backend dev-frontend clean clean-backend clean-frontend clean-deps clean-all
 
 # Colors for terminal output
 BLUE := \033[0;34m
@@ -40,10 +40,11 @@ help:
 	@echo "  make build-frontend     - Build frontend only"
 	@echo ""
 	@echo "$(GREEN)Cleanup:$(NC)"
-	@echo "  make clean              - Clean all build artifacts"
+	@echo "  make clean              - Clean generated build and cache artifacts"
 	@echo "  make clean-backend      - Clean backend only"
 	@echo "  make clean-frontend     - Clean frontend only"
 	@echo "  make clean-deps         - Remove installed dependencies"
+	@echo "  make clean-all          - Clean artifacts and dependencies"
 	@echo ""
 
 env-setup:
@@ -124,19 +125,26 @@ clean: clean-backend clean-frontend
 
 clean-backend:
 	@echo "$(BLUE)Cleaning backend...$(NC)"
-	@cd $(BACKEND_DIR) && mvn clean -q
-	@rm -rf $(BACKEND_DIR)/private
+	@if command -v mvn >/dev/null 2>&1; then \
+		cd $(BACKEND_DIR) && mvn clean -q; \
+	else \
+		rm -rf $(BACKEND_DIR)/target; \
+	fi
+	@rm -rf $(BACKEND_DIR)/target $(BACKEND_DIR)/private
 	@echo "$(GREEN)Backend cleaned$(NC)"
 
 clean-frontend:
 	@echo "$(BLUE)Cleaning frontend...$(NC)"
-	@rm -rf $(FRONTEND_DIR)/dist $(FRONTEND_DIR)/.vite
+	@rm -rf $(FRONTEND_DIR)/dist $(FRONTEND_DIR)/.vite $(FRONTEND_DIR)/node_modules/.vite $(FRONTEND_DIR)/coverage
 	@echo "$(GREEN)Frontend cleaned$(NC)"
 
 clean-deps:
 	@echo "$(BLUE)Removing installed dependencies...$(NC)"
 	@rm -rf $(FRONTEND_DIR)/node_modules
 	@echo "$(GREEN)Dependencies removed$(NC)"
+
+clean-all: clean clean-deps
+	@echo "$(GREEN)Everything clean$(NC)"
 
 setup: install
 	@echo ""
@@ -153,7 +161,8 @@ setup: install
 	@echo "  make dev                # Start both services"
 	@echo "  make dev-backend        # Backend only"
 	@echo "  make dev-frontend       # Frontend only"
-	@echo "  make clean              # Clean all artifacts"
+	@echo "  make clean              # Clean generated artifacts"
+	@echo "  make clean-all          # Clean artifacts and dependencies"
 	@echo ""
 	@echo "$(YELLOW)Test Credentials:$(NC)"
 	@echo "  Admin:    admin@example.com / admin123"

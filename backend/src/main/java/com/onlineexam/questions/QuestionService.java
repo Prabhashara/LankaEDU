@@ -7,6 +7,7 @@ import com.onlineexam.exams.PublicExam;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +51,16 @@ public class QuestionService {
     return (int) store.readAll().stream()
       .filter(question -> examId.equals(question.getExamId()))
       .count();
+  }
+
+  public Map<String, Long> countForExams(List<String> examIds) {
+    if (examIds.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    return store.readAll().stream()
+      .filter(question -> examIds.contains(question.getExamId()))
+      .collect(Collectors.groupingBy(Question::getExamId, Collectors.counting()));
   }
 
   public int countAll() {

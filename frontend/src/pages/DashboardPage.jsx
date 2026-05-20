@@ -19,11 +19,12 @@ const roleGreetings = {
 };
 
 function getStudentStats(exams) {
-  const active = exams.filter(e => e.status?.toLowerCase() === "active").length;
+  const published = exams.filter(e => e.status?.toLowerCase() === "active");
+  const active = published.filter(e => examWindow(e) === "available").length;
   return [
     { label: "Active Exams", value: active, sub: "available now", cls: "teal", icon: "exam" },
-    { label: "Scheduled", value: exams.filter(e => e.status?.toLowerCase() === "upcoming").length, sub: "upcoming", cls: "amber", icon: "calendar" },
-    { label: "Total Exams", value: exams.length, sub: "all time", cls: "", icon: "analytics" },
+    { label: "Scheduled", value: published.filter(e => examWindow(e) === "upcoming").length, sub: "upcoming", cls: "amber", icon: "calendar" },
+    { label: "Published Exams", value: published.length, sub: "all visible", cls: "", icon: "analytics" },
   ];
 }
 
@@ -79,6 +80,33 @@ function getInitials(name, role) {
   if (parts.length === 0) return "PR";
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+function examWindow(exam) {
+  const now = new Date();
+  const start = exam.startAt ? new Date(exam.startAt) : null;
+  const end = exam.endAt ? new Date(exam.endAt) : null;
+  if (start && start > now) return "upcoming";
+  if (end && end <= now) return "ended";
+  return "available";
+}
+
+function examWindowLabel(exam) {
+  const window = examWindow(exam);
+  if (window === "upcoming") return "Upcoming";
+  if (window === "ended") return "Ended";
+  return "Available";
+}
+
+function studentExamLink(exam) {
+  const window = examWindow(exam);
+  if (exam.attempted) {
+    return `/student/results/${exam.resultId || exam.attemptId}`;
+  }
+  if (window === "available" && exam.status === "Active") {
+    return `/student/exams/${exam.id}/take`;
+  }
+  return "/student/exams";
 }
 
 export default function DashboardPage({ role }) {
@@ -200,15 +228,18 @@ export default function DashboardPage({ role }) {
               <div className="exam-list">
                 {exams.slice(0, 6).map(exam => (
                   <Link className="exam-row dashboard-exam-row" key={exam.id}
-                    to={role === "lecturer" ? `/lecturer/exams/${exam.id}` : "#"}
-                    aria-disabled={role === "student" ? "true" : undefined}>
+                    to={role === "lecturer" ? `/lecturer/exams/${exam.id}` : studentExamLink(exam)}>
                     <span>
                       <strong>{exam.title}</strong>
                       <small>{exam.subject}</small>
                     </span>
                     <span className="exam-row-meta">{exam.durationMinutes} min</span>
                     <span className="exam-row-meta">{exam.passMark}% pass</span>
-                    <span className={`status-pill ${exam.status?.toLowerCase()}`}>{exam.status}</span>
+                    {role === "student" ? (
+                      <span className={`availability-badge ${examWindow(exam)}`}>{examWindowLabel(exam)}</span>
+                    ) : (
+                      <span className={`status-pill ${exam.status?.toLowerCase()}`}>{exam.status}</span>
+                    )}
                   </Link>
                 ))}
               </div>

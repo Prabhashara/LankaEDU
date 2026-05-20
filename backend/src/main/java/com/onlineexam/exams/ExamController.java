@@ -1,6 +1,7 @@
 package com.onlineexam.exams;
 
 import com.onlineexam.audit.AuditService;
+import com.onlineexam.attempts.Attempt;
 import com.onlineexam.attempts.AttemptService;
 import com.onlineexam.auth.AuthSupport;
 import com.onlineexam.auth.UserPrincipal;
@@ -61,8 +62,12 @@ public class ExamController {
   public Map<String, Object> list(HttpServletRequest request, @RequestParam(value = "status", required = false) String status) {
     UserPrincipal user = AuthSupport.currentUser(request);
     if ("student".equals(user.role())) {
-      List<AvailableExam> exams = examService.listActive().stream()
-        .map(exam -> AvailableExam.from(exam, questionService.countForExam(exam.id()), attemptService.findByStudentAndExam(user.id(), exam.id()).orElse(null)))
+      List<PublicExam> activeExams = examService.listActive();
+      List<String> examIds = activeExams.stream().map(PublicExam::id).toList();
+      Map<String, Long> questionCounts = questionService.countForExams(examIds);
+      Map<String, Attempt> attemptsByExam = attemptService.findByStudentForExams(user.id(), examIds);
+      List<AvailableExam> exams = activeExams.stream()
+        .map(exam -> AvailableExam.from(exam, questionCounts.getOrDefault(exam.id(), 0L).intValue(), attemptsByExam.get(exam.id())))
         .toList();
       return Map.of("exams", exams);
     }
